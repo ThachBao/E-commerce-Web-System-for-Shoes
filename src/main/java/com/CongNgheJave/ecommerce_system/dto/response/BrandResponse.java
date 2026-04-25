@@ -9,12 +9,12 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoryResponse {
+public class BrandResponse {
     private Integer id;
-    private Integer parentId;
-    private String parentName;
     private String code;
     private String name;
     private String slug;
+    private String description;
+    private String logoUrl;
     private Boolean isActive;
 }

@@ -1,49 +1,92 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Giỏ hàng</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giỏ hàng của bạn - E-Commerce</title>
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/cart.css}">
 </head>
 <body>
-<h1>Giỏ hàng</h1>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/cart-ui"><i class="bi bi-box-seam"></i> ShoeStore</a>
+            <span class="text-white ms-auto"><i class="bi bi-person-circle"></i> Đang test với: Customer 01</span>
+        </div>
+    </nav>
 
-<h2>Thêm sản phẩm vào giỏ hàng</h2>
+    <div class="container mt-5">
+        <div class="row align-items-center mb-4">
+            <div class="col">
+                <h2 class="fw-bold mb-0">Giỏ hàng của bạn</h2>
+            </div>
+        </div>
+        
+        <div class="row">
+            <!-- Khu vực Giỏ hàng -->
+            <div class="col-lg-8">
+                <div class="cart-container shadow-sm">
+                    <div class="table-responsive">
+                        <table class="table table-borderless">
+                            <thead class="border-bottom">
+                                <tr>
+                                    <th>Sản phẩm (SKU)</th>
+                                    <th>Đơn giá</th>
+                                    <th>Số lượng</th>
+                                    <th>Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cart-items">
+                                <tr><td colspan="4" class="text-center py-4">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Tool giả lập thêm vào giỏ hàng -->
+                <div class="cart-container mt-4 border border-info bg-light">
+                    <h5 class="fw-bold mb-3 text-info"><i class="bi bi-bug"></i> Test Tool: Giả lập Add To Cart</h5>
+                    <p class="text-muted small mb-3">Nhập ID của biến thể đang có thật trong Database (VD: 2, 4, 6).</p>
+                    <form id="form-add-to-cart" class="row g-3 align-items-end">
+                        <div class="col-md-5">
+                            <label class="form-label fw-semibold">Variant ID</label>
+                            <input type="number" class="form-control form-control-lg" id="input-variant-id" required value="2">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Số lượng</label>
+                            <input type="number" class="form-control form-control-lg" id="input-quantity" required value="1" min="1">
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold" id="btn-add-cart">THÊM <i class="bi bi-plus-circle ms-1"></i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
 
-<form action="/cart/add" method="post">
-    <label>Variant ID:</label>
-    <input type="number" name="variantId" value="2">
+            <!-- Khu vực Tổng tiền -->
+            <div class="col-lg-4 mt-4 mt-lg-0">
+                <div class="cart-container checkout-box shadow-sm">
+                    <h4 class="fw-bold mb-4">Tổng cộng</h4>
+                    <div class="d-flex justify-content-between mb-3 border-bottom pb-3">
+                        <span class="text-muted fs-5">Tạm tính</span>
+                        <span class="fw-bold fs-4 text-danger" id="cart-subtotal">...</span>
+                    </div>
+                    <a href="/checkout-ui" class="btn btn-dark btn-lg w-100 fw-bold mt-2">
+                        TIẾN HÀNH THANH TOÁN <i class="bi bi-arrow-right ms-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <label>Số lượng:</label>
-    <input type="number" name="quantity" value="1">
-
-    <button type="submit">Thêm vào giỏ</button>
-</form>
-
-<hr>
-
-<h2>Danh sách sản phẩm trong giỏ</h2>
-
-<table border="1" cellpadding="8">
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>Variant ID</th>
-        <th>Số lượng</th>
-        <th>Đơn giá</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="item : ${cartItems}">
-        <td th:text="${item.id}"></td>
-        <td th:text="${item.variantId}"></td>
-        <td th:text="${item.quantity}"></td>
-        <td th:text="${item.unitPrice}"></td>
-    </tr>
-    </tbody>
-</table>
-
-<p>
-    <a href="/">Về trang chủ</a>
-</p>
+    <script th:src="@{/js/cart.js}"></script>
 </body>
 </html>

@@ -5,7 +5,17 @@
     <preferences />
   </component>
   <component name="DBNavigator.Project.DatabaseAssistantManager">
-    <assistants />
+    <assistants>
+      <assistant-state connection-id="7da9b30e-d968-4561-8c73-f416362065e2" assistant-type="PUBLIC" default-profile-name="" selected-chat-id="49DAF3825D9D4F4AAA51FE90163B4393" availability="AVAILABLE" acknowledgement="ENGAGED" selected="true">
+        <chats>
+          <chat id="49DAF3825D9D4F4AAA51FE90163B4393" title="" session-signature="" timestamp="1777730499890">
+            <messages />
+            <context provider="" profile="" model="" action="" interactive="true" />
+          </chat>
+        </chats>
+        <tools />
+      </assistant-state>
+    </assistants>
     <selection-state>
       <model-selection />
     </selection-state>

@@ -1,0 +1,113 @@
+# Database Schema cho Cart & Order
+
+Dưới đây là cấu trúc database và dữ liệu mẫu đã được cập nhật tinh gọn hơn cho các module Giỏ hàng (Cart) và Đơn hàng (Order):
+
+```sql
+CREATE TABLE Cart (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    userId INT NOT NULL UNIQUE,
+    FOREIGN KEY (userId) REFERENCES Users(id) ON DELETE CASCADE
+);
+-- ======================
+-- Table: Cart_Item
+-- sửa tối thiểu để khớp với phần INSERT gốc
+-- ======================
+CREATE TABLE Cart_Item (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    cartId INT NOT NULL,
+    variantId INT NOT NULL,
+    quantity INT NOT NULL DEFAULT 1,
+    FOREIGN KEY (cartId) REFERENCES Cart(id) ON DELETE CASCADE,
+    FOREIGN KEY (variantId) REFERENCES Product_Variant(id)
+);
+
+
+-- ======================
+-- Table: Orders
+-- giữ nguyên style tên bảng/cột của database gốc
+-- chỉ thêm các cột đang được dùng ở phần INSERT
+-- ======================
+CREATE TABLE Orders (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    userId INT NOT NULL,
+    orderCode VARCHAR(30) NOT NULL UNIQUE,
+    orderStatus VARCHAR(30) DEFAULT 'PENDING',
+    paymentStatus VARCHAR(30) DEFAULT 'UNPAID',
+    paymentMethod VARCHAR(30) DEFAULT 'COD',
+    
+    totalAmount DECIMAL(12,2) NOT NULL, -- Chỉ giữ tổng cuối cho đơn giản
+    
+    shippingFullName VARCHAR(100) NOT NULL,
+    shippingPhone VARCHAR(20) NOT NULL,
+    shippingAddress VARCHAR(255) NOT NULL, -- Gộp tất cả địa chỉ vào đây
+    
+    note VARCHAR(255),
+    placedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (userId) REFERENCES Users(id)
+);
+
+
+-- ======================
+-- Table: Order_Item
+-- sửa tối thiểu để khớp với phần INSERT gốc
+-- ======================
+CREATE TABLE Order_Item (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    orderId INT NOT NULL,
+    variantId INT,
+    productName VARCHAR(150) NOT NULL, -- Lưu tên kèm size/màu để làm snapshot
+    unitPrice DECIMAL(12,2) NOT NULL,  -- Giá tại thời điểm mua (Snapshot)
+    quantity INT NOT NULL,
+    FOREIGN KEY (orderId) REFERENCES Orders(id) ON DELETE CASCADE,
+    FOREIGN KEY (variantId) REFERENCES Product_Variant(id) ON DELETE SET NULL
+);
+
+
+-- ======================
+-- Table: Payment
+-- giữ nguyên như gốc
+-- ======================
+CREATE TABLE Payment (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    orderId INT NOT NULL UNIQUE,
+    paymentMethod VARCHAR(30) NOT NULL,
+    amount DECIMAL(12,2) NOT NULL,
+    paymentStatus VARCHAR(30) DEFAULT 'PENDING',
+    paidAt DATETIME,
+    FOREIGN KEY (orderId) REFERENCES Orders(id) ON DELETE CASCADE
+);
+
+
+-- Dữ liệu Giỏ hàng (Mỗi User 1 giỏ)
+INSERT INTO Cart (userId) VALUES 
+(5), -- Giỏ hàng của Customer 01
+(6); -- Giỏ hàng của Customer 02
+
+-- Chi tiết giỏ hàng (Bỏ unitPrice vì sẽ lấy live từ bảng Product_Variant)
+INSERT INTO Cart_Item (cartId, variantId, quantity) VALUES 
+(1, 2, 1), -- Khách 01: 1 đôi Nike Air Zoom Pegasus (Size 40, Black)
+(1, 4, 1), -- Khách 01: 1 đôi Adidas Ultraboost Light (Size 40, Black)
+(2, 6, 2); -- Khách 02: 2 đôi Converse Chuck Taylor (Size 38, Red)
+
+-- Dữ liệu Đơn hàng
+INSERT INTO Orders (
+    userId, orderCode, orderStatus, paymentStatus, paymentMethod, 
+    totalAmount, shippingFullName, shippingPhone, shippingAddress, note
+) VALUES 
+(5, 'ORD0001', 'PENDING', 'UNPAID', 'COD', 
+ 6320000, 'Customer User 01', '0900000005', '123 Le Loi, Ben Thanh, Quan 1, Ho Chi Minh', 'Giao gio hanh chinh'),
+
+(6, 'ORD0002', 'CONFIRMED', 'PAID', 'BANK_TRANSFER', 
+ 3730000, 'Customer User 02', '0900000006', '89 Hai Ba Trung, Da Kao, Quan 1, Ho Chi Minh', 'Khach da chuyen khoan');
+
+-- Chi tiết đơn hàng (Thực hiện Price Snapshot)
+INSERT INTO Order_Item (orderId, variantId, productName, unitPrice, quantity) VALUES 
+(1, 2, 'Nike Air Zoom Pegasus - Black - 40', 2990000, 1),
+(1, 4, 'Adidas Ultraboost Light - Black - 40', 3300000, 1),
+(2, 6, 'Converse Chuck Taylor - Red - 38', 1850000, 2);
+
+-- Dữ liệu Thanh toán (Gọn hơn, không còn provider/transaction phức tạp)
+INSERT INTO Payment (orderId, paymentMethod, amount, paymentStatus, paidAt) VALUES 
+(1, 'COD', 6320000, 'PENDING', NULL),
+(2, 'BANK_TRANSFER', 3730000, 'PAID', NOW());
+```

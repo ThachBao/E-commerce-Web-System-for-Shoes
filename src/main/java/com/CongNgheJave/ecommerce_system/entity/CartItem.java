@@ -4,27 +4,23 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.math.BigDecimal;
-
 @Getter
 @Setter
 @Entity
 @Table(name = "Cart_Item")
-public class CartItem
-{
+public class CartItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "cartId", nullable = false)
-    private Integer cartId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cartId", nullable = false)
+    private Cart cart;
 
-    @Column(name = "variantId", nullable = false)
-    private Integer variantId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "variantId", nullable = false)
+    private ProductVariant productVariant;
 
-    @Column(name="quantity",nullable = false)
-    private Integer  quantity;
-
-    @Column(name = "unitPrice", nullable = false)
-    private BigDecimal unitPrice;
+    @Column(name = "quantity", nullable = false)
+    private Integer quantity = 1;
 }

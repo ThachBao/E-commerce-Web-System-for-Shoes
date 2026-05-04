@@ -9,12 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoryResponse {
+public class SizeResponse {
     private Integer id;
-    private Integer parentId;
-    private String parentName;
-    private String code;
     private String name;
-    private String slug;
-    private Boolean isActive;
 }

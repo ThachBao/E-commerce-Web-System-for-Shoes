@@ -37,3 +37,6 @@ build/
 GEMINI.md
 database.txt
 database.md
+
+### App Uploads ###
+uploads/

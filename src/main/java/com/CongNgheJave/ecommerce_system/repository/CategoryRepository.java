@@ -67,6 +67,9 @@ public interface CategoryRepository extends JpaRepository<Category, Integer> {
     /** Đếm số danh mục con trực tiếp */
     long countByParentId(Integer parentId);
 
+    /** Lấy tất cả danh mục con theo parent ID (kể cả không hoạt động) */
+    List<Category> findByParentId(Integer parentId);
+
     /** Kiểm tra danh mục có sản phẩm hay không (tránh xóa danh mục đang dùng) */
     @Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END "
          + "FROM Product p WHERE p.category.id = :categoryId")

@@ -53,4 +53,12 @@ public interface ProductVariantRepository extends JpaRepository<ProductVariant, 
     @Query("SELECT COALESCE(SUM(v.stockQuantity), 0) FROM ProductVariant v "
          + "WHERE v.product.id = :productId AND v.isActive = true")
     int sumStockByProductId(@Param("productId") Integer productId);
+
+    // ==================== Xóa cascade ====================
+
+    /** Xóa tất cả biến thể theo màu sắc */
+    void deleteByColorId(Integer colorId);
+
+    /** Xóa tất cả biến thể theo kích cỡ */
+    void deleteBySizeId(Integer sizeId);
 }

@@ -40,3 +40,7 @@ database.md
 
 ### App Uploads ###
 uploads/
+
+### Temporary Scripts & Sample Data ###
+ScratchTest.java
+data-sample.sql

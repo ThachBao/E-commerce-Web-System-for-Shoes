@@ -7,4 +7,10 @@ public interface CartService {
     void addToCart(Integer userId, AddToCartRequest request);
 
     CartResponse getCart(Integer userId);
+
+    void updateCartItemQuantity(Integer userId, Integer cartItemId, int newQuantity);
+
+    void removeCartItem(Integer userId, Integer cartItemId);
+
+    void clearCart(Integer userId);
 }

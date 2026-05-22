@@ -20,4 +20,10 @@ public class WebUIController {
     public String viewSuccess() {
         return "order/success";
     }
+
+    @GetMapping("/payment-ui/{orderCode}")
+    public String viewPayment(@org.springframework.web.bind.annotation.PathVariable String orderCode, org.springframework.ui.Model model) {
+        model.addAttribute("orderCode", orderCode);
+        return "order/payment";
+    }
 }

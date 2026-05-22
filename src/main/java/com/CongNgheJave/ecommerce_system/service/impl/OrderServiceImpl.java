@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,15 +30,28 @@ public class OrderServiceImpl implements OrderService {
         Cart cart = cartRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Cart not found"));
 
-        List<CartItem> cartItems = cart.getCartItems();
-        if (cartItems.isEmpty()) {
+        List<CartItem> allCartItems = cart.getCartItems();
+        if (allCartItems.isEmpty()) {
             throw new RuntimeException("Cart is empty");
+        }
+
+        List<Integer> selectedIds = request.getSelectedCartItemIds();
+        if (selectedIds == null || selectedIds.isEmpty()) {
+            throw new RuntimeException("Chưa chọn sản phẩm nào để thanh toán");
+        }
+
+        List<CartItem> cartItems = allCartItems.stream()
+                .filter(item -> selectedIds.contains(item.getId()))
+                .collect(Collectors.toList());
+
+        if (cartItems.isEmpty()) {
+            throw new RuntimeException("Không tìm thấy sản phẩm đã chọn trong giỏ hàng");
         }
 
         // Verify Stock
         for (CartItem item : cartItems) {
             ProductVariant variant = item.getProductVariant();
-            if (variant.getStockQuantity() < item.getQuantity()) {
+            if (variant.getStockQuantity() != null && variant.getStockQuantity() > 0 && variant.getStockQuantity() < item.getQuantity()) {
                 throw new RuntimeException("Not enough stock for SKU: " + variant.getSku());
             }
         }
@@ -74,9 +88,11 @@ public class OrderServiceImpl implements OrderService {
             
             totalAmount = totalAmount.add(price.multiply(BigDecimal.valueOf(cartItem.getQuantity())));
             
-            // Deduct stock
-            variant.setStockQuantity(variant.getStockQuantity() - cartItem.getQuantity());
-            productVariantRepository.save(variant);
+            // Deduct stock if stock is tracked (not null and > 0)
+            if (variant.getStockQuantity() != null && variant.getStockQuantity() > 0) {
+                variant.setStockQuantity(variant.getStockQuantity() - cartItem.getQuantity());
+                productVariantRepository.save(variant);
+            }
         }
 
         order.setTotalAmount(totalAmount);
@@ -91,9 +107,9 @@ public class OrderServiceImpl implements OrderService {
 
         orderRepository.save(order);
 
-        // Clear Cart
+        // Clear selected items from Cart
         cartItemRepository.deleteAll(cartItems);
-        cartItems.clear();
+        cart.getCartItems().removeAll(cartItems);
 
         OrderResponse response = new OrderResponse();
         response.setOrderCode(order.getOrderCode());

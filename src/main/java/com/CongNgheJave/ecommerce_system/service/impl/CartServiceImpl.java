@@ -36,7 +36,7 @@ public class CartServiceImpl implements CartService {
                 .orElseThrow(() -> new RuntimeException("Product variant not found"));
 
         // Check Stock (Tránh Overselling)
-        if (variant.getStockQuantity() < request.getQuantity()) {
+        if (variant.getStockQuantity() != null && variant.getStockQuantity() > 0 && variant.getStockQuantity() < request.getQuantity()) {
             throw new RuntimeException("Not enough stock available");
         }
 
@@ -56,19 +56,27 @@ public class CartServiceImpl implements CartService {
         if (cartItem != null) {
             // Incremental Logic
             int newQuantity = cartItem.getQuantity() + request.getQuantity();
-            if (variant.getStockQuantity() < newQuantity) {
+            if (newQuantity <= 0) {
+                cart.getCartItems().remove(cartItem);
+                cartItemRepository.delete(cartItem);
+                return;
+            }
+            if (variant.getStockQuantity() != null && variant.getStockQuantity() > 0 && variant.getStockQuantity() < newQuantity) {
                 throw new RuntimeException("Not enough stock available for incremental add");
             }
             cartItem.setQuantity(newQuantity);
+            cartItemRepository.save(cartItem);
         } else {
             // Create new
+            if (request.getQuantity() <= 0) {
+                throw new RuntimeException("Cannot add non-positive quantity");
+            }
             cartItem = new CartItem();
             cartItem.setCart(cart);
             cartItem.setProductVariant(variant);
             cartItem.setQuantity(request.getQuantity());
+            cartItemRepository.save(cartItem);
         }
-
-        cartItemRepository.save(cartItem);
     }
 
     @Override
@@ -105,5 +113,53 @@ public class CartServiceImpl implements CartService {
         response.setSubTotal(subTotal);
 
         return response;
+    }
+
+    @Override
+    @Transactional
+    public void updateCartItemQuantity(Integer userId, Integer cartItemId, int newQuantity) {
+        CartItem cartItem = cartItemRepository.findById(cartItemId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm trong giỏ hàng"));
+
+        if (!cartItem.getCart().getUser().getId().equals(userId)) {
+            throw new RuntimeException("Bạn không có quyền sửa sản phẩm này");
+        }
+
+        if (newQuantity <= 0) {
+            cartItem.getCart().getCartItems().remove(cartItem);
+            cartItemRepository.delete(cartItem);
+            return;
+        }
+
+        if (cartItem.getProductVariant().getStockQuantity() != null && cartItem.getProductVariant().getStockQuantity() > 0 && cartItem.getProductVariant().getStockQuantity() < newQuantity) {
+            throw new RuntimeException("Không đủ số lượng trong kho");
+        }
+
+        cartItem.setQuantity(newQuantity);
+        cartItemRepository.save(cartItem);
+    }
+
+    @Override
+    @Transactional
+    public void removeCartItem(Integer userId, Integer cartItemId) {
+        CartItem cartItem = cartItemRepository.findById(cartItemId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm trong giỏ hàng"));
+
+        if (!cartItem.getCart().getUser().getId().equals(userId)) {
+            throw new RuntimeException("Bạn không có quyền xóa sản phẩm này");
+        }
+
+        cartItem.getCart().getCartItems().remove(cartItem);
+        cartItemRepository.delete(cartItem);
+    }
+
+    @Override
+    @Transactional
+    public void clearCart(Integer userId) {
+        Cart cart = cartRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy giỏ hàng của user"));
+        
+        cart.getCartItems().clear();
+        cartRepository.save(cart);
     }
 }

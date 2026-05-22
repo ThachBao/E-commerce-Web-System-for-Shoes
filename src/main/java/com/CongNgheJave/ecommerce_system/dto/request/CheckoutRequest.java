@@ -18,4 +18,6 @@ public class CheckoutRequest {
     private String shippingAddress;
     
     private String note;
+    
+    private java.util.List<Integer> selectedCartItemIds;
 }

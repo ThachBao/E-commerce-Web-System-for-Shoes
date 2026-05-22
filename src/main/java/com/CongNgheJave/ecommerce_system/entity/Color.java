@@ -6,25 +6,23 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Entity màu sắc sản phẩm (vd: Trắng #FFFFFF, Đen #000000).
- */
 @Entity
 @Table(name = "Color")
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Color {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer id;
 
-    @Column(nullable = false, unique = true, length = 50)
+    @Column(name = "name", nullable = false, unique = true, length = 50)
     private String name;
 
-    // Mã màu HEX (vd: #FFFFFF)
-    @Column(length = 20)
+    @Column(name = "hexCode", length = 20)
     private String hexCode;
 
     @OneToMany(mappedBy = "color", fetch = FetchType.LAZY)

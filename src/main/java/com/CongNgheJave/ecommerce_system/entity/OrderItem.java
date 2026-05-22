@@ -3,16 +3,22 @@ package com.CongNgheJave.ecommerce_system.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 import java.math.BigDecimal;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "Order_Item")
 public class OrderItem {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -21,7 +27,7 @@ public class OrderItem {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "variantId")
-    private ProductVariant productVariant;
+    private ProductVariant variant;
 
     @Column(name = "productName", nullable = false, length = 150)
     private String productName;
@@ -31,4 +37,13 @@ public class OrderItem {
 
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
+
+    // Compatibility getter/setter for local admin code that might refer to productVariant
+    public ProductVariant getProductVariant() {
+        return variant;
+    }
+
+    public void setProductVariant(ProductVariant productVariant) {
+        this.variant = productVariant;
+    }
 }

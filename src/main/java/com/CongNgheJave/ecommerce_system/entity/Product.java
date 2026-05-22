@@ -6,66 +6,65 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Entity sản phẩm giày.
- * Liên kết với Category, Brand, ProductImage và ProductVariant.
- */
 @Entity
 @Table(name = "Product")
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer id;
 
-    // Danh mục sản phẩm (bắt buộc)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "categoryId", nullable = false)
     @ToString.Exclude
     private Category category;
 
-    // Thương hiệu (có thể null)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "brandId")
     @ToString.Exclude
     private Brand brand;
 
-    @Column(nullable = false, unique = true, length = 30)
+    @Column(name = "code", nullable = false, unique = true, length = 30)
     private String code;
 
-    @Column(nullable = false, length = 150)
+    @Column(name = "name", nullable = false, length = 150)
     private String name;
 
-    @Column(nullable = false, unique = true, length = 180)
+    @Column(name = "slug", nullable = false, unique = true, length = 180)
     private String slug;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
-    // Giới tính: UNISEX, MEN, WOMEN
-    @Column(length = 20)
+    @Column(name = "gender", length = 20)
     private String gender = "UNISEX";
 
-    // Sản phẩm nổi bật (hiển thị trang chủ)
-    @Column(nullable = false)
+    @Column(name = "isFeatured", nullable = false)
     private Boolean isFeatured = false;
 
-    // Trạng thái hoạt động (soft delete)
-    @Column(nullable = false)
+    @Column(name = "isActive", nullable = false)
     private Boolean isActive = true;
 
-    // Danh sách hình ảnh (xóa ảnh khi xóa sản phẩm)
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private List<ProductImage> images = new ArrayList<>();
 
-    // Danh sách biến thể: size + color + giá + tồn kho
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private List<ProductVariant> variants = new ArrayList<>();
+
+    public Boolean getActive() {
+        return isActive;
+    }
+
+    public void setActive(Boolean active) {
+        this.isActive = active;
+    }
 }

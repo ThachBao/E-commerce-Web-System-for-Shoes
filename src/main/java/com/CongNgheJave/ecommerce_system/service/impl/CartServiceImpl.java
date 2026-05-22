@@ -6,11 +6,11 @@ import com.CongNgheJave.ecommerce_system.dto.response.CartResponse;
 import com.CongNgheJave.ecommerce_system.entity.Cart;
 import com.CongNgheJave.ecommerce_system.entity.CartItem;
 import com.CongNgheJave.ecommerce_system.entity.ProductVariant;
-import com.CongNgheJave.ecommerce_system.entity.User;
+import com.CongNgheJave.ecommerce_system.entity.AppUser;
 import com.CongNgheJave.ecommerce_system.repository.CartItemRepository;
 import com.CongNgheJave.ecommerce_system.repository.CartRepository;
 import com.CongNgheJave.ecommerce_system.repository.ProductVariantRepository;
-import com.CongNgheJave.ecommerce_system.repository.UserRepository;
+import com.CongNgheJave.ecommerce_system.repository.AppUserRepository;
 import com.CongNgheJave.ecommerce_system.service.CartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,7 +27,7 @@ public class CartServiceImpl implements CartService {
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
     private final ProductVariantRepository productVariantRepository;
-    private final UserRepository userRepository;
+    private final AppUserRepository appUserRepository;
 
     @Override
     @Transactional
@@ -42,12 +42,13 @@ public class CartServiceImpl implements CartService {
 
         // Tìm hoặc tạo mới Cart
         Cart cart = cartRepository.findByUserId(userId).orElseGet(() -> {
-            User user = userRepository.findById(userId)
+            AppUser user = appUserRepository.findById(userId)
                     .orElseThrow(() -> new RuntimeException("User not found"));
             Cart newCart = new Cart();
             newCart.setUser(user);
             return cartRepository.save(newCart);
         });
+
 
         // Xử lý cộng dồn hoặc tạo mới
         CartItem cartItem = cartItemRepository.findByCartIdAndVariantId(cart.getId(), variant.getId())

@@ -12,14 +12,24 @@ import java.util.List;
 @Entity
 @Table(name = "Cart")
 public class Cart {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer id;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId", nullable = false, unique = true)
-    private User user;
+    private AppUser user;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CartItem> cartItems = new ArrayList<>();
+    private List<CartItem> items = new ArrayList<>();
+
+    public List<CartItem> getCartItems() {
+        return items;
+    }
+
+    public void setCartItems(List<CartItem> cartItems) {
+        this.items = cartItems;
+    }
 }

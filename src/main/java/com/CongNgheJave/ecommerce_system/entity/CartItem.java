@@ -9,8 +9,10 @@ import lombok.Setter;
 @Entity
 @Table(name = "Cart_Item")
 public class CartItem {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -19,8 +21,16 @@ public class CartItem {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "variantId", nullable = false)
-    private ProductVariant productVariant;
+    private ProductVariant variant;
 
     @Column(name = "quantity", nullable = false)
     private Integer quantity = 1;
+
+    public ProductVariant getProductVariant() {
+        return variant;
+    }
+
+    public void setProductVariant(ProductVariant productVariant) {
+        this.variant = productVariant;
+    }
 }

@@ -1,21 +1,46 @@
 package com.CongNgheJave.ecommerce_system.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class CheckoutRequest {
-    @NotBlank(message = "Thiếu phương thức thanh toán")
-    private String paymentMethod;
-    
-    @NotBlank(message = "Thiếu tên người nhận")
+
+    @NotBlank(message = "Tên người nhận không được để trống")
     private String shippingFullName;
-    
-    @NotBlank(message = "Thiếu số điện thoại")
+
+    @NotBlank(message = "Số điện thoại không được để trống")
     private String shippingPhone;
-    
-    @NotBlank(message = "Thiếu địa chỉ giao hàng")
-    private String shippingAddress;
-    
+
+    @NotBlank(message = "Địa chỉ giao hàng không được để trống")
+    private String shippingAddressLine;
+
+    private String shippingWard;
+
+    private String shippingDistrict;
+
+    private String shippingCity;
+
+    private String shippingCountry;
+
+    @NotBlank(message = "Phương thức thanh toán không được để trống")
+    private String paymentMethod;
+
     private String note;
+
+    public String getShippingAddress() {
+        return shippingAddressLine;
+    }
+
+    public void setShippingAddress(String shippingAddress) {
+        this.shippingAddressLine = shippingAddress;
+    }
 }
+
+

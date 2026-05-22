@@ -14,13 +14,15 @@ import java.util.List;
 @Entity
 @Table(name = "Orders")
 public class Order {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId", nullable = false)
-    private User user;
+    private AppUser user;
 
     @Column(name = "orderCode", nullable = false, unique = true, length = 30)
     private String orderCode;
@@ -29,10 +31,19 @@ public class Order {
     private String orderStatus = "PENDING";
 
     @Column(name = "paymentStatus", length = 30)
-    private String paymentStatus = "UNPAID";
+    private String paymentStatus = "PENDING";
 
     @Column(name = "paymentMethod", length = 30)
     private String paymentMethod = "COD";
+
+    @Column(name = "subTotal", precision = 12, scale = 2)
+    private BigDecimal subTotal = BigDecimal.ZERO;
+
+    @Column(name = "shippingFee", precision = 12, scale = 2)
+    private BigDecimal shippingFee = BigDecimal.ZERO;
+
+    @Column(name = "discountAmount", precision = 12, scale = 2)
+    private BigDecimal discountAmount = BigDecimal.ZERO;
 
     @Column(name = "totalAmount", nullable = false, precision = 12, scale = 2)
     private BigDecimal totalAmount = BigDecimal.ZERO;
@@ -43,8 +54,20 @@ public class Order {
     @Column(name = "shippingPhone", nullable = false, length = 20)
     private String shippingPhone;
 
-    @Column(name = "shippingAddress", nullable = false, length = 255)
-    private String shippingAddress;
+    @Column(name = "shippingAddressLine", length = 255)
+    private String shippingAddressLine;
+
+    @Column(name = "shippingWard", length = 100)
+    private String shippingWard;
+
+    @Column(name = "shippingDistrict", length = 100)
+    private String shippingDistrict;
+
+    @Column(name = "shippingCity", length = 100)
+    private String shippingCity;
+
+    @Column(name = "shippingCountry", length = 100)
+    private String shippingCountry;
 
     @Column(name = "note", length = 255)
     private String note;
@@ -53,8 +76,24 @@ public class Order {
     private LocalDateTime placedAt = LocalDateTime.now();
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OrderItem> orderItems = new ArrayList<>();
+    private List<OrderItem> items = new ArrayList<>();
 
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private Payment payment;
+
+    public String getShippingAddress() {
+        return shippingAddressLine;
+    }
+
+    public void setShippingAddress(String shippingAddress) {
+        this.shippingAddressLine = shippingAddress;
+    }
+
+    public List<OrderItem> getOrderItems() {
+        return items;
+    }
+
+    public void setOrderItems(List<OrderItem> orderItems) {
+        this.items = orderItems;
+    }
 }

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh toán QR - ShoeStore</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/cart.css}">
+    <style>
+        .qr-card {
+            border: 2px dashed #dee2e6;
+            border-radius: 1.5rem;
+            padding: 2rem;
+            background: #fff;
+            transition: all 0.3s ease;
+        }
+        .qr-card:hover {
+            border-color: var(--primary-color);
+        }
+        .qr-img-wrapper {
+            position: relative;
+            width: 250px;
+            height: 250px;
+            margin: 0 auto;
+        }
+        .qr-loading-spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom mb-5">
+        <div class="container text-center">
+            <a class="navbar-brand fw-bold mx-auto" href="#">
+                <i class="bi bi-box-seam-fill text-primary"></i> ShoeStore Checkout
+            </a>
+        </div>
+    </nav>
+
+    <div class="container animate-fade-in pb-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-6 col-md-8">
+                <div class="card card-premium shadow-lg p-2">
+                    <div class="card-body p-4 p-md-5 text-center">
+                        <div class="mb-4">
+                            <span class="badge bg-success-subtle text-success px-3 py-2 rounded-pill fw-bold">
+                                <i class="bi bi-check2-circle me-1"></i> ĐƠN HÀNG ĐÃ ĐƯỢC TẠO
+                            </span>
+                        </div>
+                        
+                        <h2 class="fw-bold mb-1">Thanh toán chuyển khoản</h2>
+                        <p class="text-muted small">Mã đơn: <span id="display-order-code" class="fw-bold text-dark" th:text="${orderCode}"></span></p>
+
+                        <div class="bg-light rounded-4 p-4 my-4 border border-1">
+                            <div class="row align-items-center">
+                                <div class="col-12 mb-2">
+                                    <span class="text-muted small text-uppercase fw-bold ls-1">Tổng số tiền cần chuyển</span>
+                                </div>
+                                <div class="col-12">
+                                    <h1 class="display-5 fw-bold text-primary mb-0" id="display-amount">...</h1>
+                                </div>
+                            </div>
+                        </div>
+
+                        <p class="mb-4">Mở ứng dụng ngân hàng để quét mã VietQR dưới đây:</p>
+
+                        <div class="qr-card mb-4">
+                            <div class="qr-img-wrapper">
+                                <div id="qr-loading" class="qr-loading-spinner">
+                                    <div class="spinner-grow text-primary" style="width: 3rem; height: 3rem;" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </div>
+                                <img id="qr-img" src="" alt="Mã VietQR" class="img-fluid rounded-3" style="display: none; width: 100%;">
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info border-0 rounded-4 p-3 mb-4 text-start">
+                            <div class="d-flex">
+                                <i class="bi bi-info-circle-fill me-3 fs-4 mt-1"></i>
+                                <div>
+                                    <div class="fw-bold">Lưu ý quan trọng:</div>
+                                    <div class="small">Số tiền và nội dung chuyển khoản phải **khớp 100%** với thông tin trong mã QR để hệ thống tự động xác nhận nhanh nhất.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button id="btn-notify" class="btn btn-premium btn-primary w-100 py-3 fs-5 shadow">
+                            TÔI ĐÃ CHUYỂN KHOẢN <i class="bi bi-send-fill ms-2"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <a href="/cart-ui" class="text-decoration-none text-muted small hover-primary">
+                        <i class="bi bi-arrow-left me-1"></i> Quay lại giỏ hàng
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const formatVND = (amount) => {
+            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+        };
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const orderCode = document.getElementById('display-order-code').innerText;
+            if(!orderCode) return;
+
+            try {
+                const res = await fetch(`/orders/${orderCode}`);
+                const data = await res.json();
+                if(data.success && data.data) {
+                    const amount = data.data.totalAmount;
+                    document.getElementById('display-amount').innerText = formatVND(amount);
+                    
+                    const qrUrl = `https://img.vietqr.io/image/970436-113366668888-compact2.png?amount=${amount}&addInfo=Thanh toan don hang ${orderCode}&accountName=SHOE STORE`;
+                    const qrImg = document.getElementById('qr-img');
+                    qrImg.src = qrUrl;
+                    qrImg.onload = () => {
+                        document.getElementById('qr-loading').style.display = 'none';
+                        qrImg.style.display = 'block';
+                    };
+                }
+            } catch(e) {
+                console.error("Lỗi lấy thông tin đơn hàng", e);
+            }
+
+            document.getElementById('btn-notify').addEventListener('click', async function() {
+                const btn = this;
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Đang gửi...';
+                btn.disabled = true;
+
+                try {
+                    const response = await fetch(`/orders/${orderCode}/notify-transfer`, {
+                        method: 'POST'
+                    });
+                    const result = await response.json();
+                    if(response.ok) {
+                        alert("✅ Cảm ơn bạn! Hệ thống sẽ kiểm tra và xác nhận đơn hàng của bạn trong giây lát.");
+                        window.location.href = "/success-ui";
+                    } else {
+                        alert("Lỗi: " + result.message);
+                        btn.disabled = false;
+                        btn.innerHTML = originalText;
+                    }
+                } catch(e) {
+                    alert("Lỗi kết nối máy chủ");
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

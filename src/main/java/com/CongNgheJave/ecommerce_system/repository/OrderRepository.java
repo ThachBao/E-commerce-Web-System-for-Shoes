@@ -7,15 +7,11 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
-@Repository
 public interface OrderRepository extends JpaRepository<Order, Integer> {
-
-    Optional<Order> findByOrderCode(String orderCode);
 
     // Customer xem lịch sử đơn hàng.
     @EntityGraph(attributePaths = {"user"})
@@ -24,7 +20,7 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     // Admin xem danh sách và lọc theo trạng thái.
     @EntityGraph(attributePaths = {"user"})
     @Query("""
-            select o from Order o
+            select o from OrderEntity o
             where (:status is null or :status = '' or o.orderStatus = :status)
             order by o.placedAt desc
             """)
@@ -33,7 +29,7 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     // Xem chi tiết đơn, items, customer.
     @EntityGraph(attributePaths = {"user", "items"})
     @Query("""
-            select o from Order o
+            select o from OrderEntity o
             where o.id = :id
             """)
     Optional<Order> findDetailById(@Param("id") Integer id);

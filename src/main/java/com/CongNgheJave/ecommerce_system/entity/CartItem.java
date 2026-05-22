@@ -1,11 +1,7 @@
 package com.CongNgheJave.ecommerce_system.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
 @Entity
 @Table(name = "Cart_Item")
 public class CartItem {
@@ -16,21 +12,48 @@ public class CartItem {
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cartId", nullable = false)
+    @JoinColumn(name = "cartId")
     private Cart cart;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "variantId", nullable = false)
+    @JoinColumn(name = "variantId")
     private ProductVariant variant;
 
-    @Column(name = "quantity", nullable = false)
-    private Integer quantity = 1;
+    @Column(name = "quantity")
+    private Integer quantity;
 
-    public ProductVariant getProductVariant() {
+    public CartItem() {
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Cart getCart() {
+        return cart;
+    }
+
+    public void setCart(Cart cart) {
+        this.cart = cart;
+    }
+
+    public ProductVariant getVariant() {
         return variant;
     }
 
-    public void setProductVariant(ProductVariant productVariant) {
-        this.variant = productVariant;
+    public void setVariant(ProductVariant variant) {
+        this.variant = variant;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
     }
 }

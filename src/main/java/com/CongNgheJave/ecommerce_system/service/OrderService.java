@@ -1,7 +1,6 @@
 package com.CongNgheJave.ecommerce_system.service;
 
 import com.CongNgheJave.ecommerce_system.dto.request.CheckoutRequest;
-import com.CongNgheJave.ecommerce_system.dto.response.OrderResponse;
 import com.CongNgheJave.ecommerce_system.entity.Order;
 import com.CongNgheJave.ecommerce_system.entity.OrderStatusHistory;
 import com.CongNgheJave.ecommerce_system.entity.Payment;
@@ -11,9 +10,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface OrderService {
-
-    // Local checkout signature for compatability
-    OrderResponse checkout(Integer userId, CheckoutRequest request);
 
     // Luồng 1 + 2: Admin xem danh sách đơn hàng và lọc theo trạng thái.
     Page<Order> getAdminOrders(String status, int page, int size);

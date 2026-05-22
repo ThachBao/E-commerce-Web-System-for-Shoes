@@ -1,7 +1,6 @@
 package com.CongNgheJave.ecommerce_system.service.impl;
 
 import com.CongNgheJave.ecommerce_system.dto.request.CheckoutRequest;
-import com.CongNgheJave.ecommerce_system.dto.response.OrderResponse;
 import com.CongNgheJave.ecommerce_system.entity.*;
 import com.CongNgheJave.ecommerce_system.exception.InvalidOperationException;
 import com.CongNgheJave.ecommerce_system.exception.ResourceNotFoundException;
@@ -48,21 +47,6 @@ public class OrderServiceImpl implements OrderService {
         this.paymentService = paymentService;
     }
 
-    // Local checkout signature for compatibility
-    @Override
-    @Transactional
-    public OrderResponse checkout(Integer userId, CheckoutRequest request) {
-        Order order = placeOrder(userId, request);
-
-        OrderResponse response = new OrderResponse();
-        response.setOrderCode(order.getOrderCode());
-        response.setTotalAmount(order.getTotalAmount());
-        response.setPaymentMethod(order.getPaymentMethod());
-        response.setOrderStatus(order.getOrderStatus());
-
-        return response;
-    }
-
     // Admin xem danh sách đơn hàng và lọc theo trạng thái.
     @Override
     @Transactional(readOnly = true)
@@ -99,7 +83,11 @@ public class OrderServiceImpl implements OrderService {
         return order;
     }
 
-    // Admin cập nhật trạng thái
+    // Admin cập nhật trạng thái:
+    // PENDING -> CONFIRMED
+    // CONFIRMED -> PROCESSING
+    // PROCESSING -> SHIPPING
+    // Đồng thời ghi lịch sử vào Order_Status_History.
     @Override
     @Transactional
     public void updateOrderStatus(Integer orderId, String newStatus, Integer changedByUserId, String note) {

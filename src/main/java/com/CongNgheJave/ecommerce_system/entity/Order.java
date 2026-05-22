@@ -1,17 +1,12 @@
 package com.CongNgheJave.ecommerce_system.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter
-@Setter
-@Entity
+@Entity(name = "OrderEntity")
 @Table(name = "Orders")
 public class Order {
 
@@ -21,79 +16,223 @@ public class Order {
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId", nullable = false)
+    @JoinColumn(name = "userId")
     private AppUser user;
 
-    @Column(name = "orderCode", nullable = false, unique = true, length = 30)
+    @Column(name = "orderCode")
     private String orderCode;
 
-    @Column(name = "orderStatus", length = 30)
-    private String orderStatus = "PENDING";
+    @Column(name = "orderStatus")
+    private String orderStatus;
 
-    @Column(name = "paymentStatus", length = 30)
-    private String paymentStatus = "PENDING";
+    @Column(name = "paymentStatus")
+    private String paymentStatus;
 
-    @Column(name = "paymentMethod", length = 30)
-    private String paymentMethod = "COD";
+    @Column(name = "paymentMethod")
+    private String paymentMethod;
 
-    @Column(name = "subTotal", precision = 12, scale = 2)
-    private BigDecimal subTotal = BigDecimal.ZERO;
+    @Column(name = "subTotal")
+    private BigDecimal subTotal;
 
-    @Column(name = "shippingFee", precision = 12, scale = 2)
-    private BigDecimal shippingFee = BigDecimal.ZERO;
+    @Column(name = "shippingFee")
+    private BigDecimal shippingFee;
 
-    @Column(name = "discountAmount", precision = 12, scale = 2)
-    private BigDecimal discountAmount = BigDecimal.ZERO;
+    @Column(name = "discountAmount")
+    private BigDecimal discountAmount;
 
-    @Column(name = "totalAmount", nullable = false, precision = 12, scale = 2)
-    private BigDecimal totalAmount = BigDecimal.ZERO;
+    @Column(name = "totalAmount")
+    private BigDecimal totalAmount;
 
-    @Column(name = "shippingFullName", nullable = false, length = 100)
+    @Column(name = "shippingFullName")
     private String shippingFullName;
 
-    @Column(name = "shippingPhone", nullable = false, length = 20)
+    @Column(name = "shippingPhone")
     private String shippingPhone;
 
-    @Column(name = "shippingAddressLine", length = 255)
+    @Column(name = "shippingAddressLine")
     private String shippingAddressLine;
 
-    @Column(name = "shippingWard", length = 100)
+    @Column(name = "shippingWard")
     private String shippingWard;
 
-    @Column(name = "shippingDistrict", length = 100)
+    @Column(name = "shippingDistrict")
     private String shippingDistrict;
 
-    @Column(name = "shippingCity", length = 100)
+    @Column(name = "shippingCity")
     private String shippingCity;
 
-    @Column(name = "shippingCountry", length = 100)
+    @Column(name = "shippingCountry")
     private String shippingCountry;
 
-    @Column(name = "note", length = 255)
+    @Column(name = "note")
     private String note;
 
     @Column(name = "placedAt")
-    private LocalDateTime placedAt = LocalDateTime.now();
+    private LocalDateTime placedAt;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> items = new ArrayList<>();
 
-    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Payment payment;
+    public Order() {
+    }
 
-    public String getShippingAddress() {
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public AppUser getUser() {
+        return user;
+    }
+
+    public void setUser(AppUser user) {
+        this.user = user;
+    }
+
+    public String getOrderCode() {
+        return orderCode;
+    }
+
+    public void setOrderCode(String orderCode) {
+        this.orderCode = orderCode;
+    }
+
+    public String getOrderStatus() {
+        return orderStatus;
+    }
+
+    public void setOrderStatus(String orderStatus) {
+        this.orderStatus = orderStatus;
+    }
+
+    public String getPaymentStatus() {
+        return paymentStatus;
+    }
+
+    public void setPaymentStatus(String paymentStatus) {
+        this.paymentStatus = paymentStatus;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
+    public BigDecimal getSubTotal() {
+        return subTotal;
+    }
+
+    public void setSubTotal(BigDecimal subTotal) {
+        this.subTotal = subTotal;
+    }
+
+    public BigDecimal getShippingFee() {
+        return shippingFee;
+    }
+
+    public void setShippingFee(BigDecimal shippingFee) {
+        this.shippingFee = shippingFee;
+    }
+
+    public BigDecimal getDiscountAmount() {
+        return discountAmount;
+    }
+
+    public void setDiscountAmount(BigDecimal discountAmount) {
+        this.discountAmount = discountAmount;
+    }
+
+    public BigDecimal getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(BigDecimal totalAmount) {
+        this.totalAmount = totalAmount;
+    }
+
+    public String getShippingFullName() {
+        return shippingFullName;
+    }
+
+    public void setShippingFullName(String shippingFullName) {
+        this.shippingFullName = shippingFullName;
+    }
+
+    public String getShippingPhone() {
+        return shippingPhone;
+    }
+
+    public void setShippingPhone(String shippingPhone) {
+        this.shippingPhone = shippingPhone;
+    }
+
+    public String getShippingAddressLine() {
         return shippingAddressLine;
     }
 
-    public void setShippingAddress(String shippingAddress) {
-        this.shippingAddressLine = shippingAddress;
+    public void setShippingAddressLine(String shippingAddressLine) {
+        this.shippingAddressLine = shippingAddressLine;
     }
 
-    public List<OrderItem> getOrderItems() {
+    public String getShippingWard() {
+        return shippingWard;
+    }
+
+    public void setShippingWard(String shippingWard) {
+        this.shippingWard = shippingWard;
+    }
+
+    public String getShippingDistrict() {
+        return shippingDistrict;
+    }
+
+    public void setShippingDistrict(String shippingDistrict) {
+        this.shippingDistrict = shippingDistrict;
+    }
+
+    public String getShippingCity() {
+        return shippingCity;
+    }
+
+    public void setShippingCity(String shippingCity) {
+        this.shippingCity = shippingCity;
+    }
+
+    public String getShippingCountry() {
+        return shippingCountry;
+    }
+
+    public void setShippingCountry(String shippingCountry) {
+        this.shippingCountry = shippingCountry;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public LocalDateTime getPlacedAt() {
+        return placedAt;
+    }
+
+    public void setPlacedAt(LocalDateTime placedAt) {
+        this.placedAt = placedAt;
+    }
+
+    public List<OrderItem> getItems() {
         return items;
     }
 
-    public void setOrderItems(List<OrderItem> orderItems) {
-        this.items = orderItems;
+    public void setItems(List<OrderItem> items) {
+        this.items = items;
     }
 }

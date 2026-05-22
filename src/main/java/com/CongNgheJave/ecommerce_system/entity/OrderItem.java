@@ -1,17 +1,8 @@
 package com.CongNgheJave.ecommerce_system.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-
 import java.math.BigDecimal;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "Order_Item")
 public class OrderItem {
@@ -22,28 +13,72 @@ public class OrderItem {
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "orderId", nullable = false)
+    @JoinColumn(name = "orderId")
     private Order order;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "variantId")
     private ProductVariant variant;
 
-    @Column(name = "productName", nullable = false, length = 150)
+    // Snapshot tên sản phẩm lúc mua (bao gồm cả size và màu)
+    @Column(name = "productName")
     private String productName;
 
-    @Column(name = "unitPrice", nullable = false, precision = 12, scale = 2)
+    // Giá tại thời điểm mua
+    @Column(name = "unitPrice")
     private BigDecimal unitPrice;
 
-    @Column(name = "quantity", nullable = false)
+    @Column(name = "quantity")
     private Integer quantity;
 
-    // Compatibility getter/setter for local admin code that might refer to productVariant
-    public ProductVariant getProductVariant() {
+    public OrderItem() {
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Order getOrder() {
+        return order;
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
+    }
+
+    public ProductVariant getVariant() {
         return variant;
     }
 
-    public void setProductVariant(ProductVariant productVariant) {
-        this.variant = productVariant;
+    public void setVariant(ProductVariant variant) {
+        this.variant = variant;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public BigDecimal getUnitPrice() {
+        return unitPrice;
+    }
+
+    public void setUnitPrice(BigDecimal unitPrice) {
+        this.unitPrice = unitPrice;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
     }
 }

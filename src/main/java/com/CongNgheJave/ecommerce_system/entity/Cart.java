@@ -1,14 +1,9 @@
 package com.CongNgheJave.ecommerce_system.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter
-@Setter
 @Entity
 @Table(name = "Cart")
 public class Cart {
@@ -19,17 +14,36 @@ public class Cart {
     private Integer id;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId", nullable = false, unique = true)
+    @JoinColumn(name = "userId")
     private AppUser user;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartItem> items = new ArrayList<>();
 
-    public List<CartItem> getCartItems() {
+    public Cart() {
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public AppUser getUser() {
+        return user;
+    }
+
+    public void setUser(AppUser user) {
+        this.user = user;
+    }
+
+    public List<CartItem> getItems() {
         return items;
     }
 
-    public void setCartItems(List<CartItem> cartItems) {
-        this.items = cartItems;
+    public void setItems(List<CartItem> items) {
+        this.items = items;
     }
 }

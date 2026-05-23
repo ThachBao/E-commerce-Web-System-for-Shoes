@@ -1,9 +1,5 @@
 package com.CongNgheJave.ecommerce_system.controller;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-public class OrderController {
-=======
 import com.CongNgheJave.ecommerce_system.dto.request.CheckoutRequest;
 import com.CongNgheJave.ecommerce_system.dto.response.ApiResponse;
 import com.CongNgheJave.ecommerce_system.dto.response.OrderDetailResponse;
@@ -66,8 +62,4 @@ public class OrderController {
                     .body(ApiResponse.error(e.getMessage()));
         }
     }
->>>>>>> origin/member3_cart_payment
-=======
-public class OrderController {
->>>>>>> origin/member2-product-catalog
 }

@@ -1,8 +1,5 @@
 package com.CongNgheJave.ecommerce_system.entity;
 
-<<<<<<< HEAD
-public class CartItem {
-=======
 import jakarta.persistence.*;
 
 @Entity
@@ -22,13 +19,8 @@ public class CartItem {
     @JoinColumn(name = "variantId")
     private ProductVariant variant;
 
-<<<<<<< HEAD
     @Column(name = "quantity", nullable = false)
     private Integer quantity = 1;
->>>>>>> origin/member3_cart_payment
-=======
-    @Column(name = "quantity")
-    private Integer quantity;
 
     public CartItem() {
     }
@@ -64,5 +56,4 @@ public class CartItem {
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
->>>>>>> origin/member2-product-catalog
 }

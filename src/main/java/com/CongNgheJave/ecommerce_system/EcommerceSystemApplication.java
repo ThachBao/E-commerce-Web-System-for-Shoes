@@ -7,12 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class EcommerceSystemApplication {
 
 	public static void main(String[] args) {
-<<<<<<< HEAD
 		SpringApplication.run(EcommerceSystemApplication.class, args);
-=======
-
-        SpringApplication.run(EcommerceSystemApplication.class, args);
->>>>>>> origin/member3_cart_payment
 	}
 
 }

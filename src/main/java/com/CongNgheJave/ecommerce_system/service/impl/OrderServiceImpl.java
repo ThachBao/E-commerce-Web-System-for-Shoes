@@ -1,9 +1,7 @@
 package com.CongNgheJave.ecommerce_system.service.impl;
 
-<<<<<<< HEAD
-public interface OrderServiceImpl {
-=======
 import com.CongNgheJave.ecommerce_system.dto.request.CheckoutRequest;
+import com.CongNgheJave.ecommerce_system.dto.response.OrderResponse;
 import com.CongNgheJave.ecommerce_system.entity.*;
 import com.CongNgheJave.ecommerce_system.exception.InvalidOperationException;
 import com.CongNgheJave.ecommerce_system.exception.ResourceNotFoundException;
@@ -21,12 +19,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-<<<<<<< HEAD
-import java.util.UUID;
-import java.util.stream.Collectors;
-=======
 import java.util.Optional;
->>>>>>> origin/member2-product-catalog
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -53,6 +46,19 @@ public class OrderServiceImpl implements OrderService {
         this.cartRepository = cartRepository;
         this.inventoryService = inventoryService;
         this.paymentService = paymentService;
+    }
+
+    // Checkout - tạo đơn hàng và trả về OrderResponse (dùng bởi OrderController).
+    @Override
+    @Transactional
+    public OrderResponse checkout(Integer userId, CheckoutRequest request) {
+        Order order = placeOrder(userId, request);
+        OrderResponse response = new OrderResponse();
+        response.setOrderCode(order.getOrderCode());
+        response.setTotalAmount(order.getTotalAmount());
+        response.setPaymentMethod(order.getPaymentMethod());
+        response.setOrderStatus(order.getOrderStatus());
+        return response;
     }
 
     // Admin xem danh sách đơn hàng và lọc theo trạng thái.
@@ -91,43 +97,13 @@ public class OrderServiceImpl implements OrderService {
         return order;
     }
 
-    // Admin cập nhật trạng thái:
-    // PENDING -> CONFIRMED
-    // CONFIRMED -> PROCESSING
-    // PROCESSING -> SHIPPING
-    // Đồng thời ghi lịch sử vào Order_Status_History.
+    // Admin cập nhật trạng thái: PENDING -> CONFIRMED -> PROCESSING -> SHIPPING -> COMPLETED.
     @Override
     @Transactional
     public void updateOrderStatus(Integer orderId, String newStatus, Integer changedByUserId, String note) {
         Order order = orderRepository.findDetailById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn hàng id = " + orderId));
 
-<<<<<<< HEAD
-        List<CartItem> allCartItems = cart.getCartItems();
-        if (allCartItems.isEmpty()) {
-            throw new RuntimeException("Cart is empty");
-        }
-
-        List<Integer> selectedIds = request.getSelectedCartItemIds();
-        if (selectedIds == null || selectedIds.isEmpty()) {
-            throw new RuntimeException("Chưa chọn sản phẩm nào để thanh toán");
-        }
-
-        List<CartItem> cartItems = allCartItems.stream()
-                .filter(item -> selectedIds.contains(item.getId()))
-                .collect(Collectors.toList());
-
-        if (cartItems.isEmpty()) {
-            throw new RuntimeException("Không tìm thấy sản phẩm đã chọn trong giỏ hàng");
-        }
-
-        // Verify Stock
-        for (CartItem item : cartItems) {
-            ProductVariant variant = item.getProductVariant();
-            if (variant.getStockQuantity() != null && variant.getStockQuantity() > 0 && variant.getStockQuantity() < item.getQuantity()) {
-                throw new RuntimeException("Not enough stock for SKU: " + variant.getSku());
-            }
-=======
         String oldStatus = order.getOrderStatus();
 
         validateStatusChange(oldStatus, newStatus);
@@ -157,7 +133,6 @@ public class OrderServiceImpl implements OrderService {
 
         if (oldStatus.equals(newStatus)) {
             throw new InvalidOperationException("Trạng thái mới đang trùng trạng thái hiện tại");
->>>>>>> origin/member2-product-catalog
         }
 
         boolean valid = switch (oldStatus) {
@@ -187,7 +162,7 @@ public class OrderServiceImpl implements OrderService {
         return paymentRepository.findByOrder_Id(orderId);
     }
 
-    // NEW: Checkout - tạo đơn hàng từ giỏ hàng.
+    // Tạo đơn hàng từ giỏ hàng.
     @Override
     @Transactional
     public Order placeOrder(Integer userId, CheckoutRequest request) {
@@ -259,7 +234,7 @@ public class OrderServiceImpl implements OrderService {
             // Snapshot product name with color and size
             String colorName = (color != null && color.getName() != null) ? color.getName() : "Unknown";
             String sizeName = (size != null && size.getName() != null) ? size.getName() : "Unknown";
-            
+
             String productName;
             if (product != null && product.getName() != null) {
                 productName = product.getName() + " - " + colorName + " - " + sizeName;
@@ -271,24 +246,11 @@ public class OrderServiceImpl implements OrderService {
             BigDecimal price = variant.getSalePrice() != null ? variant.getSalePrice() : variant.getPrice();
             orderItem.setUnitPrice(price);
             orderItem.setQuantity(cartItem.getQuantity());
-<<<<<<< HEAD
-            
-            order.getOrderItems().add(orderItem);
-            
-            totalAmount = totalAmount.add(price.multiply(BigDecimal.valueOf(cartItem.getQuantity())));
-            
-            // Deduct stock if stock is tracked (not null and > 0)
-            if (variant.getStockQuantity() != null && variant.getStockQuantity() > 0) {
-                variant.setStockQuantity(variant.getStockQuantity() - cartItem.getQuantity());
-                productVariantRepository.save(variant);
-            }
-=======
 
             order.getItems().add(orderItem);
 
             // Deduct stock
             inventoryService.deductStock(variant, cartItem.getQuantity());
->>>>>>> origin/member2-product-catalog
         }
 
         // Save order with items
@@ -307,24 +269,14 @@ public class OrderServiceImpl implements OrderService {
         history.setChangedAt(LocalDateTime.now());
         historyRepository.save(history);
 
-<<<<<<< HEAD
-        // Clear selected items from Cart
-        cartItemRepository.deleteAll(cartItems);
-        cart.getCartItems().removeAll(cartItems);
-=======
         // Clear cart
         cart.getItems().clear();
         cartRepository.save(cart);
->>>>>>> origin/member2-product-catalog
 
         return order;
     }
-<<<<<<< HEAD
->>>>>>> origin/member3_cart_payment
-}
-=======
 
-    // NEW: Customer cancel order.
+    // Customer cancel order.
     @Override
     @Transactional
     public void cancelOrder(Integer orderId, Integer customerId) {
@@ -365,7 +317,7 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.save(order);
     }
 
-    // NEW: Admin cancel order.
+    // Admin cancel order.
     @Override
     @Transactional
     public void adminCancelOrder(Integer orderId, Integer adminId, String note) {
@@ -404,7 +356,7 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.save(order);
     }
 
-    // NEW: Admin complete order.
+    // Admin complete order.
     @Override
     @Transactional
     public void completeOrder(Integer orderId, Integer adminId, String note) {
@@ -454,4 +406,3 @@ public class OrderServiceImpl implements OrderService {
         return "ORD" + timestamp;
     }
 }
->>>>>>> origin/member2-product-catalog

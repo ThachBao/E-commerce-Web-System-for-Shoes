@@ -1,8 +1,5 @@
 package com.CongNgheJave.ecommerce_system.entity;
 
-<<<<<<< HEAD
-public class Order {
-=======
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -76,11 +73,9 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> items = new ArrayList<>();
 
-<<<<<<< HEAD
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private Payment payment;
->>>>>>> origin/member3_cart_payment
-=======
+
     public Order() {
     }
 
@@ -243,5 +238,23 @@ public class Order {
     public void setItems(List<OrderItem> items) {
         this.items = items;
     }
->>>>>>> origin/member2-product-catalog
+
+    public Payment getPayment() {
+        return payment;
+    }
+
+    public void setPayment(Payment payment) {
+        this.payment = payment;
+    }
+
+    // Helper method for backward compatibility - getShippingAddress combines address parts
+    public String getShippingAddress() {
+        StringBuilder sb = new StringBuilder();
+        if (shippingAddressLine != null) sb.append(shippingAddressLine);
+        if (shippingWard != null) sb.append(", ").append(shippingWard);
+        if (shippingDistrict != null) sb.append(", ").append(shippingDistrict);
+        if (shippingCity != null) sb.append(", ").append(shippingCity);
+        if (shippingCountry != null) sb.append(", ").append(shippingCountry);
+        return sb.toString();
+    }
 }

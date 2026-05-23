@@ -1,9 +1,5 @@
 package com.CongNgheJave.ecommerce_system.controller;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-public class CartController {
-=======
 import com.CongNgheJave.ecommerce_system.dto.request.AddToCartRequest;
 import com.CongNgheJave.ecommerce_system.dto.request.UpdateCartItemRequest;
 import com.CongNgheJave.ecommerce_system.dto.response.ApiResponse;
@@ -100,8 +96,4 @@ public class CartController {
                     .body(ApiResponse.error(e.getMessage()));
         }
     }
->>>>>>> origin/member3_cart_payment
-=======
-public class CartController {
->>>>>>> origin/member2-product-catalog
 }

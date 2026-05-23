@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 const API_CART = '/carts';
 const API_ORDER = '/orders';
 
@@ -402,3 +403,5 @@ document.addEventListener('DOMContentLoaded', () => {
         checkoutForm.addEventListener('submit', doCheckout);
     }
 });
+=======
+>>>>>>> origin/member2-product-catalog

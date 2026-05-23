@@ -1,9 +1,7 @@
 package com.CongNgheJave.ecommerce_system.dto.request;
 
-<<<<<<< HEAD
-public class CheckoutRequest {
-=======
 import jakarta.validation.constraints.NotBlank;
+import java.util.List;
 
 public class CheckoutRequest {
 
@@ -28,11 +26,8 @@ public class CheckoutRequest {
     private String paymentMethod;
 
     private String note;
-<<<<<<< HEAD
-    
-    private java.util.List<Integer> selectedCartItemIds;
->>>>>>> origin/member3_cart_payment
-=======
+
+    private List<Integer> selectedCartItemIds;
 
     public CheckoutRequest() {
     }
@@ -108,5 +103,12 @@ public class CheckoutRequest {
     public void setNote(String note) {
         this.note = note;
     }
->>>>>>> origin/member2-product-catalog
+
+    public List<Integer> getSelectedCartItemIds() {
+        return selectedCartItemIds;
+    }
+
+    public void setSelectedCartItemIds(List<Integer> selectedCartItemIds) {
+        this.selectedCartItemIds = selectedCartItemIds;
+    }
 }

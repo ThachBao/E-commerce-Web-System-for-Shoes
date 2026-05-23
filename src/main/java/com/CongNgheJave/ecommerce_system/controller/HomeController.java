@@ -1,10 +1,5 @@
 package com.CongNgheJave.ecommerce_system.controller;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-public class HomeController {
-}
-=======
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -16,8 +11,3 @@ public class HomeController {
         return "home/index";
     }
 }
->>>>>>> origin/member3_cart_payment
-=======
-public class HomeController {
-}
->>>>>>> origin/member2-product-catalog

@@ -1,8 +1,5 @@
 package com.CongNgheJave.ecommerce_system.repository;
 
-<<<<<<< HEAD
-public class OrderRepository {
-=======
 import com.CongNgheJave.ecommerce_system.entity.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,11 +12,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface OrderRepository extends JpaRepository<Order, Integer> {
-<<<<<<< HEAD
+
     Optional<Order> findByOrderCode(String orderCode);
->>>>>>> origin/member3_cart_payment
-}
-=======
 
     // Customer xem lịch sử đơn hàng.
     @EntityGraph(attributePaths = {"user"})
@@ -42,4 +36,3 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
             """)
     Optional<Order> findDetailById(@Param("id") Integer id);
 }
->>>>>>> origin/member2-product-catalog

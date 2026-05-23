@@ -54,9 +54,6 @@
 			<groupId>org.thymeleaf.extras</groupId>
 			<artifactId>thymeleaf-extras-springsecurity6</artifactId>
 		</dependency>
-
-<<<<<<< HEAD
-=======
 		<!-- Swagger UI để giao diện test API -->
 		<dependency>
 			<groupId>org.springdoc</groupId>
@@ -64,7 +61,6 @@
 			<version>2.5.0</version>
 		</dependency>
 
->>>>>>> origin/member3_cart_payment
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>

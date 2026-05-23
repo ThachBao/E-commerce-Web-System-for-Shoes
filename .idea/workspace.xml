@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="d9ca6f31-8c5c-437b-8c52-79665f32b986" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/CongNgheJave/ecommerce_system/controller/CartController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/CongNgheJave/ecommerce_system/controller/CartController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/CongNgheJave/ecommerce_system/controller/WebUIController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/CongNgheJave/ecommerce_system/controller/WebUIController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/CongNgheJave/ecommerce_system/dto/request/AddToCartRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/CongNgheJave/ecommerce_system/dto/request/AddToCartRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/CongNgheJave/ecommerce_system/dto/request/CheckoutRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/CongNgheJave/ecommerce_system/dto/request/CheckoutRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/CongNgheJave/ecommerce_system/service/CartService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/CongNgheJave/ecommerce_system/service/CartService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/CongNgheJave/ecommerce_system/service/impl/CartServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/CongNgheJave/ecommerce_system/service/impl/CartServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/CongNgheJave/ecommerce_system/service/impl/OrderServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/CongNgheJave/ecommerce_system/service/impl/OrderServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/js/cart.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/js/cart.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/cart/view.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/cart/view.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/order/checkout.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/order/checkout.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/EcommerceSystemApplication.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/EcommerceSystemApplication.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/config/ModelMapperConfig.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/controller/CartController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/controller/CartController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/controller/WebUIController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/controller/WebUIController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/controller/admin/AdminAttributeController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/controller/admin/AdminBrandController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/controller/admin/AdminCategoryController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/controller/admin/AdminProductController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/controller/admin/AdminWarehouseController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/dto/request/AddToCartRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/dto/request/AddToCartRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/dto/request/BrandRequest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/dto/request/CheckoutRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/dto/request/CheckoutRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/dto/request/ColorRequest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/dto/request/ProductVariantRequest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/dto/request/SizeRequest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/dto/response/BrandResponse.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/dto/response/ColorResponse.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/dto/response/ProductImageResponse.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/dto/response/ProductVariantResponse.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/dto/response/SizeResponse.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/entity/Brand.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/entity/Color.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/entity/ProductImage.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/entity/Size.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/repository/BrandRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/repository/ColorRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/repository/ProductImageRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/repository/SizeRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/service/BrandService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/service/CartService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/service/CartService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/service/ColorService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/service/FileStorageService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/service/ProductVariantService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/service/SizeService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/service/impl/BrandServiceImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/service/impl/CartServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/service/impl/CartServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/service/impl/ColorServiceImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/service/impl/FileStorageServiceImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/service/impl/OrderServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/service/impl/OrderServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/service/impl/ProductVariantServiceImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/CongNgheJave/ecommerce_system/service/impl/SizeServiceImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/static/js/cart.js" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/static/js/cart.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/templates/admin/attribute/color-list.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/templates/admin/attribute/size-list.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/templates/admin/brand/add.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/templates/admin/brand/edit.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/templates/admin/brand/list.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/templates/admin/category/add.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/templates/admin/category/edit.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/templates/admin/category/list.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/templates/admin/product/add.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/templates/admin/product/edit.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/templates/admin/product/list.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/templates/admin/warehouse/variants.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/templates/cart/view.html" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/templates/cart/view.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/templates/fragments/admin_layout.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/templates/fragments/shop_layout.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/templates/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/templates/order/checkout.html" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/templates/order/checkout.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/templates/order/payment.html" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/templates/order/payment.html" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHomeTypeForPersistence" value="WRAPPER" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 7
+}</component>
+  <component name="ProjectId" id="3Cml2akeR1i2FedkUELLAvFkmwl" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.EcommerceSystemApplication.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "feature/member3-cart-payment",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/Admin/Desktop/project/E-commerce-Web-System-for-Shoes",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "settings.editor.selected.configurable": "preferences.pluginManager"
+  }
+}]]></component>
+  <component name="RunAnythingCache">
+    <myKeys>
+      <visibility group="Gradle Tasks" flag="true" />
+      <visibility group="Maven Goals" flag="true" />
+      <visibility group="Recent projects" flag="true" />
+      <visibility group="Run Python file" flag="true" />
+      <visibility group="Run conda command" flag="true" />
+      <visibility group="Run configurations" flag="true" />
+      <visibility group="Run pip command" flag="true" />
+      <visibility group="com.intellij.ide.actions.runAnything.RunAnythingRunConfigurationProvider" flag="true" />
+      <visibility group="com.intellij.ide.actions.runAnything.activity.RunAnythingRecentProjectProvider" flag="true" />
+      <visibility group="com.jetbrains.python.run.runAnything.PyRunAnythingCondaProvider" flag="true" />
+      <visibility group="com.jetbrains.python.run.runAnything.PyRunAnythingFileProvider" flag="true" />
+      <visibility group="com.jetbrains.python.run.runAnything.PyRunAnythingPipProvider" flag="true" />
+      <visibility group="org.jetbrains.idea.maven.execution.MavenRunAnythingProvider" flag="true" />
+      <visibility group="org.jetbrains.plugins.gradle.execution.GradleRunAnythingProvider" flag="true" />
+    </myKeys>
+  </component>
+  <component name="RunManager">
+    <configuration name="EcommerceSystemApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.CongNgheJave.ecommerce_system.EcommerceSystemApplication" />
+      <module name="E-commerce-Web-System-for-Shoes" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.CongNgheJave.ecommerce_system.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="JetRunConfigurationType">
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <option name="filePath" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="Tox" factoryName="Tox">
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.EcommerceSystemApplication" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="d9ca6f31-8c5c-437b-8c52-79665f32b986" name="Changes" comment="" />
+      <created>1776998421536</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1776998421536</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="RECENT_FILTERS">
+      <map>
+        <entry key="Branch">
+          <value>
+            <list>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="feature/member3-cart-payment" />
+                </option>
+              </RecentGroup>
+            </list>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="feature/member3-cart-payment" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/E_commerce_Web_System_for_Shoes$EcommerceSystemApplication.ic" NAME="EcommerceSystemApplication Coverage Results" MODIFIED="1776999324968" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>com.CongNgheJave.ecommerce_system.*</FILTER>
+    </SUITE>
+  </component>
+</project>

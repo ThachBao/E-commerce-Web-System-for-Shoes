@@ -1,57 +1,37 @@
-<<<<<<< HEAD
 const API_CART = '/carts';
-const API_ORDER = '/orders';
+const API_ORDER = '/api/orders';
 
 // Utility: Format currency
 const formatVND = (amount) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
 };
 
-// Toast Notification
-const showToast = (message, type = 'success') => {
-    const existing = document.getElementById('custom-toast');
-    if (existing) existing.remove();
-
-    const toast = document.createElement('div');
-    toast.id = 'custom-toast';
-    toast.className = `position-fixed top-0 start-50 translate-middle-x mt-4 p-3 rounded-3 shadow text-white d-flex align-items-center`;
-    toast.style.zIndex = '9999';
-    toast.style.backgroundColor = type === 'success' ? '#198754' : '#dc3545';
-    
-    const icon = document.createElement('i');
-    icon.className = type === 'success' ? 'bi bi-check-circle-fill fs-5 me-2' : 'bi bi-exclamation-triangle-fill fs-5 me-2';
-    
-    const text = document.createElement('span');
-    text.className = 'fw-medium';
-    text.innerText = message;
-
-    toast.appendChild(icon);
-    toast.appendChild(text);
-    document.body.appendChild(toast);
-
-    toast.style.opacity = '0';
-    toast.style.transform = 'translate(-50%, -20px)';
-    toast.style.transition = 'all 0.3s ease';
-    
-    setTimeout(() => {
-        toast.style.opacity = '1';
-        toast.style.transform = 'translate(-50%, 0)';
-    }, 10);
-
-    setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transform = 'translate(-50%, -20px)';
-        setTimeout(() => toast.remove(), 300);
-    }, 3000);
-};
+// Toast Notification is handled globally by shop_layout.html
 
 // Load Cart
+window.updateGlobalCartBadge = async () => {
+    try {
+        const response = await fetch(API_CART);
+        const data = await response.json();
+        if (data.success && data.data.items) {
+            const badge = document.getElementById('cart-badge');
+            if (badge) {
+                const totalItems = data.data.items.reduce((sum, item) => sum + item.quantity, 0);
+                badge.innerText = totalItems;
+                badge.style.transform = 'translate(-50%, -50%) scale(1.3)';
+                setTimeout(() => { badge.style.transform = 'translate(-50%, -50%) scale(1)'; }, 200);
+            }
+        }
+    } catch (e) { console.error('Error updating cart badge', e); }
+};
+
 const loadCart = async () => {
     try {
         const response = await fetch(API_CART);
         const data = await response.json();
 
         if (data.success) {
+            updateGlobalCartBadge();
             if (typeof renderCart === 'function') {
                 renderCart(data.data);
             }
@@ -298,7 +278,8 @@ const addToCart = async (variantId, quantity, successMessage = 'Đã thêm vào 
             if (successMessage) {
                 showToast(successMessage, 'success');
             }
-            loadCart();
+            updateGlobalCartBadge();
+            if (document.getElementById('cart-items')) loadCart();
         } else {
             if (successMessage || !data.success) {
                 showToast(data.message || 'Lỗi dữ liệu (Ví dụ: Variant không tồn tại hoặc hết hàng)', 'error');
@@ -343,7 +324,7 @@ window.doCheckout = async (event) => {
         paymentMethod: document.getElementById('paymentMethod').value,
         shippingFullName: document.getElementById('shippingFullName').value,
         shippingPhone: document.getElementById('shippingPhone').value,
-        shippingAddress: document.getElementById('shippingAddress').value,
+        shippingAddressLine: document.getElementById('shippingAddress').value,
         note: document.getElementById('note').value,
         selectedCartItemIds: JSON.parse(sessionStorage.getItem('selectedCartItemIds') || '[]')
     };
@@ -384,6 +365,8 @@ window.doCheckout = async (event) => {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
+    updateGlobalCartBadge();
+    
     if (document.getElementById('cart-items')) {
         loadCart();
     }
@@ -403,5 +386,3 @@ document.addEventListener('DOMContentLoaded', () => {
         checkoutForm.addEventListener('submit', doCheckout);
     }
 });
-=======
->>>>>>> origin/member2-product-catalog

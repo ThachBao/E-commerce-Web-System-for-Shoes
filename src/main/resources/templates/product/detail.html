@@ -22,8 +22,9 @@
                     <span th:unless="${product.thumbnailUrl != null}" class="text-muted"><i class="bi bi-image" style="font-size: 5rem;"></i></span>
                 </div>
                 <!-- Gallery nhỏ -->
-                <div class="d-flex gap-2 overflow-auto py-2" th:if="${product.imageUrls != null and !product.imageUrls.isEmpty()}">
-                    <img th:each="imgUrl : ${product.imageUrls}" th:src="${imgUrl}" class="img-thumbnail cursor-pointer gallery-img" style="width: 80px; height: 80px; object-fit: cover; cursor: pointer;" onclick="document.getElementById('mainImage').src=this.src;">
+                <div class="d-flex gap-2 overflow-auto py-2" th:if="${product.thumbnailUrl != null or (product.imageUrls != null and !product.imageUrls.isEmpty())}">
+                    <img th:if="${product.thumbnailUrl != null}" th:src="${product.thumbnailUrl}" class="img-thumbnail cursor-pointer gallery-img" style="width: 80px; height: 80px; object-fit: cover; cursor: pointer;" onclick="document.getElementById('mainImage').src=this.src;">
+                    <img th:if="${product.imageUrls != null}" th:each="imgUrl : ${product.imageUrls}" th:src="${imgUrl}" class="img-thumbnail cursor-pointer gallery-img" style="width: 80px; height: 80px; object-fit: cover; cursor: pointer;" onclick="document.getElementById('mainImage').src=this.src;">
                 </div>
             </div>
 
@@ -39,13 +40,13 @@
                     Mô tả...
                 </div>
 
-                <form action="/cart/add" method="post">
+                <form action="/cart/add" method="post" id="form-add-to-cart">
                     <input type="hidden" name="productId" th:value="${product.id}">
                     
                     <!-- Chọn Biến thể (Màu và Size) -->
                     <div class="mb-4">
                         <label class="form-label fw-bold">Chọn Màu sắc & Kích cỡ:</label>
-                        <select name="variantId" class="form-select form-select-lg" required>
+                        <select name="variantId" id="input-variant-id" class="form-select form-select-lg" required>
                             <option value="">-- Chọn một tùy chọn --</option>
                             <option th:each="variant : ${variants}" 
                                     th:value="${variant.id}" 
@@ -61,14 +62,17 @@
                         <span class="text-muted">Vui lòng chọn Màu & Size để xem giá.</span>
                     </div>
 
-                    <div class="d-flex gap-3 mb-4">
+                    <div class="d-flex gap-2 mb-4">
                         <div style="width: 120px;">
                             <label class="form-label fw-bold">Số lượng:</label>
-                            <input type="number" name="quantity" class="form-control form-control-lg text-center" value="1" min="1" required>
+                            <input type="number" name="quantity" id="input-quantity" class="form-control form-control-lg text-center" value="1" min="1" required>
                         </div>
-                        <div class="flex-grow-1 align-self-end">
-                            <button type="submit" class="btn btn-warning btn-lg w-100 fw-bold">
+                        <div class="flex-grow-1 align-self-end d-flex gap-2">
+                            <button type="button" class="btn btn-warning btn-lg fw-bold flex-grow-1" id="btn-add-cart" onclick="addToCart(false)">
                                 <i class="bi bi-cart-plus me-2"></i>Thêm vào giỏ
+                            </button>
+                            <button type="button" class="btn btn-dark btn-lg fw-bold flex-grow-1" id="btn-buy-now" onclick="addToCart(true)">
+                                Mua ngay
                             </button>
                         </div>
                     </div>
@@ -112,6 +116,65 @@
                     priceDisplay.innerHTML = html;
                 });
             });
+
+            // Handle Add to Cart / Buy Now via AJAX
+            async function addToCart(isBuyNow) {
+                const variantId = document.getElementById('input-variant-id').value;
+                const quantity = document.getElementById('input-quantity').value;
+
+                if (!variantId) {
+                    showToast('Vui lòng chọn Màu sắc & Kích cỡ!', 'danger');
+                    return;
+                }
+
+                if (!quantity || quantity < 1) {
+                    showToast('Số lượng không hợp lệ!', 'danger');
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/carts/items', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            variantId: parseInt(variantId),
+                            quantity: parseInt(quantity)
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok && data.success) {
+                        if (isBuyNow) {
+                            // Fetch cart to get the cart item ID
+                            const cartRes = await fetch('/carts');
+                            const cartData = await cartRes.json();
+                            if (cartData.success && cartData.data && cartData.data.items) {
+                                // Find the cart item with this variantId
+                                const cartItem = cartData.data.items.find(i => i.variantId === parseInt(variantId));
+                                if (cartItem) {
+                                    sessionStorage.setItem('selectedCartItemIds', JSON.stringify([cartItem.id]));
+                                    window.location.href = '/checkout-ui';
+                                    return;
+                                }
+                            }
+                            // Fallback if not found
+                            window.location.href = '/cart-ui';
+                        } else {
+                            showToast('Đã thêm sản phẩm vào giỏ hàng!', 'success');
+                            // Update cart count if applicable
+                            if(typeof updateCartCount === 'function') updateCartCount();
+                        }
+                    } else {
+                        showToast(data.message || 'Lỗi khi thêm vào giỏ hàng', 'danger');
+                    }
+                } catch (error) {
+                    console.error(error);
+                    showToast('Lỗi kết nối máy chủ', 'danger');
+                }
+            }
         </script>
     </section>
 </body>

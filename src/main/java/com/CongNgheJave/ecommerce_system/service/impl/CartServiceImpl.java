@@ -12,6 +12,7 @@ import com.CongNgheJave.ecommerce_system.repository.CartItemRepository;
 import com.CongNgheJave.ecommerce_system.repository.CartRepository;
 import com.CongNgheJave.ecommerce_system.repository.ProductVariantRepository;
 import com.CongNgheJave.ecommerce_system.service.CartService;
+import com.CongNgheJave.ecommerce_system.service.FileStorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +29,7 @@ public class CartServiceImpl implements CartService {
     private final CartItemRepository cartItemRepository;
     private final ProductVariantRepository productVariantRepository;
     private final AppUserRepository appUserRepository;
+    private final FileStorageService fileStorageService;
 
     @Override
     @Transactional
@@ -90,6 +92,16 @@ public class CartServiceImpl implements CartService {
             response.setId(item.getId());
             response.setVariantId(item.getVariant().getId());
             response.setSku(item.getVariant().getSku());
+            response.setProductName(item.getVariant().getProduct().getName());
+            response.setColorName(item.getVariant().getColor().getName());
+            response.setSizeName(item.getVariant().getSize().getName());
+            
+            // Lấy ảnh thumbnail
+            item.getVariant().getProduct().getImages().stream()
+                .filter(img -> Boolean.TRUE.equals(img.getIsThumbnail()))
+                .findFirst()
+                .ifPresent(img -> response.setImageUrl(fileStorageService.getFileUrl(img.getImageUrl())));
+                
             response.setQuantity(item.getQuantity());
 
             BigDecimal price = item.getVariant().getSalePrice() != null ?

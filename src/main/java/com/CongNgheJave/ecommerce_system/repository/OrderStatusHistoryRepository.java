@@ -9,6 +9,5 @@ import java.util.List;
 public interface OrderStatusHistoryRepository extends JpaRepository<OrderStatusHistory, Integer> {
 
     // Lấy lịch sử đổi trạng thái của đơn hàng.
-    @EntityGraph(attributePaths = {"changedBy"})
-    List<OrderStatusHistory> findByOrder_IdOrderByChangedAtDesc(Integer orderId);
+    List<OrderStatusHistory> findByOrder_IdOrderByCreatedAtDesc(Integer orderId);
 }

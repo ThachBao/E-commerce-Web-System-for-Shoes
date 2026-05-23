@@ -115,11 +115,10 @@ public class OrderServiceImpl implements OrderService {
 
         OrderStatusHistory history = new OrderStatusHistory();
         history.setOrder(order);
-        history.setOldStatus(oldStatus);
-        history.setNewStatus(newStatus);
-        history.setChangedBy(changedBy);
-        history.setNote(note);
-        history.setChangedAt(LocalDateTime.now());
+        history.setStatus(newStatus);
+        // Include changedBy info in the note if needed, or just keep original note
+        history.setNote(note != null ? note : "Changed by user " + changedByUserId);
+        history.setCreatedAt(LocalDateTime.now());
 
         historyRepository.save(history);
         orderRepository.save(order);
@@ -152,7 +151,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional(readOnly = true)
     public List<OrderStatusHistory> getStatusHistory(Integer orderId) {
-        return historyRepository.findByOrder_IdOrderByChangedAtDesc(orderId);
+        return historyRepository.findByOrder_IdOrderByCreatedAtDesc(orderId);
     }
 
     // Hiển thị thông tin thanh toán.
@@ -195,11 +194,7 @@ public class OrderServiceImpl implements OrderService {
         // Shipping info
         order.setShippingFullName(request.getShippingFullName());
         order.setShippingPhone(request.getShippingPhone());
-        order.setShippingAddressLine(request.getShippingAddressLine());
-        order.setShippingWard(request.getShippingWard());
-        order.setShippingDistrict(request.getShippingDistrict());
-        order.setShippingCity(request.getShippingCity());
-        order.setShippingCountry(request.getShippingCountry());
+        order.setShippingAddress(request.getShippingAddressLine());
         order.setNote(request.getNote());
 
         // Calculate totals
@@ -211,9 +206,6 @@ public class OrderServiceImpl implements OrderService {
             subTotal = subTotal.add(lineTotal);
         }
 
-        order.setSubTotal(subTotal);
-        order.setShippingFee(BigDecimal.ZERO);
-        order.setDiscountAmount(BigDecimal.ZERO);
         order.setTotalAmount(subTotal);
         order.setPlacedAt(LocalDateTime.now());
 
@@ -262,11 +254,9 @@ public class OrderServiceImpl implements OrderService {
         // Create order status history
         OrderStatusHistory history = new OrderStatusHistory();
         history.setOrder(order);
-        history.setOldStatus(null);
-        history.setNewStatus("PENDING");
-        history.setChangedBy(user);
+        history.setStatus("PENDING");
         history.setNote("Đơn hàng được tạo");
-        history.setChangedAt(LocalDateTime.now());
+        history.setCreatedAt(LocalDateTime.now());
         historyRepository.save(history);
 
         // Clear cart
@@ -307,11 +297,9 @@ public class OrderServiceImpl implements OrderService {
         // Create history
         OrderStatusHistory history = new OrderStatusHistory();
         history.setOrder(order);
-        history.setOldStatus(oldStatus);
-        history.setNewStatus("CANCELLED");
-        history.setChangedBy(order.getUser());
+        history.setStatus("CANCELLED");
         history.setNote("Khách hàng hủy đơn");
-        history.setChangedAt(LocalDateTime.now());
+        history.setCreatedAt(LocalDateTime.now());
 
         historyRepository.save(history);
         orderRepository.save(order);
@@ -346,11 +334,9 @@ public class OrderServiceImpl implements OrderService {
         // Create history
         OrderStatusHistory history = new OrderStatusHistory();
         history.setOrder(order);
-        history.setOldStatus(oldStatus);
-        history.setNewStatus("CANCELLED");
-        history.setChangedBy(admin);
+        history.setStatus("CANCELLED");
         history.setNote(note != null ? note : "Admin hủy đơn");
-        history.setChangedAt(LocalDateTime.now());
+        history.setCreatedAt(LocalDateTime.now());
 
         historyRepository.save(history);
         orderRepository.save(order);
@@ -390,11 +376,9 @@ public class OrderServiceImpl implements OrderService {
         // Create history
         OrderStatusHistory history = new OrderStatusHistory();
         history.setOrder(order);
-        history.setOldStatus(oldStatus);
-        history.setNewStatus("COMPLETED");
-        history.setChangedBy(admin);
+        history.setStatus("COMPLETED");
         history.setNote(note != null ? note : "Đơn hàng hoàn thành");
-        history.setChangedAt(LocalDateTime.now());
+        history.setCreatedAt(LocalDateTime.now());
 
         historyRepository.save(history);
         orderRepository.save(order);

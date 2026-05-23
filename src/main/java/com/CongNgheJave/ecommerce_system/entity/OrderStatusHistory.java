@@ -17,22 +17,14 @@ public class OrderStatusHistory {
     @JoinColumn(name = "orderId")
     private Order order;
 
-    @Column(name = "oldStatus")
-    private String oldStatus;
-
-    @Column(name = "newStatus")
-    private String newStatus;
-
-    // Người thay đổi trạng thái.
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "changedBy")
-    private AppUser changedBy;
+    @Column(name = "status")
+    private String status;
 
     @Column(name = "note")
     private String note;
 
-    @Column(name = "changedAt")
-    private LocalDateTime changedAt;
+    @Column(name = "createdAt")
+    private LocalDateTime createdAt;
 
     public OrderStatusHistory() {
     }
@@ -53,28 +45,12 @@ public class OrderStatusHistory {
         this.order = order;
     }
 
-    public String getOldStatus() {
-        return oldStatus;
+    public String getStatus() {
+        return status;
     }
 
-    public void setOldStatus(String oldStatus) {
-        this.oldStatus = oldStatus;
-    }
-
-    public String getNewStatus() {
-        return newStatus;
-    }
-
-    public void setNewStatus(String newStatus) {
-        this.newStatus = newStatus;
-    }
-
-    public AppUser getChangedBy() {
-        return changedBy;
-    }
-
-    public void setChangedBy(AppUser changedBy) {
-        this.changedBy = changedBy;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public String getNote() {
@@ -85,11 +61,11 @@ public class OrderStatusHistory {
         this.note = note;
     }
 
-    public LocalDateTime getChangedAt() {
-        return changedAt;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setChangedAt(LocalDateTime changedAt) {
-        this.changedAt = changedAt;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

@@ -21,11 +21,7 @@ public class Payment {
     @Column(name = "paymentMethod")
     private String paymentMethod;
 
-    @Column(name = "paymentProvider")
-    private String paymentProvider;
 
-    @Column(name = "transactionCode")
-    private String transactionCode;
 
     @Column(name = "amount")
     private BigDecimal amount;
@@ -63,21 +59,7 @@ public class Payment {
         this.paymentMethod = paymentMethod;
     }
 
-    public String getPaymentProvider() {
-        return paymentProvider;
-    }
 
-    public void setPaymentProvider(String paymentProvider) {
-        this.paymentProvider = paymentProvider;
-    }
-
-    public String getTransactionCode() {
-        return transactionCode;
-    }
-
-    public void setTransactionCode(String transactionCode) {
-        this.transactionCode = transactionCode;
-    }
 
     public BigDecimal getAmount() {
         return amount;

@@ -31,15 +31,6 @@ public class Order {
     @Column(name = "paymentMethod")
     private String paymentMethod;
 
-    @Column(name = "subTotal")
-    private BigDecimal subTotal;
-
-    @Column(name = "shippingFee")
-    private BigDecimal shippingFee;
-
-    @Column(name = "discountAmount")
-    private BigDecimal discountAmount;
-
     @Column(name = "totalAmount")
     private BigDecimal totalAmount;
 
@@ -49,20 +40,8 @@ public class Order {
     @Column(name = "shippingPhone")
     private String shippingPhone;
 
-    @Column(name = "shippingAddressLine")
-    private String shippingAddressLine;
-
-    @Column(name = "shippingWard")
-    private String shippingWard;
-
-    @Column(name = "shippingDistrict")
-    private String shippingDistrict;
-
-    @Column(name = "shippingCity")
-    private String shippingCity;
-
-    @Column(name = "shippingCountry")
-    private String shippingCountry;
+    @Column(name = "shippingAddress")
+    private String shippingAddress;
 
     @Column(name = "note")
     private String note;
@@ -127,30 +106,6 @@ public class Order {
         this.paymentMethod = paymentMethod;
     }
 
-    public BigDecimal getSubTotal() {
-        return subTotal;
-    }
-
-    public void setSubTotal(BigDecimal subTotal) {
-        this.subTotal = subTotal;
-    }
-
-    public BigDecimal getShippingFee() {
-        return shippingFee;
-    }
-
-    public void setShippingFee(BigDecimal shippingFee) {
-        this.shippingFee = shippingFee;
-    }
-
-    public BigDecimal getDiscountAmount() {
-        return discountAmount;
-    }
-
-    public void setDiscountAmount(BigDecimal discountAmount) {
-        this.discountAmount = discountAmount;
-    }
-
     public BigDecimal getTotalAmount() {
         return totalAmount;
     }
@@ -175,44 +130,12 @@ public class Order {
         this.shippingPhone = shippingPhone;
     }
 
-    public String getShippingAddressLine() {
-        return shippingAddressLine;
+    public String getShippingAddress() {
+        return shippingAddress;
     }
 
-    public void setShippingAddressLine(String shippingAddressLine) {
-        this.shippingAddressLine = shippingAddressLine;
-    }
-
-    public String getShippingWard() {
-        return shippingWard;
-    }
-
-    public void setShippingWard(String shippingWard) {
-        this.shippingWard = shippingWard;
-    }
-
-    public String getShippingDistrict() {
-        return shippingDistrict;
-    }
-
-    public void setShippingDistrict(String shippingDistrict) {
-        this.shippingDistrict = shippingDistrict;
-    }
-
-    public String getShippingCity() {
-        return shippingCity;
-    }
-
-    public void setShippingCity(String shippingCity) {
-        this.shippingCity = shippingCity;
-    }
-
-    public String getShippingCountry() {
-        return shippingCountry;
-    }
-
-    public void setShippingCountry(String shippingCountry) {
-        this.shippingCountry = shippingCountry;
+    public void setShippingAddress(String shippingAddress) {
+        this.shippingAddress = shippingAddress;
     }
 
     public String getNote() {
@@ -247,14 +170,5 @@ public class Order {
         this.payment = payment;
     }
 
-    // Helper method for backward compatibility - getShippingAddress combines address parts
-    public String getShippingAddress() {
-        StringBuilder sb = new StringBuilder();
-        if (shippingAddressLine != null) sb.append(shippingAddressLine);
-        if (shippingWard != null) sb.append(", ").append(shippingWard);
-        if (shippingDistrict != null) sb.append(", ").append(shippingDistrict);
-        if (shippingCity != null) sb.append(", ").append(shippingCity);
-        if (shippingCountry != null) sb.append(", ").append(shippingCountry);
-        return sb.toString();
-    }
+
 }

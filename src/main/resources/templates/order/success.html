@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/shop_layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Đặt hàng thành công - ShoeStore</title>
+</head>
+<body>
+    <section class="container py-5 d-flex justify-content-center align-items-center" style="min-height: 60vh;">
+        <div class="card border-0 shadow-sm rounded-4 text-center p-5" style="max-width: 500px; width: 100%;">
+            <div class="card-body">
+                <i class="bi bi-check-circle-fill text-success" style="font-size: 80px;"></i>
+                <h2 class="fw-bold mt-4 mb-3">Đặt Hàng Thành Công!</h2>
+                <p class="text-muted mb-4 fs-5">Cảm ơn bạn đã mua sắm tại ShoeStore. Đơn hàng của bạn đang được xử lý và sẽ được giao trong thời gian sớm nhất.</p>
+                
+                <div class="d-grid gap-3">
+                    <a href="/" class="btn btn-dark btn-lg fw-bold py-3">Tiếp tục mua sắm</a>
+                    <a href="/orders/history" class="btn btn-outline-secondary py-2">Xem lịch sử đơn hàng</a>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

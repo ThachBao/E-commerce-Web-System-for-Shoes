@@ -1,7 +1,2 @@
-# Local AI assistant context
-GEMINI.md
-.gemini/
-
-# Build output
 target/
 

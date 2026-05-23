@@ -1,6 +1,7 @@
 package com.CongNgheJave.ecommerce_system.controller;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 public class HomeController {
 }
 =======
@@ -16,3 +17,7 @@ public class HomeController {
     }
 }
 >>>>>>> origin/member3_cart_payment
+=======
+public class HomeController {
+}
+>>>>>>> origin/member2-product-catalog

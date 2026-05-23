@@ -1,6 +1,7 @@
 package com.CongNgheJave.ecommerce_system.service;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 public class CartService {
 =======
 import com.CongNgheJave.ecommerce_system.dto.request.AddToCartRequest;
@@ -17,4 +18,7 @@ public interface CartService {
 
     void clearCart(Integer userId);
 >>>>>>> origin/member3_cart_payment
+=======
+public class CartService {
+>>>>>>> origin/member2-product-catalog
 }

@@ -1,6 +1,7 @@
 package com.CongNgheJave.ecommerce_system.service.impl;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 public interface CartServiceImpl {
 =======
 import com.CongNgheJave.ecommerce_system.dto.request.AddToCartRequest;
@@ -166,4 +167,7 @@ public class CartServiceImpl implements CartService {
         cartRepository.save(cart);
     }
 >>>>>>> origin/member3_cart_payment
+=======
+public interface CartServiceImpl {
+>>>>>>> origin/member2-product-catalog
 }

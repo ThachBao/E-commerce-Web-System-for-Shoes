@@ -1,0 +1,499 @@
+﻿-- Create database
+CREATE DATABASE shoe_store_db;
+USE shoe_store_db;
+
+
+-- ======================
+-- Table: Role
+-- ======================
+-- 1. Table: Role (Giữ nguyên) 
+CREATE TABLE Role ( 
+id INT AUTO_INCREMENT PRIMARY KEY, 
+name VARCHAR(50) NOT NULL UNIQUE, 
+description VARCHAR(255) 
+); 
+
+
+-- ======================
+-- Table: Users
+-- Ghi chu:
+-- passwordHash luu MAT KHAU DA MA HOA (bcrypt)
+-- Khi dang nhap, ban van nhap MAT KHAU THUONG o phan ghi chu ben duoi
+-- ======================
+CREATE TABLE Users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    passwordHash VARCHAR(255) NOT NULL,
+    fullName VARCHAR(100) NOT NULL,
+    phone VARCHAR(20),
+    avatarUrl VARCHAR(255),
+    isActive BOOLEAN DEFAULT TRUE,
+    isSystem BOOLEAN DEFAULT FALSE,
+    forceChangePassword BOOLEAN DEFAULT FALSE
+);
+
+
+-- 3. Table: User_Role
+CREATE TABLE User_Role (
+    userId INT,
+    roleId INT,
+    PRIMARY KEY (userId, roleId),
+    FOREIGN KEY (userId) REFERENCES Users(id) ON DELETE CASCADE,
+    FOREIGN KEY (roleId) REFERENCES Role(id) ON DELETE CASCADE
+);
+
+
+-- 4. Table: Address
+CREATE TABLE Address (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    userId INT NOT NULL,
+    recipientName VARCHAR(100) NOT NULL,
+    phone VARCHAR(20) NOT NULL,
+    addressLine VARCHAR(255) NOT NULL, -- Số nhà, tên đường
+    district VARCHAR(100),            -- Quận/Huyện
+    city VARCHAR(100) NOT NULL,        -- Tỉnh/Thành phố
+    isDefault BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (userId) REFERENCES Users(id) ON DELETE CASCADE
+);
+
+
+
+
+-- 5. Table: Brand
+CREATE TABLE Brand (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    code VARCHAR(20) NOT NULL UNIQUE,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    slug VARCHAR(150) NOT NULL UNIQUE,
+    description VARCHAR(255),
+    logoUrl VARCHAR(255),
+    isActive BOOLEAN DEFAULT TRUE
+);
+
+
+-- 6. Table: Category
+CREATE TABLE Category (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    parentId INT,
+    code VARCHAR(20) NOT NULL UNIQUE,
+    name VARCHAR(100) NOT NULL,
+    slug VARCHAR(150) NOT NULL UNIQUE,
+    isActive BOOLEAN DEFAULT TRUE,
+    FOREIGN KEY (parentId) REFERENCES Category(id) ON DELETE SET NULL
+);
+
+
+-- ======================
+-- Table: Size
+-- ======================
+CREATE TABLE Size (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(20) NOT NULL UNIQUE -- Vd: 38, 39, 40
+);
+
+
+
+
+-- ======================
+-- Table: Color
+-- ======================
+CREATE TABLE Color (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE, 
+    hexCode VARCHAR(20)               -- Vd: #000000
+);
+
+
+-- ======================
+-- Table: Product
+-- ======================
+CREATE TABLE Product (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    categoryId INT NOT NULL,
+    brandId INT,
+    code VARCHAR(30) NOT NULL UNIQUE,
+    name VARCHAR(150) NOT NULL,
+    slug VARCHAR(180) NOT NULL UNIQUE,
+    description TEXT,
+    gender VARCHAR(20) DEFAULT 'UNISEX',
+    isFeatured BOOLEAN DEFAULT FALSE,
+    isActive BOOLEAN DEFAULT TRUE,
+    FOREIGN KEY (categoryId) REFERENCES Category(id),
+    FOREIGN KEY (brandId) REFERENCES Brand(id)
+);
+
+
+
+
+-- ======================
+-- Table: Product_Image
+-- ======================
+CREATE TABLE Product_Image (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    productId INT NOT NULL,
+    imageUrl VARCHAR(255) NOT NULL,
+    isThumbnail BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (productId) REFERENCES Product(id) ON DELETE CASCADE
+);
+
+
+-- ======================
+-- Table: Product_Variant
+-- Moi dong la 1 bien the cu the:
+-- 1 san pham + 1 size + 1 mau
+-- ======================
+CREATE TABLE Product_Variant (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    productId INT NOT NULL,
+    sizeId INT NOT NULL,
+    colorId INT NOT NULL,
+    sku VARCHAR(100) NOT NULL UNIQUE,
+    price DECIMAL(12,2) NOT NULL,
+    salePrice DECIMAL(12,2),
+    stockQuantity INT DEFAULT 0,
+    isActive BOOLEAN DEFAULT TRUE,
+    UNIQUE (productId, sizeId, colorId),
+    FOREIGN KEY (productId) REFERENCES Product(id) ON DELETE CASCADE,
+    FOREIGN KEY (sizeId) REFERENCES Size(id),
+    FOREIGN KEY (colorId) REFERENCES Color(id)
+);
+-- ======================
+-- Table: Cart
+-- sửa tối thiểu để khớp với phần INSERT gốc
+-- ======================
+CREATE TABLE Cart (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    userId INT NOT NULL UNIQUE,
+    FOREIGN KEY (userId) REFERENCES Users(id) ON DELETE CASCADE
+);
+-- ======================
+-- Table: Cart_Item
+-- sửa tối thiểu để khớp với phần INSERT gốc
+-- ======================
+CREATE TABLE Cart_Item (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    cartId INT NOT NULL,
+    variantId INT NOT NULL,
+    quantity INT NOT NULL DEFAULT 1,
+    FOREIGN KEY (cartId) REFERENCES Cart(id) ON DELETE CASCADE,
+    FOREIGN KEY (variantId) REFERENCES Product_Variant(id)
+);
+
+
+
+
+-- ======================
+-- Table: Orders
+-- giữ nguyên style tên bảng/cột của database gốc
+-- chỉ thêm các cột đang được dùng ở phần INSERT
+-- ======================
+CREATE TABLE Orders (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    userId INT NOT NULL,
+    orderCode VARCHAR(30) NOT NULL UNIQUE,
+    orderStatus VARCHAR(30) DEFAULT 'PENDING',
+    paymentStatus VARCHAR(30) DEFAULT 'UNPAID',
+    paymentMethod VARCHAR(30) DEFAULT 'COD',
+    
+    totalAmount DECIMAL(12,2) NOT NULL, -- Chỉ giữ tổng cuối cho đơn giản
+    
+    shippingFullName VARCHAR(100) NOT NULL,
+    shippingPhone VARCHAR(20) NOT NULL,
+    shippingAddress VARCHAR(255) NOT NULL, -- Gộp tất cả địa chỉ vào đây
+    
+    note VARCHAR(255),
+    placedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (userId) REFERENCES Users(id)
+);
+
+
+
+
+-- ======================
+-- Table: Order_Item
+-- sửa tối thiểu để khớp với phần INSERT gốc
+-- ======================
+CREATE TABLE Order_Item (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    orderId INT NOT NULL,
+    variantId INT,
+    productName VARCHAR(150) NOT NULL, -- Lưu tên kèm size/màu để làm snapshot
+    unitPrice DECIMAL(12,2) NOT NULL,  -- Giá tại thời điểm mua (Snapshot)
+    quantity INT NOT NULL,
+    FOREIGN KEY (orderId) REFERENCES Orders(id) ON DELETE CASCADE,
+    FOREIGN KEY (variantId) REFERENCES Product_Variant(id) ON DELETE SET NULL
+);
+
+
+
+
+-- ======================
+-- Table: Payment
+-- giữ nguyên như gốc
+-- ======================
+CREATE TABLE Payment (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    orderId INT NOT NULL UNIQUE,
+    paymentMethod VARCHAR(30) NOT NULL,
+    amount DECIMAL(12,2) NOT NULL,
+    paymentStatus VARCHAR(30) DEFAULT 'PENDING',
+    paidAt DATETIME,
+    FOREIGN KEY (orderId) REFERENCES Orders(id) ON DELETE CASCADE
+);
+
+
+
+
+-- ======================
+-- Table: Order_Status_History
+-- giữ nguyên như gốc
+-- ======================
+CREATE TABLE Order_Status_History (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    orderId INT NOT NULL,
+    status VARCHAR(30) NOT NULL, -- Trạng thái mới được cập nhật
+    note VARCHAR(255),           -- Ghi chú nhanh (vd: "Khách đã thanh toán")
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (orderId) REFERENCES Orders(id) ON DELETE CASCADE
+);
+
+
+
+
+-- ======================
+-- Table: Inventory_Transaction
+-- giữ nguyên như gốc
+-- ======================
+CREATE TABLE Inventory_Transaction (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    variantId INT NOT NULL,
+    quantityChange INT NOT NULL, -- Số lượng thay đổi (Ví dụ: -1 khi bán, +10 khi nhập)
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (variantId) REFERENCES Product_Variant(id) ON DELETE CASCADE
+);
+
+
+USE shoe_store_db;
+
+
+-- ======================
+-- Insert Role
+-- ======================
+INSERT INTO Role (name, description) VALUES
+('ROOT_ADMIN', 'Tai khoan quan tri cao nhat, khong duoc xoa'),
+('ADMIN', 'Quan tri vien he thong'),
+('STAFF', 'Nhan vien quan ly san pham, kho, don hang'),
+('CUSTOMER', 'Khach hang mua sam');
+
+
+-- ======================
+-- Insert Users
+-- ======================
+INSERT INTO Users (username, email, passwordHash, fullName, phone, avatarUrl, isActive, isSystem, forceChangePassword) VALUES
+('rootadmin',  'rootadmin@shop.com',   '$2y$10$PLTmjRsvHLHaPPNsJN1DrOSdkKvkUk200pB3St.JiyR93sb.vryE.', 'Root Administrator', '0900000001', NULL, TRUE, TRUE, FALSE),
+('admin01',    'admin01@shop.com',     '$2y$10$u7HabJx11uL0aPWmpPcApe2ZZm1o2jH4Qh0vn92AiKf..RDw7cG/m', 'Admin User 01',     '0900000002', NULL, TRUE, FALSE, FALSE),
+('staff01',    'staff01@shop.com',     '$2y$10$qoH34OSbqcLPCFdTKmfh0Oh8V8Clf/OI.h3K9thsmfAaPmf/4psSS', 'Staff User 01',     '0900000003', NULL, TRUE, FALSE, FALSE),
+('staff02',    'staff02@shop.com',     '$2y$10$qoH34OSbqcLPCFdTKmfh0Oh8V8Clf/OI.h3K9thsmfAaPmf/4psSS', 'Staff User 02',     '0900000004', NULL, TRUE, FALSE, FALSE),
+('customer01', 'customer01@gmail.com', '$2y$10$ntf0/CLs/v/3KGwVkq5daeXWhEGLxO2l9.rH6XvvE6FQT7VWydqHy', 'Customer User 01',  '0900000005', NULL, TRUE, FALSE, FALSE),
+('customer02', 'customer02@gmail.com', '$2y$10$ntf0/CLs/v/3KGwVkq5daeXWhEGLxO2l9.rH6XvvE6FQT7VWydqHy', 'Customer User 02',  '0900000006', NULL, TRUE, FALSE, FALSE);
+
+
+-- ======================
+-- Insert User_Role
+-- ======================
+INSERT INTO User_Role (userId, roleId) VALUES
+(1, 1),
+(2, 2),
+(3, 3),
+(4, 3),
+(5, 4),
+(6, 4);
+
+
+-- ======================
+-- Insert Address
+-- khớp với bảng Address hiện tại
+-- ======================
+INSERT INTO Address (
+    userId, recipientName, phone, addressLine, district, city, isDefault
+) VALUES
+(5, 'Customer User 01', '0900000005', '123 Le Loi', 'Quan 1', 'Ho Chi Minh', TRUE),
+(5, 'Customer User 01', '0900000005', '45 Nguyen Trai', 'Quan 5', 'Ho Chi Minh', FALSE),
+(6, 'Customer User 02', '0900000006', '89 Hai Ba Trung', 'Quan 1', 'Ho Chi Minh', TRUE);
+
+
+-- ======================
+-- Insert Brand
+-- ======================
+INSERT INTO Brand (code, name, slug, description, logoUrl, isActive) VALUES
+('BR001', 'Nike', 'nike', 'Thuong hieu Nike', 'images/brands/nike.png', TRUE),
+('BR002', 'Adidas', 'adidas', 'Thuong hieu Adidas', 'images/brands/adidas.png', TRUE),
+('BR003', 'Converse', 'converse', 'Thuong hieu Converse', 'images/brands/converse.png', TRUE);
+
+
+-- ======================
+-- Insert Category
+-- khớp với bảng Category hiện tại
+-- ======================
+INSERT INTO Category (parentId, code, name, slug, isActive) VALUES
+(NULL, 'CAT001', 'Sneaker', 'sneaker', TRUE),
+(NULL, 'CAT002', 'Running', 'running', TRUE),
+(NULL, 'CAT003', 'Boots', 'boots', TRUE),
+(NULL, 'CAT004', 'Sandal', 'sandal', TRUE);
+
+
+-- ======================
+-- Insert Size
+-- khớp với bảng Size hiện tại
+-- ======================
+INSERT INTO Size (name) VALUES
+('36'),
+('37'),
+('38'),
+('39'),
+('40'),
+('41'),
+('42');
+
+
+-- ======================
+-- Insert Color
+-- khớp với bảng Color hiện tại
+-- ======================
+INSERT INTO Color (name, hexCode) VALUES
+('Black', '#000000'),
+('White', '#FFFFFF'),
+('Red', '#FF0000'),
+('Blue', '#0000FF');
+
+
+-- ======================
+-- Insert Product
+-- khớp với bảng Product hiện tại
+-- ======================
+INSERT INTO Product (
+    categoryId, brandId, code, name, slug, description, gender, isFeatured, isActive
+) VALUES
+(2, 1, 'PRD001', 'Nike Air Zoom Pegasus', 'nike-air-zoom-pegasus',
+ 'San pham Nike Air Zoom Pegasus phu hop chay bo hang ngay.',
+ 'UNISEX', TRUE, TRUE),
+
+
+(1, 2, 'PRD002', 'Adidas Ultraboost Light', 'adidas-ultraboost-light',
+ 'San pham Adidas Ultraboost Light voi de mem va do dan hoi cao.',
+ 'UNISEX', TRUE, TRUE),
+
+
+(1, 3, 'PRD003', 'Converse Chuck Taylor', 'converse-chuck-taylor',
+ 'Mau giay co dien de phoi do, phu hop di hoc va di choi.',
+ 'UNISEX', FALSE, TRUE);
+
+
+-- ======================
+-- Insert Product_Image
+-- khớp với bảng Product_Image hiện tại
+-- ======================
+INSERT INTO Product_Image (productId, imageUrl, isThumbnail) VALUES
+(1, 'images/products/pegasus-main.jpg', TRUE),
+(1, 'images/products/pegasus-side.jpg', FALSE),
+(1, 'images/products/pegasus-back.jpg', FALSE),
+(2, 'images/products/ultraboost-main.jpg', TRUE),
+(2, 'images/products/ultraboost-side.jpg', FALSE),
+(3, 'images/products/converse-main.jpg', TRUE),
+(3, 'images/products/converse-side.jpg', FALSE);
+
+
+-- ======================
+-- Insert Product_Variant
+-- khớp với bảng Product_Variant hiện tại
+-- Size id: 1=36, 2=37, 3=38, 4=39, 5=40, 6=41, 7=42
+-- Color id: 1=Black, 2=White, 3=Red, 4=Blue
+-- ======================
+INSERT INTO Product_Variant (
+    productId, sizeId, colorId, sku, price, salePrice, stockQuantity, isActive
+) VALUES
+(1, 4, 1, 'NAZP-39-BLK', 3200000, 2990000, 20, TRUE),
+(1, 5, 1, 'NAZP-40-BLK', 3200000, 2990000, 25, TRUE),
+(1, 6, 2, 'NAZP-41-WHT', 3200000, 3050000, 15, TRUE),
+(2, 5, 1, 'AUBL-40-BLK', 3500000, 3300000, 18, TRUE),
+(2, 6, 4, 'AUBL-41-BLU', 3500000, 3350000, 12, TRUE),
+(3, 3, 3, 'CCTY-38-RED', 1900000, 1850000, 30, TRUE);
+
+
+-- ======================
+-- Insert Cart
+-- ======================
+INSERT INTO Cart (userId) VALUES 
+(5), -- Giỏ hàng của Customer 01
+(6); -- Giỏ hàng của Customer 02
+
+
+
+
+-- ======================
+-- Insert Cart_Item
+-- ======================
+INSERT INTO Cart_Item (cartId, variantId, quantity) VALUES 
+(1, 2, 1), -- Khách 01: 1 đôi Nike Air Zoom Pegasus (Size 40, Black)
+(1, 4, 1), -- Khách 01: 1 đôi Adidas Ultraboost Light (Size 40, Black)
+(2, 6, 2); -- Khách 02: 2 đôi Converse Chuck Taylor (Size 38, Red)
+
+
+
+
+-- ======================
+-- Insert Orders
+-- ======================
+INSERT INTO Orders (
+    userId, orderCode, orderStatus, paymentStatus, paymentMethod, 
+    totalAmount, shippingFullName, shippingPhone, shippingAddress, note
+) VALUES 
+(5, 'ORD0001', 'PENDING', 'UNPAID', 'COD', 
+ 6320000, 'Customer User 01', '0900000005', '123 Le Loi, Ben Thanh, Quan 1, Ho Chi Minh', 'Giao gio hanh chinh'),
+
+
+(6, 'ORD0002', 'CONFIRMED', 'PAID', 'BANK_TRANSFER', 
+ 3730000, 'Customer User 02', '0900000006', '89 Hai Ba Trung, Da Kao, Quan 1, Ho Chi Minh', 'Khach da chuyen khoan');
+
+
+
+
+
+
+-- ======================
+-- Insert Order_Item
+-- ======================
+INSERT INTO Order_Item (orderId, variantId, productName, unitPrice, quantity) VALUES 
+(1, 2, 'Nike Air Zoom Pegasus - Black - 40', 2990000, 1),
+(1, 4, 'Adidas Ultraboost Light - Black - 40', 3300000, 1),
+(2, 6, 'Converse Chuck Taylor - Red - 38', 1850000, 2);
+
+
+
+
+-- ======================
+-- Insert Payment
+-- dùng PAID thay cho SUCCESS cho đồng bộ hơn
+-- ======================
+INSERT INTO Payment (orderId, paymentMethod, amount, paymentStatus, paidAt) VALUES 
+(1, 'COD', 6320000, 'PENDING', NULL),
+(2, 'BANK_TRANSFER', 3730000, 'PAID', NOW());
+
+
+
+
+-- ======================
+-- Insert Order_Status_History
+-- ======================
+INSERT INTO Order_Status_History (orderId, status, note) VALUES (1, 'PENDING', 'Khach hang vua tao don hang'), (2, 'PENDING', 'Khach hang vua tao don hang'), (2, 'CONFIRMED', 'He thong da xac nhan thanh toan chuyen khoan'); 
+
+
+-- ======================
+-- Insert Inventory_Transaction
+-- ======================
+-- Quản lý tồn kho: Dùng số âm cho việc xuất kho bán hàng
+INSERT INTO Inventory_Transaction (variantId, quantityChange) VALUES 
+(2, -1), -- Trừ 1 chiếc cho đơn ORD0001
+(4, -1), -- Trừ 1 chiếc cho đơn ORD0001
+(6, -2); -- Trừ 2 chiếc cho đơn ORD0002

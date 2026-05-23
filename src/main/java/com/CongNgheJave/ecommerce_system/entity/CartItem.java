@@ -4,27 +4,65 @@ package com.CongNgheJave.ecommerce_system.entity;
 public class CartItem {
 =======
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
 @Entity
 @Table(name = "Cart_Item")
 public class CartItem {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cartId", nullable = false)
+    @JoinColumn(name = "cartId")
     private Cart cart;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "variantId", nullable = false)
-    private ProductVariant productVariant;
+    @JoinColumn(name = "variantId")
+    private ProductVariant variant;
 
+<<<<<<< HEAD
     @Column(name = "quantity", nullable = false)
     private Integer quantity = 1;
 >>>>>>> origin/member3_cart_payment
+=======
+    @Column(name = "quantity")
+    private Integer quantity;
+
+    public CartItem() {
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Cart getCart() {
+        return cart;
+    }
+
+    public void setCart(Cart cart) {
+        this.cart = cart;
+    }
+
+    public ProductVariant getVariant() {
+        return variant;
+    }
+
+    public void setVariant(ProductVariant variant) {
+        this.variant = variant;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
+>>>>>>> origin/member2-product-catalog
 }

@@ -39,6 +39,12 @@ public class PaymentServiceImpl implements PaymentService {
 
         payment.setPaymentStatus("PAID");
         payment.setPaidAt(LocalDateTime.now());
+        
+        Order order = payment.getOrder();
+        if (order != null) {
+            order.setPaymentStatus("PAID");
+        }
+        
         paymentRepository.save(payment);
     }
 }

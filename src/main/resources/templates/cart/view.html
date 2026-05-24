@@ -1,8 +1,11 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/shop_layout :: layout(~{::title}, ~{::section})}">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+    th:replace="~{fragments/shop_layout :: layout(~{::title}, ~{::section})}">
+
 <head>
     <title>Giỏ hàng của bạn - ShoeStore</title>
 </head>
+
 <body>
     <section class="container mt-5 mb-5">
         <div class="row align-items-center mb-4">
@@ -15,7 +18,7 @@
                 </button>
             </div>
         </div>
-        
+
         <div class="row">
             <!-- Khu vực Giỏ hàng -->
             <div class="col-lg-8">
@@ -25,23 +28,26 @@
                             <thead class="border-bottom text-muted">
                                 <tr>
                                     <th style="width: 40px;" class="text-center">
-                                        <input class="form-check-input fs-5 mt-0" type="checkbox" id="selectAll" checked onchange="toggleSelectAll(this)">
+                                        <input class="form-check-input fs-5 mt-0" type="checkbox" id="selectAll" checked
+                                            onchange="toggleSelectAll(this)">
                                     </th>
-                                    <th>Sản phẩm (SKU)</th>
+                                    <th>Sản phẩm</th>
                                     <th class="text-center">Đơn giá</th>
                                     <th class="text-center">Số lượng</th>
                                     <th class="text-end pe-3">Thành tiền</th>
                                 </tr>
                             </thead>
                             <tbody id="cart-items">
-                                <tr><td colspan="4" class="text-center py-4">
-                                    <div class="spinner-border text-primary" role="status"></div>
-                                </td></tr>
+                                <tr>
+                                    <td colspan="4" class="text-center py-4">
+                                        <div class="spinner-border text-primary" role="status"></div>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
-                
+
                 <!-- Tool giả lập thêm vào giỏ hàng -->
                 <div class="cart-container mt-4 border border-info bg-light shadow-sm rounded p-4 d-none">
                     <h5 class="fw-bold mb-3 text-info"><i class="bi bi-bug"></i> Test Tool: Giả lập Add To Cart</h5>
@@ -64,7 +70,8 @@
 
             <!-- Khu vực Tổng tiền -->
             <div class="col-lg-4 mt-4 mt-lg-0">
-                <div class="cart-container checkout-box shadow-sm border border-light bg-white rounded p-4 position-sticky" style="top: 100px;">
+                <div class="cart-container checkout-box shadow-sm border border-light bg-white rounded p-4 position-sticky"
+                    style="top: 100px;">
                     <h4 class="fw-bold mb-4">Tổng cộng</h4>
                     <div class="d-flex justify-content-between mb-3 border-bottom pb-3">
                         <span class="text-muted fs-5">Tạm tính</span>
@@ -76,9 +83,10 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Container for custom toasts dynamically created by JS -->
         <div id="toast-container"></div>
     </section>
 </body>
+
 </html>

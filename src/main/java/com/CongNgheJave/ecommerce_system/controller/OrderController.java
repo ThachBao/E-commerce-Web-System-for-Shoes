@@ -21,9 +21,16 @@ public class OrderController {
     private final OrderService orderService;
     private final OrderRepository orderRepository;
 
-    // TODO: Khi ráp với Spring Security, thay thế bằng cách lấy từ SecurityContextHolder
     private Integer getCurrentUserId() {
-        return 5; // Hardcode mapping to user 5 (Customer 01) in DB for testing
+        org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !auth.getName().equals("anonymousUser")) {
+            try {
+                return Integer.parseInt(auth.getName());
+            } catch (NumberFormatException e) {
+                // Ignore and fallback
+            }
+        }
+        return 5; // Hardcode mapping to user 5 for testing/fallback
     }
 
     @PostMapping("/checkout")

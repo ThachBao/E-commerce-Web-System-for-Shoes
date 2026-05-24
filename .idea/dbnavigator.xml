@@ -44,7 +44,7 @@
     <connection id="7da9b30e-d968-4561-8c73-f416362065e2">
       <console name="shoe_store_db" type="STANDARD" schema="shoe_store_db" session="Main"><![CDATA[use shoe_store_db
 
-select * from Product]]></console>
+select * from users]]></console>
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseEditorStateManager">

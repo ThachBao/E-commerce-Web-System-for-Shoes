@@ -1,10 +1,80 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/shop_layout :: layout(~{::title}, ~{::section})}">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Đăng nhập | ShoeStore</title>
 </head>
 <body>
-
+<section class="container py-5 my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <i class="bi bi-box-seam text-warning fs-1 mb-2 d-inline-block"></i>
+                        <h3 class="fw-bold text-uppercase">Đăng nhập</h3>
+                        <p class="text-muted">Chào mừng bạn quay trở lại ShoeStore</p>
+                    </div>
+                    
+                    <!-- Thông báo lỗi / thành công -->
+                    <div th:if="${param.error}" class="alert alert-danger py-2 small fw-medium">
+                        <i class="bi bi-exclamation-circle me-1"></i> Tên đăng nhập hoặc mật khẩu không chính xác!
+                    </div>
+                    <div th:if="${param.logout}" class="alert alert-info py-2 small fw-medium">
+                        <i class="bi bi-info-circle me-1"></i> Bạn đã đăng xuất thành công.
+                    </div>
+                    <div th:if="${param.registered}" class="alert alert-success py-2 small fw-medium">
+                        <i class="bi bi-check-circle me-1"></i> Đăng ký thành công! Vui lòng đăng nhập.
+                    </div>
+                    
+                    <form action="/login" method="post" id="loginForm">
+                        <input type="hidden" name="redirect" th:if="${redirect != null}" th:value="${redirect}">
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control rounded-pill px-4" id="username" name="username" placeholder="Tên đăng nhập" required>
+                            <label for="username" class="px-4">Tên đăng nhập</label>
+                        </div>
+                        <div class="form-floating mb-3 position-relative">
+                            <input type="password" class="form-control rounded-pill px-4" id="password" name="password" placeholder="Mật khẩu" required>
+                            <label for="password" class="px-4">Mật khẩu</label>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-4 px-2">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="rememberMe" name="remember-me">
+                                <label class="form-check-label text-muted" for="rememberMe">
+                                    Ghi nhớ
+                                </label>
+                            </div>
+                            <a href="/forgot-password" class="text-decoration-none text-primary fw-medium">Quên mật khẩu?</a>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-dark w-100 py-3 rounded-pill fw-bold text-uppercase mb-3 btn-login">
+                            Đăng nhập
+                        </button>
+                        
+                        <div class="text-center mt-4">
+                            <p class="text-muted mb-0">Chưa có tài khoản? <a th:href="@{/register(redirect=${redirect})}" class="text-primary fw-bold text-decoration-none">Đăng ký ngay</a></p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <style>
+        .btn-login {
+            transition: all 0.3s ease;
+        }
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            background-color: #ffc107 !important;
+            color: #000 !important;
+            border-color: #ffc107 !important;
+        }
+        .form-control:focus {
+            box-shadow: none;
+            border-color: #ffc107;
+        }
+    </style>
+</section>
 </body>
 </html>

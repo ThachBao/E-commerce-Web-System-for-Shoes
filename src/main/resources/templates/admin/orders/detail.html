@@ -1,15 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/admin_layout :: layout(~{::title}, ~{::section})}">
 <head>
-    <meta charset="UTF-8">
     <title>Order Detail</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-
-<body class="bg-light">
-
-<div class="container mt-4 mb-5">
+<body>
+<section>
 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
@@ -84,23 +79,6 @@
                     </div>
                 </div>
 
-                <div class="col-md-4">
-                    <label class="text-muted">Sub Total</label>
-                    <div class="fw-semibold"
-                         th:text="${#numbers.formatDecimal(order.subTotal, 0, 'COMMA', 0, 'POINT')} + ' VND'"></div>
-                </div>
-
-                <div class="col-md-4">
-                    <label class="text-muted">Shipping Fee</label>
-                    <div class="fw-semibold"
-                         th:text="${#numbers.formatDecimal(order.shippingFee, 0, 'COMMA', 0, 'POINT')} + ' VND'"></div>
-                </div>
-
-                <div class="col-md-4">
-                    <label class="text-muted">Discount</label>
-                    <div class="fw-semibold"
-                         th:text="${#numbers.formatDecimal(order.discountAmount, 0, 'COMMA', 0, 'POINT')} + ' VND'"></div>
-                </div>
 
                 <div class="col-md-4">
                     <label class="text-muted">Total Amount</label>
@@ -137,19 +115,9 @@
                     <div class="fw-semibold" th:text="${order.shippingPhone}"></div>
                 </div>
 
-                <div class="col-md-4">
-                    <label class="text-muted">Country</label>
-                    <div class="fw-semibold" th:text="${order.shippingCountry}"></div>
-                </div>
-
                 <div class="col-md-12">
                     <label class="text-muted">Address</label>
-                    <div class="fw-semibold">
-                        <span th:text="${order.shippingAddressLine}"></span>,
-                        <span th:text="${order.shippingWard}"></span>,
-                        <span th:text="${order.shippingDistrict}"></span>,
-                        <span th:text="${order.shippingCity}"></span>
-                    </div>
+                    <div class="fw-semibold" th:text="${order.shippingAddress}"></div>
                 </div>
 
                 <div class="col-md-12">
@@ -172,9 +140,6 @@
                 <thead class="table-dark">
                 <tr>
                     <th>Product</th>
-                    <th>SKU</th>
-                    <th>Size</th>
-                    <th>Color</th>
                     <th>Unit Price</th>
                     <th>Quantity</th>
                     <th>Line Total</th>
@@ -184,16 +149,13 @@
                 <tbody>
                 <tr th:each="item : ${order.items}">
                     <td class="text-start" th:text="${item.productName}"></td>
-                    <td th:text="${item.sku}"></td>
-                    <td th:text="${item.sizeName}"></td>
-                    <td th:text="${item.colorName}"></td>
                     <td th:text="${#numbers.formatDecimal(item.unitPrice, 0, 'COMMA', 0, 'POINT')} + ' VND'"></td>
                     <td th:text="${item.quantity}"></td>
-                    <td th:text="${#numbers.formatDecimal(item.lineTotal, 0, 'COMMA', 0, 'POINT')} + ' VND'"></td>
+                    <td th:text="${#numbers.formatDecimal(item.unitPrice * item.quantity, 0, 'COMMA', 0, 'POINT')} + ' VND'"></td>
                 </tr>
 
                 <tr th:if="${#lists.isEmpty(order.items)}">
-                    <td colspan="7" class="text-muted py-4">
+                    <td colspan="4" class="text-muted py-4">
                         No items found
                     </td>
                 </tr>
@@ -216,15 +178,7 @@
                     <div class="fw-semibold" th:text="${payment.paymentMethod}"></div>
                 </div>
 
-                <div class="col-md-4">
-                    <label class="text-muted">Provider</label>
-                    <div class="fw-semibold" th:text="${payment.paymentProvider != null ? payment.paymentProvider : 'N/A'}"></div>
-                </div>
 
-                <div class="col-md-4">
-                    <label class="text-muted">Transaction Code</label>
-                    <div class="fw-semibold" th:text="${payment.transactionCode != null ? payment.transactionCode : 'N/A'}"></div>
-                </div>
 
                 <div class="col-md-4">
                     <label class="text-muted">Amount</label>
@@ -243,6 +197,15 @@
                          th:text="${payment.paidAt != null ? #temporals.format(payment.paidAt, 'dd/MM/yyyy HH:mm') : 'N/A'}"></div>
                 </div>
 
+            </div>
+            
+            <!-- Nút Xác nhận đã thanh toán -->
+            <div class="mt-3" th:if="${payment.paymentStatus != 'PAID'}">
+                <form th:action="@{/admin/orders/{id}/mark-paid(id=${order.id})}" method="post">
+                    <button type="submit" class="btn btn-success" onclick="return confirm('Xác nhận đã nhận được tiền thanh toán cho đơn hàng này?');">
+                        <i class="bi bi-check-circle me-1"></i> Xác nhận đã nhận chuyển khoản / thanh toán
+                    </button>
+                </form>
             </div>
         </div>
 
@@ -304,9 +267,7 @@
             <table class="table table-bordered text-center align-middle mb-0">
                 <thead class="table-dark">
                 <tr>
-                    <th>Old Status</th>
-                    <th>New Status</th>
-                    <th>Changed By</th>
+                    <th>Status</th>
                     <th>Note</th>
                     <th>Changed At</th>
                 </tr>
@@ -314,15 +275,13 @@
 
                 <tbody>
                 <tr th:each="history : ${histories}">
-                    <td th:text="${history.oldStatus != null ? history.oldStatus : 'N/A'}"></td>
-                    <td th:text="${history.newStatus}"></td>
-                    <td th:text="${history.changedBy != null ? history.changedBy.fullName : 'N/A'}"></td>
+                    <td th:text="${history.status}"></td>
                     <td th:text="${history.note != null ? history.note : 'N/A'}"></td>
-                    <td th:text="${history.changedAt != null ? #temporals.format(history.changedAt, 'dd/MM/yyyy HH:mm') : 'N/A'}"></td>
+                    <td th:text="${history.createdAt != null ? #temporals.format(history.createdAt, 'dd/MM/yyyy HH:mm') : 'N/A'}"></td>
                 </tr>
 
                 <tr th:if="${#lists.isEmpty(histories)}">
-                    <td colspan="5" class="text-muted py-4">
+                    <td colspan="3" class="text-muted py-4">
                         No status history found
                     </td>
                 </tr>
@@ -331,7 +290,6 @@
         </div>
     </div>
 
-</div>
-
+</section>
 </body>
 </html>

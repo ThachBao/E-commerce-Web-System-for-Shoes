@@ -68,10 +68,10 @@
                             <input type="number" name="quantity" id="input-quantity" class="form-control form-control-lg text-center" value="1" min="1" required>
                         </div>
                         <div class="flex-grow-1 align-self-end d-flex gap-2">
-                            <button type="button" class="btn btn-warning btn-lg fw-bold flex-grow-1" id="btn-add-cart" onclick="addToCart(false)">
+                            <button type="button" class="btn btn-warning btn-lg fw-bold flex-grow-1" id="btn-add-cart" onclick="handleAddToCart(false)">
                                 <i class="bi bi-cart-plus me-2"></i>Thêm vào giỏ
                             </button>
-                            <button type="button" class="btn btn-dark btn-lg fw-bold flex-grow-1" id="btn-buy-now" onclick="addToCart(true)">
+                            <button type="button" class="btn btn-dark btn-lg fw-bold flex-grow-1" id="btn-buy-now" onclick="handleAddToCart(true)">
                                 Mua ngay
                             </button>
                         </div>
@@ -118,7 +118,7 @@
             });
 
             // Handle Add to Cart / Buy Now via AJAX
-            async function addToCart(isBuyNow) {
+            async function handleAddToCart(isBuyNow) {
                 const variantId = document.getElementById('input-variant-id').value;
                 const quantity = document.getElementById('input-quantity').value;
 
@@ -144,6 +144,12 @@
                         })
                     });
 
+                    if (response.status === 401 || response.status === 403) {
+                        const currentUrl = encodeURIComponent(window.location.pathname + window.location.search);
+                        showGlobalConfirm(null, 'Vui lòng đăng nhập để tiếp tục mua sắm!', `/login?redirect=${currentUrl}`, 'Đăng nhập', 'Để sau');
+                        return;
+                    }
+
                     const data = await response.json();
 
                     if (response.ok && data.success) {
@@ -165,7 +171,7 @@
                         } else {
                             showToast('Đã thêm sản phẩm vào giỏ hàng!', 'success');
                             // Update cart count if applicable
-                            if(typeof updateCartCount === 'function') updateCartCount();
+                            if(typeof window.updateGlobalCartBadge === 'function') window.updateGlobalCartBadge();
                         }
                     } else {
                         showToast(data.message || 'Lỗi khi thêm vào giỏ hàng', 'danger');

@@ -18,21 +18,46 @@
                         <div class="row g-3 mb-3">
                             <div class="col-sm-6">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control bg-light" id="shippingFullName" placeholder="Họ và tên người nhận" value="Customer Test 01" required>
+                                    <input type="text" class="form-control bg-light" id="shippingFullName" placeholder="Họ và tên người nhận" th:value="${currentUser != null ? currentUser.fullName : ''}" required>
                                     <label for="shippingFullName">Họ và tên người nhận</label>
                                 </div>
                             </div>
                             <div class="col-sm-6">
                                 <div class="form-floating">
-                                    <input type="tel" class="form-control bg-light" id="shippingPhone" placeholder="Số điện thoại" value="0987654321" required>
+                                    <input type="tel" class="form-control bg-light" id="shippingPhone" placeholder="Số điện thoại" th:value="${currentUser != null && currentUser.phone != null ? currentUser.phone : ''}" pattern="(0[3|5|7|8|9])+([0-9]{8})" title="Vui lòng nhập đúng định dạng số điện thoại Việt Nam (10 số, bắt đầu bằng 03, 05, 07, 08, hoặc 09)" required>
                                     <label for="shippingPhone">Số điện thoại</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-floating">
+                                    <select class="form-select bg-light" id="province" required>
+                                        <option value="" disabled selected>Chọn Tỉnh/Thành phố</option>
+                                    </select>
+                                    <label for="province">Tỉnh/Thành phố</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-floating">
+                                    <select class="form-select bg-light" id="district" required disabled>
+                                        <option value="" disabled selected>Chọn Quận/Huyện</option>
+                                    </select>
+                                    <label for="district">Quận/Huyện</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-floating">
+                                    <select class="form-select bg-light" id="ward" required disabled>
+                                        <option value="" disabled selected>Chọn Phường/Xã</option>
+                                    </select>
+                                    <label for="ward">Phường/Xã</label>
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control bg-light" id="shippingAddress" placeholder="Địa chỉ chi tiết" value="123 Nguyễn Văn Cừ, Quận 5, TP.HCM" required>
-                                    <label for="shippingAddress">Địa chỉ nhận hàng (Chi tiết)</label>
+                                    <input type="text" class="form-control bg-light" id="addressDetail" placeholder="Số nhà, Tên đường..." required>
+                                    <label for="addressDetail">Số nhà, Tên đường (Địa chỉ chi tiết)</label>
                                 </div>
+                                <input type="hidden" id="shippingAddress" value="">
                             </div>
                         </div>
                         <div class="mb-4 form-floating">
@@ -170,14 +195,14 @@
                         div.innerHTML = `
                             <div class="flex-shrink-0 position-relative me-3">
                                 <img src="${imgSrc}" class="rounded-3 border border-light" style="width: 75px; height: 75px; object-fit: contain; background: #fff;">
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-circle bg-dark border border-white shadow-sm d-flex align-items-center justify-content-center" style="width: 22px; height: 22px; font-size: 0.75rem; padding: 0;">
-                                    ${item.quantity}
-                                </span>
                             </div>
                             <div class="flex-grow-1 min-w-0 pe-2">
                                 <h6 class="mb-1 text-truncate fw-bold text-dark" style="font-size: 0.95rem; line-height: 1.4;">${productName}</h6>
                                 <small class="text-muted d-block text-truncate mb-2"><i class="bi bi-tag me-1"></i>${variantInfo}</small>
-                                <div class="fw-bold text-danger">${localFormatVND(item.itemTotal)}</div>
+                                <div class="d-flex justify-content-between align-items-center mt-1">
+                                    <div class="fw-bold text-danger fs-6">${localFormatVND(item.itemTotal)}</div>
+                                    <div class="text-muted small fw-bold bg-light px-2 py-1 rounded border">SL: ${item.quantity}</div>
+                                </div>
                             </div>
                         `;
                         container.appendChild(div);
@@ -193,8 +218,88 @@
                 }
             }
 
+            // Address Handling
+            let addressData = [];
+            
+            async function loadProvinces() {
+                try {
+                    const res = await fetch('https://provinces.open-api.vn/api/?depth=3');
+                    addressData = await res.json();
+                    
+                    const provinceSelect = document.getElementById('province');
+                    addressData.forEach(p => {
+                        const option = document.createElement('option');
+                        option.value = p.code;
+                        option.text = p.name;
+                        provinceSelect.appendChild(option);
+                    });
+                } catch (e) {
+                    console.error('Error loading provinces', e);
+                }
+            }
+            
+            document.getElementById('province').addEventListener('change', function() {
+                const districtSelect = document.getElementById('district');
+                const wardSelect = document.getElementById('ward');
+                
+                districtSelect.innerHTML = '<option value="" disabled selected>Chọn Quận/Huyện</option>';
+                wardSelect.innerHTML = '<option value="" disabled selected>Chọn Phường/Xã</option>';
+                districtSelect.disabled = false;
+                wardSelect.disabled = true;
+                
+                const selectedProvince = addressData.find(p => p.code == this.value);
+                if (selectedProvince && selectedProvince.districts) {
+                    selectedProvince.districts.forEach(d => {
+                        const option = document.createElement('option');
+                        option.value = d.code;
+                        option.text = d.name;
+                        districtSelect.appendChild(option);
+                    });
+                }
+                updateFullAddress();
+            });
+            
+            document.getElementById('district').addEventListener('change', function() {
+                const wardSelect = document.getElementById('ward');
+                wardSelect.innerHTML = '<option value="" disabled selected>Chọn Phường/Xã</option>';
+                wardSelect.disabled = false;
+                
+                const selectedProvince = addressData.find(p => p.code == document.getElementById('province').value);
+                if (selectedProvince) {
+                    const selectedDistrict = selectedProvince.districts.find(d => d.code == this.value);
+                    if (selectedDistrict && selectedDistrict.wards) {
+                        selectedDistrict.wards.forEach(w => {
+                            const option = document.createElement('option');
+                            option.value = w.code;
+                            option.text = w.name;
+                            wardSelect.appendChild(option);
+                        });
+                    }
+                }
+                updateFullAddress();
+            });
+            
+            document.getElementById('ward').addEventListener('change', updateFullAddress);
+            document.getElementById('addressDetail').addEventListener('input', updateFullAddress);
+            
+            function updateFullAddress() {
+                const p = document.getElementById('province');
+                const d = document.getElementById('district');
+                const w = document.getElementById('ward');
+                const detail = document.getElementById('addressDetail').value;
+                
+                let addressParts = [];
+                if (detail) addressParts.push(detail.trim());
+                if (w.selectedIndex > 0) addressParts.push(w.options[w.selectedIndex].text);
+                if (d.selectedIndex > 0) addressParts.push(d.options[d.selectedIndex].text);
+                if (p.selectedIndex > 0) addressParts.push(p.options[p.selectedIndex].text);
+                
+                document.getElementById('shippingAddress').value = addressParts.join(', ');
+            }
+
             document.addEventListener('DOMContentLoaded', () => {
                 loadCheckoutCart();
+                loadProvinces();
             });
         </script>
     </section>

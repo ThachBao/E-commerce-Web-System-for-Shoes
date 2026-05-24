@@ -18,6 +18,11 @@ window.updateGlobalCartBadge = async () => {
             if (badge) {
                 const totalItems = data.data.items.reduce((sum, item) => sum + item.quantity, 0);
                 badge.innerText = totalItems;
+                if (totalItems > 0) {
+                    badge.classList.remove('d-none');
+                } else {
+                    badge.classList.add('d-none');
+                }
                 badge.style.transform = 'translate(-50%, -50%) scale(1.3)';
                 setTimeout(() => { badge.style.transform = 'translate(-50%, -50%) scale(1)'; }, 200);
             }
@@ -59,6 +64,10 @@ let renderCart = (cart) => {
     }
 
     cart.items.forEach(item => {
+        const imgSrc = item.imageUrl || 'https://via.placeholder.com/70?text=No+Image';
+        const productName = item.productName || item.sku;
+        const variantInfo = (item.colorName && item.sizeName) ? `${item.colorName} / Size ${item.sizeName}` : `Mã: ${item.sku}`;
+
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td class="align-middle text-center">
@@ -66,9 +75,10 @@ let renderCart = (cart) => {
             </td>
             <td class="align-middle ps-2">
                 <div class="d-flex align-items-center">
+                    <img src="${imgSrc}" class="rounded-3 border border-light me-3" style="width: 60px; height: 60px; object-fit: contain; background: #fff;">
                     <div>
-                        <h6 class="mb-0 fw-bold">${item.sku || ('Variant #' + item.variantId)}</h6>
-                        <small class="text-muted">Variant ID: ${item.variantId}</small>
+                        <h6 class="mb-1 fw-bold text-dark">${productName}</h6>
+                        <small class="text-muted"><i class="bi bi-tag me-1"></i>${variantInfo}</small>
                     </div>
                 </div>
             </td>
@@ -272,6 +282,13 @@ const addToCart = async (variantId, quantity, successMessage = 'Đã thêm vào 
             },
             body: JSON.stringify({ variantId: parseInt(variantId), quantity: parseInt(quantity) })
         });
+
+        if (response.status === 401 || response.status === 403) {
+            const currentUrl = encodeURIComponent(window.location.pathname + window.location.search);
+            showGlobalConfirm(null, 'Vui lòng đăng nhập để tiếp tục mua sắm!', `/login?redirect=${currentUrl}`, 'Đăng nhập', 'Để sau');
+            return;
+        }
+
         const data = await response.json();
 
         if (response.ok && data.success) {

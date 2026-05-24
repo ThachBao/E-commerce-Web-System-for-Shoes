@@ -82,10 +82,15 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public CartResponse getCart(Integer userId) {
-        Cart cart = cartRepository.findByUser_Id(userId)
-                .orElseThrow(() -> new RuntimeException("Cart not found for user"));
+        Cart cart = cartRepository.findByUser_Id(userId).orElseGet(() -> {
+            AppUser user = appUserRepository.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            Cart newCart = new Cart();
+            newCart.setUser(user);
+            return cartRepository.save(newCart);
+        });
 
         List<CartItemResponse> itemResponses = cart.getItems().stream().map(item -> {
             CartItemResponse response = new CartItemResponse();

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/admin_layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Quản lý Kích cỡ</title>
+</head>
+<body>
+    <section>
+        <div class="mb-4">
+            <h2 class="h4 m-0">Quản lý Kích cỡ</h2>
+        </div>
+
+        <div class="row">
+            <!-- Cột Thêm mới -->
+            <div class="col-md-4 mb-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white fw-bold">
+                        Thêm Kích cỡ mới
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/admin/attributes/sizes/add}" method="post">
+                            <div class="mb-4">
+                                <label class="form-label">Tên kích cỡ <span class="text-danger">*</span></label>
+                                <input type="text" name="name" class="form-control" required placeholder="VD: 40">
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary"><i class="bi bi-plus-circle me-1"></i>Thêm Kích cỡ</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cột Danh sách -->
+            <div class="col-md-8">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <form action="/admin/attributes/sizes" method="get" class="mb-3">
+                            <div class="input-group w-50">
+                                <input type="text" name="keyword" class="form-control form-control-sm" placeholder="Tìm kiếm..." th:value="${keyword}">
+                                <button class="btn btn-sm btn-outline-secondary" type="submit"><i class="bi bi-search"></i></button>
+                                <a href="/admin/attributes/sizes" class="btn btn-sm btn-outline-danger" th:if="${keyword != null and keyword != ''}"><i class="bi bi-x"></i></a>
+                            </div>
+                        </form>
+
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Tên Kích cỡ</th>
+                                        <th class="text-end">Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="size : ${sizes}">
+                                        <td th:text="${size.id}"></td>
+                                        <td class="fw-bold" th:text="${size.name}"></td>
+                                        <td class="text-end">
+                                            <button type="button" class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="modal" th:data-bs-target="'#editSizeModal' + ${size.id}"><i class="bi bi-pencil"></i></button>
+                                            <a th:href="@{/admin/attributes/sizes/delete/{id}(id=${size.id})}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Xóa kích cỡ này?');"><i class="bi bi-trash"></i></a>
+                                            
+                                            <!-- Modal Edit Size -->
+                                            <div class="modal fade text-start" th:id="'editSizeModal' + ${size.id}" tabindex="-1" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <form th:action="@{/admin/attributes/sizes/edit/{id}(id=${size.id})}" method="post">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title">Cập nhật Kích cỡ</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <div class="mb-4">
+                                                                    <label class="form-label">Tên kích cỡ <span class="text-danger">*</span></label>
+                                                                    <input type="text" name="name" class="form-control" required th:value="${size.name}">
+                                                                </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                                                <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(sizes)}">
+                                        <td colspan="3" class="text-center text-muted py-3">Không có dữ liệu.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Phân trang -->
+                        <nav th:if="${totalPages > 1}" class="mt-3">
+                            <ul class="pagination pagination-sm justify-content-center">
+                                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                                    <a class="page-link" th:href="@{/admin/attributes/sizes(page=${currentPage - 1}, keyword=${keyword})}">Trước</a>
+                                </li>
+                                <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}" th:classappend="${currentPage == i} ? 'active'">
+                                    <a class="page-link" th:href="@{/admin/attributes/sizes(page=${i}, keyword=${keyword})}" th:text="${i + 1}"></a>
+                                </li>
+                                <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                                    <a class="page-link" th:href="@{/admin/attributes/sizes(page=${currentPage + 1}, keyword=${keyword})}">Sau</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

@@ -1,102 +1,10 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/shop_layout :: layout(~{::title}, ~{::section})}">
+<html lang="en">
 <head>
-    <title>Đăng ký | ShoeStore</title>
+    <meta charset="UTF-8">
+    <title>Title</title>
 </head>
 <body>
-<section class="container py-5 my-4">
-    <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-6">
-            <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
-                <div class="card-body p-5">
-                    <div class="text-center mb-4">
-                        <i class="bi bi-person-plus text-warning fs-1 mb-2 d-inline-block"></i>
-                        <h3 class="fw-bold text-uppercase">Tạo tài khoản mới</h3>
-                        <p class="text-muted">Tham gia cùng ShoeStore để trải nghiệm mua sắm tuyệt vời</p>
-                    </div>
-                    
-                    <!-- Thông báo lỗi -->
-                    <div th:if="${param.error != null and param.error[0] == 'UsernameExists'}" class="alert alert-danger py-2 small fw-medium">
-                        <i class="bi bi-exclamation-circle me-1"></i> Tên đăng nhập đã tồn tại, vui lòng chọn tên khác!
-                    </div>
-                    
-                    <form action="/register" method="post" id="registerForm">
-                        <input type="hidden" name="redirect" th:if="${redirect != null}" th:value="${redirect}">
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <div class="form-floating">
-                                    <input type="text" class="form-control rounded-pill px-4" id="firstName" name="firstName" placeholder="Họ" required>
-                                    <label for="firstName" class="px-4">Họ</label>
-                                </div>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <div class="form-floating">
-                                    <input type="text" class="form-control rounded-pill px-4" id="lastName" name="lastName" placeholder="Tên" required>
-                                    <label for="lastName" class="px-4">Tên</label>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="form-floating mb-3">
-                            <input type="text" class="form-control rounded-pill px-4" id="username" name="username" placeholder="Tên đăng nhập" required>
-                            <label for="username" class="px-4">Tên đăng nhập</label>
-                        </div>
-                        
-                        <div class="form-floating mb-3">
-                            <input type="email" class="form-control rounded-pill px-4" id="email" name="email" placeholder="Email" required>
-                            <label for="email" class="px-4">Địa chỉ Email</label>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <div class="form-floating">
-                                    <input type="password" class="form-control rounded-pill px-4" id="password" name="password" placeholder="Mật khẩu" required>
-                                    <label for="password" class="px-4">Mật khẩu</label>
-                                </div>
-                            </div>
-                            <div class="col-md-6 mb-4">
-                                <div class="form-floating">
-                                    <input type="password" class="form-control rounded-pill px-4" id="confirmPassword" name="confirmPassword" placeholder="Xác nhận mật khẩu" required>
-                                    <label for="confirmPassword" class="px-4">Xác nhận mật khẩu</label>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="form-check mb-4 px-2 ms-2">
-                            <input class="form-check-input" type="checkbox" id="terms" required>
-                            <label class="form-check-label text-muted" for="terms" style="font-size: 0.9rem;">
-                                Tôi đồng ý với các <a href="#" class="text-primary text-decoration-none">Điều khoản dịch vụ</a> và <a href="#" class="text-primary text-decoration-none">Chính sách bảo mật</a>
-                            </label>
-                        </div>
-                        
-                        <button type="submit" class="btn btn-warning w-100 py-3 rounded-pill fw-bold text-uppercase mb-3 btn-register text-dark">
-                            Đăng ký
-                        </button>
-                        
-                        <div class="text-center mt-4">
-                            <p class="text-muted mb-0">Đã có tài khoản? <a th:href="@{/login(redirect=${redirect})}" class="text-primary fw-bold text-decoration-none">Đăng nhập</a></p>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    <style>
-        .btn-register {
-            transition: all 0.3s ease;
-        }
-        .btn-register:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 193, 7, 0.4);
-            background-color: #212529 !important;
-            color: #fff !important;
-            border-color: #212529 !important;
-        }
-        .form-control:focus {
-            box-shadow: none;
-            border-color: #ffc107;
-        }
-    </style>
-</section>
+
 </body>
 </html>

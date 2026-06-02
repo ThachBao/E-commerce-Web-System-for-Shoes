@@ -75,6 +75,9 @@ public class FileStorageServiceImpl implements FileStorageService {
         if (fileName == null || fileName.trim().isEmpty()) {
             return null;
         }
+        if (fileName.startsWith("/") || fileName.startsWith("http://") || fileName.startsWith("https://")) {
+            return fileName;
+        }
         return urlPrefix + fileName;
     }
 

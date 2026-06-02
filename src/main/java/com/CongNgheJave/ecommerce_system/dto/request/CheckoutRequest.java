@@ -9,6 +9,10 @@ public class CheckoutRequest {
     private String shippingFullName;
 
     @NotBlank(message = "Số điện thoại không được để trống")
+    @jakarta.validation.constraints.Pattern(
+        regexp = "0[35789]\\d{8}",
+        message = "Số điện thoại không đúng định dạng Việt Nam (10 số, bắt đầu bằng 03, 05, 07, 08, hoặc 09)"
+    )
     private String shippingPhone;
 
     @NotBlank(message = "Địa chỉ giao hàng không được để trống")

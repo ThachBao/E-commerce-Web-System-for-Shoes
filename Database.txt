@@ -1,4 +1,4 @@
-﻿-- Create database
+-- Create database
 CREATE DATABASE shoe_store_db;
 USE shoe_store_db;
 
@@ -26,6 +26,7 @@ CREATE TABLE Users (
     fullName VARCHAR(100) NOT NULL,
     phone VARCHAR(20),
     avatarUrl VARCHAR(255),
+    role VARCHAR(50) DEFAULT 'ROLE_USER',
     isActive BOOLEAN DEFAULT TRUE,
     isSystem BOOLEAN DEFAULT FALSE,
     forceChangePassword BOOLEAN DEFAULT FALSE
@@ -260,16 +261,25 @@ INSERT INTO Role (name, description) VALUES
 ('STAFF', 'Nhan vien quan ly san pham, kho, don hang'),
 ('CUSTOMER', 'Khach hang mua sam');
 
--- ======================
+
+SELECT * FROM USERS;
+-- ==============================================================
 -- Insert Users
--- ======================
-INSERT INTO Users (username, email, passwordHash, fullName, phone, avatarUrl, isActive, isSystem, forceChangePassword) VALUES
-('rootadmin',  'rootadmin@shop.com',   '$2y$10$PLTmjRsvHLHaPPNsJN1DrOSdkKvkUk200pB3St.JiyR93sb.vryE.', 'Root Administrator', '0900000001', NULL, TRUE, TRUE, FALSE),
-('admin01',    'admin01@shop.com',     '$2y$10$u7HabJx11uL0aPWmpPcApe2ZZm1o2jH4Qh0vn92AiKf..RDw7cG/m', 'Admin User 01',     '0900000002', NULL, TRUE, FALSE, FALSE),
-('staff01',    'staff01@shop.com',     '$2y$10$qoH34OSbqcLPCFdTKmfh0Oh8V8Clf/OI.h3K9thsmfAaPmf/4psSS', 'Staff User 01',     '0900000003', NULL, TRUE, FALSE, FALSE),
-('staff02',    'staff02@shop.com',     '$2y$10$qoH34OSbqcLPCFdTKmfh0Oh8V8Clf/OI.h3K9thsmfAaPmf/4psSS', 'Staff User 02',     '0900000004', NULL, TRUE, FALSE, FALSE),
-('customer01', 'customer01@gmail.com', '$2y$10$ntf0/CLs/v/3KGwVkq5daeXWhEGLxO2l9.rH6XvvE6FQT7VWydqHy', 'Customer User 01',  '0900000005', NULL, TRUE, FALSE, FALSE),
-('customer02', 'customer02@gmail.com', '$2y$10$ntf0/CLs/v/3KGwVkq5daeXWhEGLxO2l9.rH6XvvE6FQT7VWydqHy', 'Customer User 02',  '0900000006', NULL, TRUE, FALSE, FALSE);
+-- 📝 Plaintext Passwords for Testing & Seeded Accounts:
+--   - rootadmin   -> Password: admin123
+--   - admin01     -> Password: admin123
+--   - staff01     -> Password: admin123
+--   - staff02     -> Password: admin123
+--   - customer01  -> Password: 123456
+--   - customer02  -> Password: 123456
+-- ==============================================================
+INSERT INTO Users (username, email, passwordHash, fullName, phone, avatarUrl, role, isActive, isSystem, forceChangePassword) VALUES
+('rootadmin',  'rootadmin@shop.com',   '$2a$10$u7HabJx11uL0aPWmpPcApe2ZZm1o2jH4Qh0vn92AiKf..RDw7cG/m', 'Root Administrator', '0900000001', NULL, 'ROLE_ADMIN', TRUE, TRUE, FALSE),
+('admin01',    'admin01@shop.com',     '$2a$10$u7HabJx11uL0aPWmpPcApe2ZZm1o2jH4Qh0vn92AiKf..RDw7cG/m', 'Admin User 01',     '0900000002', NULL, 'ROLE_ADMIN', TRUE, FALSE, FALSE),
+('staff01',    'staff01@shop.com',     '$2a$10$u7HabJx11uL0aPWmpPcApe2ZZm1o2jH4Qh0vn92AiKf..RDw7cG/m', 'Staff User 01',     '0900000003', NULL, 'ROLE_STAFF', TRUE, FALSE, FALSE),
+('staff02',    'staff02@shop.com',     '$2a$10$u7HabJx11uL0aPWmpPcApe2ZZm1o2jH4Qh0vn92AiKf..RDw7cG/m', 'Staff User 02',     '0900000004', NULL, 'ROLE_STAFF', TRUE, FALSE, FALSE),
+('customer01', 'customer01@gmail.com', '$2a$10$ntf0/CLs/v/3KGwVkq5daeXWhEGLxO2l9.rH6XvvE6FQT7VWydqHy', 'Customer User 01',  '0900000005', NULL, 'ROLE_USER', TRUE, FALSE, FALSE),
+('customer02', 'customer02@gmail.com', '$2a$10$ntf0/CLs/v/3KGwVkq5daeXWhEGLxO2l9.rH6XvvE6FQT7VWydqHy', 'Customer User 02',  '0900000006', NULL, 'ROLE_USER', TRUE, FALSE, FALSE);
 
 -- ======================
 -- Insert User_Role
@@ -338,50 +348,195 @@ INSERT INTO Color (name, hexCode) VALUES
 -- Insert Product
 -- khớp với bảng Product hiện tại
 -- ======================
-INSERT INTO Product (
-    categoryId, brandId, code, name, slug, description, gender, isFeatured, isActive
-) VALUES
-(2, 1, 'PRD001', 'Nike Air Zoom Pegasus', 'nike-air-zoom-pegasus',
- 'San pham Nike Air Zoom Pegasus phu hop chay bo hang ngay.',
- 'UNISEX', TRUE, TRUE),
-
-(1, 2, 'PRD002', 'Adidas Ultraboost Light', 'adidas-ultraboost-light',
- 'San pham Adidas Ultraboost Light voi de mem va do dan hoi cao.',
- 'UNISEX', TRUE, TRUE),
-
-(1, 3, 'PRD003', 'Converse Chuck Taylor', 'converse-chuck-taylor',
- 'Mau giay co dien de phoi do, phu hop di hoc va di choi.',
- 'UNISEX', FALSE, TRUE);
-
+INSERT INTO Product (id, categoryId, brandId, code, name, slug, description, gender, isFeatured, isActive) VALUES
+  (21, 1, 1, 'DC0774-105', 'Nike Air Jordan 1 Low White Wolf Grey', 'nike-air-jordan-1-low-white-wolf-grey-dc0774-105', 'Giới tính: Unisex\nMàu sắc: Trắng - Xám\nKiểu dáng: Giày thể thao\n- Giày Thể Thao Nike Air Jordan 1 Low White Wolf Grey được làm từ chất liệu da cao cấp với độ ôm được thiết kế đặc biệt để nâng đỡ có định hướng và hỗ trợ chuyển động.\n- Đế ngoài bằng cao su mềm dẻo tạo độ bám, lớp lót mềm mại mang lại cảm giác thoải mái cho đôi chân.\n- Form giày đi lên chân vừa vặn, các đường chỉ khâu rất tinh tế và chắc chắn đảm bảo hài lòng mọi khách hàng.\n- Màu sắc đơn giản rất dễ phối đồ.\nGiày thể thao Nike luôn là sự gợi ý lý tưởng hàng đầu bởi sự năng động, trẻ trung, tiện dụng, dễ dàng phối kết hợp với nhiều bộ trang phục và phù hợp đi trong nhiều hoàn cảnh khác nhau.', 'UNISEX', FALSE, TRUE),
+  (22, 1, 1, 'DM9922-105', 'Nike Air Max 90 Futura', 'nike-air-max-90-futura-dm9922-105', 'Chất liệu: Da / Vải\nGiới tính: Nữ\nMàu sắc: Xanh\nGiày Thể Thao Nike Air Max 90 Futura DM9922-105 Màu Xanh được làm từ chất liệu da và vải cao cấp bền đẹp trong suốt quá trình sử dụng, lớp lót mềm mại giúp giảm thiểu chấn thương khi di chuyển hoặc hoạt động, đồng thời mang lại cảm giác thoải mái, dễ chịu cho người sử dụng.\nKhông chỉ vậy, phần đế còn được gia công từ chất liệu cao su giúp hạn chế trơn trượt và có độ đàn hồi cực tốt.\nNike Air Max 90 Futura DM9922-105 thiết kế basic sẽ dễ dàng phù hợp với rất nhiều phong cách thời trang khác nhau. Bởi vậy, khi sở hữu mẫu giày này bạn hoàn toàn có thể kết hợp với rất nhiều trang phục khác nhau để có những set đồ ưng ý khi dạo phố cùng gia đình và bạn bè.\nMàu sắc trẻ trung, năng động dễ dàng kết hợp với nhiều trang phục khác nhau theo sở thích bản thân tạo nên 1 set đồ đẹp khi đi chơi, đi học hay dạo phố, tập luyện thể dục, thể thao...', 'WOMEN', FALSE, TRUE),
+  (23, 1, 1, 'HQ1657-004', 'Nike Killshot 2 Ltr Prm Nam', 'nike-killshot-2-ltr-prm-nam-hq1657-004', 'Chất liệu: Da cao cấp\nGiới tính: Nam\nMàu sắc: Be\nGiày Thể Thao Nike Killshot 2 Ltr Prm Nam HQ1657-004 được hoàn thiện từ chất liệu da cao cấp mềm mại, dễ làm sạch, bền đẹp lâu dài trong quá trình sử dụng. Form giày chuẩn đẹp với các đường chỉ vô cùng tinh tế, tỉ mỉ đến từng chi tiết.\nThiết kế giày kiểu dáng cổ thấp, bóng bẩy, gọn nhẹ với độ ôm vừa phải mang lại cảm giác nâng đỡ rất linh hoạt phù hợp mang hàng ngày hay mọi hoạt động thể thao. Phần lớp lót đệm mang lại sự thoải mái lâu dài, đế ngoài bằng cao su bền bỉ, đem lại độ bám tuyệt, chịu lực cao hạn chế trơn trượt, cùng độ nâng phù hợp giúp đôi chân vững vàng hơn khi di chuyển và hoạt động.\nNike Killshot 2 Ltr Prm Nam HQ1657-004 mang gam màu be thanh lịch, dễ dàng kết hợp với nhiều trang phục khác nhau theo sở thích bản thân tạo nên 1 set đồ trẻ trung, năng động khi đi chơi, đi học hay tập thể thao…', 'MEN', FALSE, TRUE),
+  (24, 1, 1, 'HF1068-133', 'Nike Men''s Shoes Nike Court Vision Low', 'nike-mens-shoes-nike-court-vision-low-hf1068-133', 'Chất liệu: Da cao cấp\nGiới tính: Nam\nMàu sắc: Trắng\nGiày Thể Thao Men''s Shoes Nike Court Vision Low HF1068-133 sở hữu kiểu dáng hiện đại, mang phong cách thể thao chuyên nghiệp và năng động. Sản phẩm được ứng dụng công nghệ tiên tiến từ Nike, hỗ trợ tăng cảm giác êm ái, linh hoạt và hạn chế tác động khi vận động trên sân.\nTông màu trắng trẻ trung kết hợp logo Nike đặc trưng tạo điểm nhấn nổi bật nhưng vẫn dễ phối đồ. Phần thân giày sử dụng chất liệu da cao cấp có độ thoáng khí tốt, mang lại cảm giác thoải mái khi mang trong thời gian dài. Đế giày có độ bám ổn định, hỗ trợ di chuyển linh hoạt trên nhiều bề mặt khác nhau.\nMẫu giày này phù hợp cho cả người mới tập luyện lẫn những ai thường xuyên tham gia các hoạt động thể thao. Ngoài khả năng hỗ trợ vận động, sản phẩm còn dễ dàng kết hợp với nhiều phong cách thời trang khác nhau, mang đến vẻ ngoài cá tính và hiện đại.', 'MEN', FALSE, TRUE),
+  (25, 1, 1, 'CW3403-003', 'Nike Precision 5 Black White', 'nike-precision-5-black-white-cw3403-003', 'Chất liệu: Vải dệt\nGiới tính: Nam\nMàu sắc: Đen trắng\nGiày bóng rổ Nike Precision 5 Black White CW3403-003 sử dụng chất vải dệt kim với phần cổ được cắt thấp tạo sự vừa vặn, nâng đỡ trong khi vẫn duy trì khả năng di chuyển của mắt cá chân. Thiết kế thông minh này giúp cho đôi giày thoáng mát, mềm mại và tự tin cho người dùng.\nỞ phiên bản này, Precision 5 Black White CW3403-003 được khắc với kiểu dáng ấn tượng và bắt mắt hơn. Độ bám của đôi giày được thể hiện khá tốt, có độ bền cao, khó bị bào mòn và bám đất sỏi.\nThiết kế giày với độ ôm vừa phải mang lại cảm giác nâng đỡ rất linh hoạt, lớp lót êm ái phù hợp mang hàng ngày hay mọi hoạt động thể thao như chơi bóng rổ. Mặt đế ngoài đa hướng với cao su bọc ở hai bên giúp bạn bám sân, hạn chế trơn trượt, cùng độ nâng phù hợp giúp đôi chân vững vàng hơn khi di chuyển và hoạt động.\nNike Precision 5 Black White CW3403-003 mang gam màu đen phối trắng trẻ trung, hiện đại, có thể dễ dàng kết hợp với nhiều trang phục khác nhau theo sở thích bản thân tạo nên 1 set đồ trẻ trung, năng động khi đi chơi, đi học hay tập thể thao, chơi bóng rổ...', 'MEN', FALSE, TRUE),
+  (26, 1, 1, 'FD4691-200', 'Nike SB Vertablay', 'nike-sb-vertablay-fd4691-200', 'Chất liệu: Da + Vải cao cấp\nGiới tính: Nam\nMàu sắc: Nâu\nGiày Thể Thao Nike SB Vertablay FD4691-200 Màu Nâu được hoàn thiện từ chất liệu da và vải cao cấp mềm mại, dễ làm sạch, bền đẹp lâu dài trong quá trình sử dụng. Form giày chuẩn đẹp với các đường chỉ vô cùng tinh tế, tỉ mỉ đến từng chi tiết.\nNike SB Vertablay thiết kế phù hợp với các hoạt động thể thao, mang lại cảm giác thoải mái linh hoạt trên sân. Giày được cấu tạo từ da và vải dệt cao cấp mềm mại, giúp giảm thiểu áp lực lên các ngón chân. Đế ngoài bằng cao su được thiết kế rộng rãi cải thiện độ bám, hỗ trợ chuyển động linh hoạt.\nNike SB Vertablay FD4691-200 mang gam màu sang trọng và khỏe khoắn, thanh lịch, dễ dàng kết hợp với nhiều trang phục khác nhau theo sở thích bản thân tạo nên 1 set đồ trẻ trung, năng động khi đi chơi, đi học hay tập thể thao…', 'MEN', FALSE, TRUE),
+  (27, 2, 1, 'HJ5269-6000', 'Nike V2K Run Shoes Pink Foam', 'nike-v2k-run-shoes-pink-foam-hj5269-6000', 'Giới tính: Nữ\nMàu sắc: Hồng\nKiểu dáng: Giày thể thao\nGiày Thể Thao Nike V2K Run Shoes Pink Foam HJ5269-6000 Màu Hồng được làm từ chất liệu vải cao cấp với độ ôm hỗ trợ chuyển động. Mẫu giày nổi bật với chất liệu lưới mở, mang lại cảm giác thoáng khí ấn tượng. Lớp lót dưới lớp lưới rất mỏng và xốp, không gây cản trở cho luồng không khí từ bên ngoài.\nLogo thương hiệu Nike trên giày tạo điểm nhấn tinh tế. Phần đế giày với chất liệu cao su có độ ma sát cao hạn chế trơn trượt cho người sử dụng trong mọi hoàn cảnh thời tiết. Đế ngoài bằng cao su giúp tăng thêm lực kéo và độ bền. Đế giữa bằng bọt tạo cảm giác vô cùng mềm mại, tăng thêm độ đàn hồi cho bước đi.\nGiày được thiết kế độc đáo, phá cách tạo điểm nhấn cho bạn phong cách trẻ trung, năng động. Mẫu giày Nike V2K Run Shoes Pink Foam HJ5269-6000 Màu Hồng đi rất êm chân giúp bạn thoải mái cho mọi hoạt động thể thao cũng như mọi hoạt động hàng ngày.', 'WOMEN', FALSE, TRUE),
+  (28, 1, 1, 'HF7834-300', 'Nike Vapor 12 Premium Luminous Green', 'nike-vapor-12-premium-luminous-green-hf7834-300', 'Chất liệu: Vải tổng hợp\nGiới tính: Unisex\nMàu sắc: Xanh bơ\nGiày thể thao Nike Vapor 12 Premium Luminous Green HF7834-300 là phiên bản cao cấp của dòng giày Nike Vapor 12, nổi bật với màu sắc Luminous Green sáng rực và thiết kế tinh tế, mang đến một đôi giày thể thao vừa thể hiện phong cách, vừa tối ưu hóa hiệu suất cho các hoạt động thể thao đòi hỏi tốc độ và sự linh hoạt.\nGiày có độ ôm chân, hỗ trợ chuyển động một cách nhẹ nhàng thoải mái tối đa cùng thiết kế phá cách ấn tượng với điểm nhấn phối màu bắt mắt, logo thương hiệu tinh tế. Đế lót vô cùng mềm mại êm ái, mang lại sự thoải mái nhẹ nhàng, đế ngoài bằng cao su độ đàn hồi cho bạn lực kéo bền bỉ, ma sát tốt, giúp hạn chế trơn trượt.\nNike Vapor 12 Premium Luminous Green HF7834-300 mang gam màu xanh bơ trẻ trung và năng động, dễ dàng kết hợp với nhiều trang phục khác nhau phù hợp sử dụng nhiều hoàn cảnh như: đi học, đi chơi,...sẽ là một sự bổ sung hoàn hảo cho bạn phong cách ấn tượng.', 'UNISEX', FALSE, TRUE),
+  (29, 1, 1, 'FZ5068-161', 'WMNS Air Force 1 Low Valentine’s Day 2024', 'wmns-air-force-1-low-valentines-day-2024-fz5068-161', 'Mặt hàng: Order\nChất liệu: Da cao cấp\nGiới tính: Nữ\nGiày Thể Thao WMNS Air Force 1 Low Valentine’s Day 2024 FZ5068-161 có kiểu dáng chuyên nghiệp và hiện đại, được thiết kế đặc biệt để mang lại sự thoải mái và hiệu suất tốt khi vận động. Kiểu dáng đơn giản, áp dụng công nghệ sản xuất hiện đại, giúp giảm thiểu va đập, tăng cường sự thoải mái và linh hoạt khi vận động trên sân.\nTông màu trắng đơn giản nhưng không kém phần trẻ trung, năng động, sành điệu, họa tiết logo đặc trưng của Nike tạo điểm nhấn hài hòa, ấn tượng. Chất liệu giày được làm từ da cao cấp thoáng khí và độ bền bỉ trong suốt quá trình sử dụng, giúp bạn thoải mái khi tham gia các hoạt động, không bị trơn trượt và tăng cường độ bám trên mọi bề mặt sân.\nGiày Thể Thao Nike WMNS Air Force 1 Low Valentine’s Day 2024 FZ5068-161 Màu Trắng được thiết kế linh hoạt và đa dụng, đôi giày này đáp ứng tốt cho bạn trong các hoạt động thể thao ngoài trời. Ngoài ra, bạn có thể sử dụng đôi giày này phối cùng với các style thời trang độc đáo khác nhau. Đây sẽ là một người bạn đồng hành dành cho những người theo đuổi phong cách cá tính, năng động.', 'WOMEN', FALSE, TRUE),
+  (13, 1, 3, '168504V', 'Chuck Taylor All Star 1970s Colors Vintage Canvas -', 'chuck-taylor-all-star-1970s-colors-vintage-canvas-168504v', 'Chất liệu: Da cuội, vải canvas\nGiới tính: Unisex\nMàu sắc: Nâu nhạt\nKiểu dáng: Sneakers\nGiày Converse Chuck Taylor All Star Renew được làm từ chất liệu Canvas cao cấp, form dáng đẹp, đi gọn, êm chân và vô cùng thời trang.\nGiữ nguyên chi tiết gốc của dòng Chuck 70s, nhưng nâng cấp một số cải tiến: Công nghệ khâu trên vải chất lượng hơn, vừa tạo nên các đường chỉ khâu đều hoàn hảo vừa gia tăng sự chắc chắn cho sản phẩm. Đường chỉ may cũng là một phần điểm nhấn giúp đôi giày trở nên mạnh mẽ cá tính hơn hẳn so với các sản phẩm khác.\nLớp lót cao su rộng hơn.\nLưỡi gà mở rộng với đường khâu sắc sảo.\nĐế lót hỗ trợ đệm để tăng sự thoải mái lâu dài.\nToe box hỗ trợ nâng cấp rộng rãi với chất liệu cao su cao cấp.\nĐế giày cao su trắng ngà, được phủ một lớp bóng để dễ dàng vệ sinh.\nThiết kế cao cổ của sản phẩm giày Converse Chuck Taylor All Star Renew vừa mang lại sự trẻ trung, vừa cá tính lại rất biết chiều lòng những tín đồ thời trang. Đôi giày cao cổ này mang lại tính chất thời trang và sự khác biệt hơn hẳn, dành cho những người yêu thích gu thời trang cá tính và nổi bật.', 'UNISEX', FALSE, TRUE),
+  (14, 1, 3, 'Sunflower', 'Converse 1970s High', 'converse-1970s-high-sunflower', 'Chất liệu: Da cuội, vải canvas\nGiới tính: Unisex\nMàu sắc: Vàng\nGiày Converse 1970s High Sunflower được làm từ chất liệu Canvas  và da bò cao cấp, form dáng đẹp, đi gọn, êm chân và vô cùng thời trang. Đôi giày với các đường nét chỉ khâu tỉ mỉ và chắc chắn.\nConverse 1970s High Sunflower sử dụng công nghệ OrthoLite hiện đại giúp giày có độ êm ái tuyệt đối, bảo vệ chân của người dùng lên tối đa.\nCông nghệ khâu trên vải chất lượng hơn, vừa tạo nên các đường chỉ khâu đều hoàn hảo vừa gia tăng sự chắc chắn cho sản phẩm. Đường chỉ may cũng là một phần điểm nhấn giúp đôi giày trở nên mạnh mẽ cá tính hơn hẳn so với các sản phẩm khác.\nThiết kế cao cổ của đôi giày vừa mang lại sự trẻ trung, vừa cá tính lại rất biết chiều lòng những tín đồ thời trang.  Sản phẩm cao cổ này mang lại tính chất thời trang và sự khác biệt hơn hẳn, dành cho những người yêu thích gu thời trang cá tính và nổi bật.\nPhần đế giày Converse 1970s High Sunflower được bổ sung thêm phần đế ngoài để gia tăng phần chịu lực cũng như ổn định vòm, form dáng của giày được cứng cáp hơn.', 'UNISEX', FALSE, TRUE),
+  (15, 1, 3, '168786C', 'Converse All-Court', 'converse-all-court-168786c', 'Giới tính Nam\nMàu sắc Trắng\nKiểu dáng Giày thể thao\nChất liệu Da cao cấp\nBộ sưu tập Converse All-Court với những mẫu giày đậm chất sporty những vẫn cực thoải mái để diện hàng ngày, cho bạn một vẻ ngoài thật năng động. Thân giày được làm từ chất liệu da cao cấp với độ dày dặn vừa phải, thích hợp để mang trong những ngày thời tiết giao mùa như hiện nay. Form giày với các đường chỉ khâu vô cùng chắc chắn hài lòng mọi khách hàng.\nPhần đế giày được thiết kế mềm, nhẹ, hạn chế trơn trượt cho người sử dụng. Màu sắc giày đơn giản dễ phối đồ cho bạn phong cách trẻ trung, thời trang.\nGiày thể thao Converse là sự gợi ý lý tưởng hàng đầu bởi sự năng động, khỏe khoắn, tiện dụng, dễ dàng phối kết hợp với nhiều bộ trang phục và phù hợp đi trong nhiều hoàn cảnh khác nhau.', 'MEN', FALSE, TRUE),
+  (16, 1, 3, 'Top', 'Converse Chuck 70 Hybrid Floral Low', 'converse-chuck-70-hybrid-floral-low-top', 'Chất liệu: Canvas\nGiới tính: Nữ\nMàu sắc: Trắng - Hồng\nKiểu dáng: Sneakers\nĐến với BST Converse Hybrid Floral lần này, tín đồ yêu thời trang lại một lần nữa được trải nghiệm dòng sản phẩm đầy tính nghệ thuật của Converse khi sử dụng những bông hoa dại, được ép khô và in lụa trực tiếp lên bề mặt vải. Những đường nét mềm mại, cánh hoa nhỏ xinh, nét sương mai kiều diễm hay e lệ chúm chím của những loài hoa sẽ được khắc họa lên tinh tế trên các phiên bản giày Converse quan tâm nhiều này.\nĐôi giày Sneakers Converse Chuck 70 Hybrid Floral Low Top với phong cách đậm chất thời trang cho bạn vẻ ngoài thật năng động. Thân giày được làm từ vải canvas cho độ fit chân và lên form cực chuẩn. Đế ngoài bằng chất liệu cao su được thiết kế linh hoạt và bền chắc.\nChất liệu vải Canvas cao cấp bền chắc và mềm nhẹ.\nThiết kế cổ thấp đơn giản, dễ diện, phù hợp mọi phong cách.\nĐế giày cao hơn có màu trắng ngà và được phủ bóng để dễ dàng dễ vệ sinh.\nĐệm chân Ortholite ® giúp bạn đi lại êm ái, nhẹ nhàng.\nLogo sau gót giày được cách tân chữ trắng nền đen với font chữ vintage.\nKhoen xỏ lỗ giày và khoen bên hông giày được làm từ kim loại cao cấp chống rỉ sét.\nDây giày được thiết kế lại với màu ngà trùng với đế giày có độ thanh mảnh.\nGiày Converse Chuck 70 Hybrid Floral Low Top là sự gợi ý lý tưởng hàng đầu bởi sự năng động, khỏe khoắn, tiện dụng, dễ dàng phối kết hợp với nhiều bộ trang phục và phù hợp đi trong nhiều hoàn cảnh khác nhau.', 'WOMEN', FALSE, TRUE),
+  (17, 1, 3, 'Màu', 'Converse Chuck 70 Play in the World Low Top Phối', 'converse-chuck-70-play-in-the-world-low-top-phi-mu', 'Chất liệu: Canvas\nGiới tính: Nữ\nMàu sắc: Trắng - Hồng\nKiểu dáng: Sneakers\nĐiểm đặc biệt của những đôi Chuck 70 Play in the World là phối màu pastal nhẹ nhàng dễ phối đồ. Đôi giày Converse Chuck 70 Play in the World Low Top với phong cách đậm chất thời trang cho bạn vẻ ngoài thật năng động. Thân giày được làm từ vải canvas cho độ fit chân và lên form cực chuẩn. Đế ngoài bằng chất liệu cao su được thiết kế linh hoạt và bền chắc.\nChất liệu vải Canvas cao cấp bền chắc và mềm nhẹ.\nThiết kế cổ thấp đơn giản, dễ diện, phù hợp mọi phong cách.\nĐế giày cao hơn có màu trắng ngà và được phủ bóng để dễ dàng dễ vệ sinh.\nĐệm chân Ortholite ® giúp bạn đi lại êm ái, nhẹ nhàng.\nLogo sau gót giày được cách tân chữ trắng nền đen với font chữ vintage.\nKhoen xỏ lỗ giày và khoen bên hông giày được làm từ kim loại cao cấp chống rỉ sét.\nDây giày được thiết kế lại với màu ngà trùng với đế giày có độ thanh mảnh.\nGiày Converse Chuck 70 Play in the World Low Top là sự gợi ý lý tưởng hàng đầu bởi sự năng động, khỏe khoắn, tiện dụng, dễ dàng phối kết hợp với nhiều bộ trang phục và phù hợp đi trong nhiều hoàn cảnh khác nhau.', 'WOMEN', FALSE, TRUE),
+  (18, 1, 3, 'Low', 'Converse Chuck Taylor All Star VLTG', 'converse-chuck-taylor-all-star-vltg-low', 'Mặt hàng: Có sẵn\nChất liệu: Canvas\nGiới tính: Unisex\nKiểu dáng: Sneakers\nBộ sưu tập Misson V của Converse lần này mang đến cho các tín đồ những trải nghiệm mới với nhiều biến tấu của họa tiết Chevron. Lấy chung một cảm hứng nhưng nhà Converse đã kịp tạo ra nhiều items với sự kết hợp giữa kiểu dáng đặc trưng với họa tiết hình học đầy độc đáo và sáng tạo.\nGiày Converse Chuck Taylor All Star VLTG Low Màu Đen Trắng Giày có thiết kế cổ thấp  và icon ngôi sao được cách điệu ở foxing tạo điểm nhấn.\nThân giày được làm từ vải canvas và sử dụng đệm lót Ortholite tạo cảm giác êm ái, thoải mái cho người sử dụng. Phần đế ngoài bằng chất liệu cao su được thiết kế linh hoạt và bền chắc.\nGiày Converse Chuck Taylor All Star VLTG Low Màu Đen Trắng là sự gợi ý lý tưởng hàng đầu bởi sự năng động, khỏe khoắn, tiện dụng, dễ dàng phối kết hợp với nhiều bộ trang phục và phù hợp đi trong nhiều hoàn cảnh khác nhau.', 'UNISEX', FALSE, TRUE),
+  (19, 1, 3, 'A01607C', 'Converse Star Player 76 Premium Canvas', 'converse-star-player-76-premium-canvas-a01607c', 'Chất liệu: Canvas\nGiới tính: Unisex\nMàu sắc: Đen\nGiày Thể Thao Converse Star Player 76 Premium Canvas A01607C Màu Đen là một sự kết hợp ấn tượng giữa chất liệu canvas chịu lực, đệm OrthoLite tạo sự thoải mái, và chi tiết Star Chevron mang hơi hướng cổ điển.\nThân giày được làm từ vải cao cấp và sử dụng đệm lót Ortholite tạo cảm giác êm ái, thoải mái cho người sử dụng. Lớp lót lưới thông hơi, duy trì sự thoải mái và khô ráo cho đôi chân, chi tiết mang tính biểu tượng của Star Chevron tôn vinh thiết kể cổ điển của thương hiệu.\nConverse Star Player 76 Premium Canvas A01607C là item được yêu thích bởi sự năng động, khỏe khoắn, tiện dụng, dễ dàng phối kết hợp với nhiều bộ trang phục và phù hợp đi trong nhiều hoàn cảnh khác nhau.', 'UNISEX', FALSE, TRUE),
+  (20, 1, 3, 'CO6571', 'Sneaker Nam Converse X Off', 'sneaker-nam-converse-x-off-co6571', 'Giới tính: Nam\nMàu sắc: Trắng\nKiểu dáng: Sneakers\nGiày Sneaker Nam Converse X Off CO6571 Màu Trắng được làm từ chất liệu vải cao cấp, với độ ôm được thiết kế vừa vặn hỗ trợ chuyển động. Form giày với các đường chỉ khâu vô cùng tinh tế và sắc sảo. Đế ngoài bằng chất liệu cao su được thiết kế linh hoạt và bền chắc.\nKiểu dáng giày sneaker có dây buộc\nPhần đế giày ma sát tốt\nHọa tiết trang trí trên giày tạo điểm nhấn tinh tế\nGiày sở hữu gam màu cơ bản dễ phối đồ theo phong cách riêng của bạn. Đôi giày Converse X Off CO6571 năng động, khỏe khoắn, tiện dụng, dễ dàng phối kết hợp với nhiều bộ trang phục và phù hợp đi trong nhiều hoàn cảnh khác nhau.', 'MEN', FALSE, TRUE),
+  (5, 2, 2, 'GZ8991', 'Adidas Alphabounce 1', 'adidas-alphabounce-1-gz8991', 'Chất liệu: Vải dệt\nGiới tính: Unisex\nMàu sắc: Đen\nThuộc dòng Alphabounce, Adidas Alphabounce 1 GZ8991 tiếp tục mang ngôn ngữ thiết kế tối giản, mang hơi hướng tương lai của dòng giày Performance nhưng vẫn đáp ứng tốt về mặt thời trang. Giày sử dụng dụng phần vải lưới trên được tập trung vào các vị trí chủ đạo hỗ trợ bảo vệ và tăng khả năng thoáng khí. Bộ đế cao su êm ái, mềm nhẹ giúp người đi tận hưởng cảm giác thoải mái cho cả ngày dài vận động.\nAdidas Alphabounce 1 GZ8991 được thiết kế rất đơn giản không kém phần tinh tế và độc đáo với biểu tượng của 3 sọc đặc trưng ngay trên lưỡi gà - điều làm nên thương hiệu Adidas trải qua nhiều thập kỷ. Form giày đi lên chân vừa vặn, các đường nét chi tiết vô cùng tỉ mỉ làm hài lòng mọi khách hàng.\nMang thiết kế tối giản, nhấn nhá bằng những đường rãnh đặc trưng trên hai bên thân giày và bộ đế Bounce, mẫu giày thể thao nam nhà Adidas có một độ bền cực tốt giúp người sử dụng có thể thoải mái vận động mà không ảnh hưởng đến tuổi thọ của giày. Chúng ta có thể tìm thấy sự cân bằng giữa hiệu năng và thời trang trên thiết kế của AlphaBounce, khi sử dụng đôi giày này, Adidas muốn hướng người dùng theo hướng "all day, everyday" - đủ tốt, đủ đẹp để sử dụng hàng ngày.', 'UNISEX', FALSE, TRUE),
+  (6, 1, 2, 'HQ8711', 'Adidas Campus 00s Shoes', 'adidas-campus-00s-shoes-hq8711', 'Chất liệu: Da lộn\nGiới tính: Unisex\nMàu sắc: Be, đen\nGiày Thể Thao Adidas Campus 00s Shoes HQ8711 Màu Be Phối Đen mang thiết kế basic nhưng không hề đơn điệu với chi tiết 3 sọc quen thuộc mang đến một phong cách thể thao trẻ trung, thu hút.\nGiày được làm từ chất liệu da lộn mềm mại, thoáng khí mang lại cảm giác thoải mái cho người đi. Form giày đi lên chân vừa vặn, thoải mái, được gia công tỉ mỉ và sắc sảo trong từng đường may, mũi chỉ giúp cho sản phẩm luôn bền chắc và thời hạn sử dụng lâu dài.\nĐế giày mềm nhẹ cho người dùng thoải mái thử sức với các loại hình thể thao khác nhau cùng lớp đệm siêu nhẹ nâng niu từng sải bước.\nMàu sắc basic dễ dàng kết hợp với nhiều trang phục khác nhau theo sở thích bản thân tạo nên 1 set đồ đẹp khi đi chơi, đi học hay dạo phố,… Kết hợp cùng chiếc quần short chạy bộ ưa thích, bạn sẽ có được phong cách thể thao mà casual.', 'UNISEX', FALSE, TRUE),
+  (7, 1, 2, 'JP7723', 'Adidas Gamecourt 2.0 Tennis Shoes', 'adidas-gamecourt-20-tennis-shoes-jp7723', 'Chất liệu: Vải dệt\nGiới tính: Nữ\nMàu sắc: Trắng\nGiày Thể Thao Nữ Adidas Gamecourt 2.0 Tennis Shoes JP7723 Màu Trắng với thân giày được hoàn thiện từ chất liệu vải dệt mềm mại, dễ vệ sinh bền đẹp lâu dài trong quá trình sử dụng. Form giày chuẩn đẹp với các đường nét tinh tế, tỉ mỉ đến từng chi tiết nhỏ.\nPhần lớp lót vải êm ái, mềm mại, đế ngoài giày được làm bằng cao su có độ ma sát, chịu lực cao hạn chế trơn trượt, cùng độ nâng và đàn hồi phù hợp giúp đôi chân vững vàng hơn khi di chuyển.\nGiày thể thao Adidas JP7723 mang gam màu sáng dễ dàng kết hợp với bất kỳ kiểu trang phục nào để tạo nên 1 set đồ trẻ trung, năng động phù hợp mọi dịp: đi chơi, đi học cũng như đi làm và hoạt động thể thao.…', 'WOMEN', FALSE, TRUE),
+  (8, 1, 2, 'GX4119', 'Adidas Men''s Originals Forum Exhibit Mid Shoes', 'adidas-mens-originals-forum-exhibit-mid-shoes-gx4119', 'Giới tính: Nam\nMàu sắc: Phối màu\nKiểu dáng: Giày thể thao\nAdidas Men''s Originals Forum Exhibit Mid Shoes GX4119 được thiết kế với phong cách trẻ trung, kết hợp thời trang và thể thao tạo nên một vẻ đẹp hoàn hảo cho người đi. Và đặc biệt, bạn sẽ bị ấn tượng và cuốn hút bởi cách phối màu bắt mắt, tinh tế và không kém phần cá tính.\nMẫu giày được hoàn thiện từ chất liệu da cao cấp đem lại sự bền đẹp trong suốt quá trình sử dụng cho người mang. Form giày vừa chân, phần đế không quá giày và nặng giúp cho việc sử dụng của các bạn linh hoạt cho hàng ngày mà vẫn cảm thấy thoải mái.\nĐế giày mềm nhẹ, ma sát tốt hạn chế trơn trượt và mang lại sự thoải mái ngay cả khi bạn đi giày trong một khoảng thời gian dài. Với đôi giày hàng hiệu thời trang này, chắc chắn bạn sẽ trở nên nổi bật và thu hút hơn rất nhiều dù ở bất cứ khoảnh khắc nào.', 'MEN', FALSE, TRUE),
+  (9, 2, 2, 'GW8567', 'Adidas Ultraboost 4.0 Shoes', 'adidas-ultraboost-40-shoes-gw8567', 'Chất liệu: Vải dệt\nGiới tính: Nữ\nMàu sắc: Phối màu\nGiày Thể Thao Adidas Ultraboost 4.0 Shoes GW8567 Phối Màu được hoàn thiện từ chất liệu vải dệt cao cấp thoáng khí, êm ái, bền đẹp lâu dài trong quá trình sử dụng. Form giày chuẩn đẹp với các đường chỉ vô cùng tinh tế, tỉ mỉ đến từng chi tiết.\nThiết kế giày kiểu dáng gọn với độ ôm vừa phải mang lại cảm giác nâng đỡ rất linh hoạt phù hợp mang hàng ngày hay mọi hoạt động thể thao. Họa tiết 3 sọc kinh điển màu hồng nhạt bên hông giày - đặc trưng của thương hiệu Adidas cùng cách phối màu sắc tạo điểm nhấn nổi bật.\nPhần đế giữa BOOST mềm mại, đế ngoài giày được làm bằng cao su có độ uốn cong tự nhiên và cung cấp lực kéo vượt trội trên các bề mặt trơn hoặc nghiêng tạo ma sát, chịu lực cao, hạn chế trơn trượt, giúp đôi chân vững vàng hơn khi di chuyển và hoạt động.\nGiày Adidas Ultraboost 4.0 Shoes GW8567 mang gam màu bắt mắt, dễ dàng kết hợp với nhiều trang phục khác nhau theo sở thích bản thân tạo nên 1 set đồ trẻ trung, năng động khi đi chơi, đi học hay tập thể thao…', 'WOMEN', FALSE, TRUE),
+  (10, 1, 2, 'HP5774', 'Adidas Ultrabounce', 'adidas-ultrabounce-hp5774', 'Chất liệu: Vải dệt\nGiới tính: Nam\nMàu sắc: Xanh navy\nKiểu dáng: Giày thể thao\nGiày Thể Thao Nam Adidas Ultrabounce HP5774 Màu Xanh Navy được hoàn thiện từ chất liệu vải dệt cao cấp, mềm mại, bền đẹp lâu dài trong quá trình sử dụng. Form giày chuẩn đẹp với các đường chỉ vô cùng tinh tế, tỉ mỉ đến từng chi tiết.\nThiết kế giày Adidas kiểu dáng ôm vừa vặn, mang lại cảm giác nâng đỡ rất linh, ổn định nhạy bén. Điểm nhấn logo 3 sọc kinh điển trên lưỡi gà thể hiện nét đặc trưng mang phong cách thể thao riêng ấn tượng.\nPhần lớp lót vải dệt êm ái, mềm mại, đế ngoài giày được làm bằng cao su có độ ma sát, chịu lực cao hạn chế trơn trượt, cùng độ nâng và đàn hồi phù hợp giúp đôi chân vững vàng hơn khi di chuyển.\nGiày thể thao Adidas Ultrabounce HP5774 mang gam màu trung tính dễ dàng kết hợp với bất kỳ kiểu trang phục nào để tạo nên 1 set đồ trẻ trung, năng động phù hợp mọi dịp: đi chơi, đi học cũng như đi làm và hoạt động thể thao.…', 'MEN', FALSE, TRUE),
+  (11, 2, 2, 'FX6671', 'Adidas Wmns Supernova+ Fresh Candy', 'adidas-wmns-supernova-fresh-candy-fx6671', 'Chất liệu: Vải dệt\nGiới tính: Nữ\nMàu sắc: Hồng\nGiày Thể Thao Adidas Wmns Supernova+ Fresh Candy FX6671 Màu Hồng được làm từ chất liệu vải dệt cao cấp với độ ôm được thiết kế đặc biệt để nâng đỡ có định hướng và hỗ trợ chuyển động. Đế ngoài bằng cao su mềm dẻo, lớp lót mềm mại mang lại cảm giác thoải mái cho đôi chân. Form giày đi lên chân vừa vặn, các đường chỉ khâu rất tinh tế và chắc chắn đảm bảo hài lòng mọi khách hàng.\nBên trong có đế đệm êm ái, mang lại cảm giác dễ chịu khi sử dụng, không gây đau chân. Đôi giày có lót đế mềm nhẹ, ma sát tốt hạn chế trơn trượt và mang lại sự thoải mái ngay cả khi bạn đi giày trong một khoảng thời gian dài.\nGiày thể thao Adidas luôn là sự gợi ý lý tưởng hàng đầu bởi sự năng động, trẻ trung, tiện dụng, dễ dàng phối kết hợp với nhiều bộ trang phục và phù hợp đi trong nhiều hoàn cảnh khác nhau.', 'WOMEN', FALSE, TRUE),
+  (12, 2, 2, 'GW3905', 'Men Workout Trainer Drop Set', 'men-workout-trainer-drop-set-gw3905', 'Chất liệu: Vải dệt\nGiới tính: Nam\nMàu sắc: Đen trắng\nChinh phục các bài tập sức mạnh và tập gym không chút do dự với đôi giày adidas Men Workout Trainer Drop Set GW3905 này giúp bạn nâng tầm cuộc chơi. Đế giữa dropset tạo cảm giác tiếp xúc đất, hỗ trợ bạn tập luyện đúng tư thế và tiếp thêm tự tin trong từng động tác. Hai lớp đệm EVA khác nhau mang tới độ ổn định ở gót chân đồng thời tạo cảm giác thoải mái ở mũi chân.\nMen Workout Trainer Drop Set GW3905 được làm từ một loạt chất liệu tái chế, thân giày có chứa tối thiểu 50% thành phần tái chế. Đế ngoài bằng cao su mềm dẻo, lớp lót bằng vải dệt mềm mại mang lại cảm giác thoải mái cho đôi chân.\nThiết kế form giày đi lên chân vừa vặn, các đường chỉ khâu rất tinh tế và chắc chắn đảm bảo hài lòng mọi khách hàng. Giày thể thao Men Workout Trainer Drop Set GW3905 luôn là sự gợi ý lý tưởng hàng đầu bởi sự năng động, trẻ trung, tiện dụng, dễ dàng phối kết hợp với nhiều bộ trang phục và phù hợp đi trong nhiều hoàn cảnh khác nhau.', 'MEN', FALSE, TRUE);
 -- ======================
 -- Insert Product_Image
 -- khớp với bảng Product_Image hiện tại
 -- ======================
 INSERT INTO Product_Image (productId, imageUrl, isThumbnail) VALUES
-(1, 'images/products/pegasus-main.jpg', TRUE),
-(1, 'images/products/pegasus-side.jpg', FALSE),
-(1, 'images/products/pegasus-back.jpg', FALSE),
-(2, 'images/products/ultraboost-main.jpg', TRUE),
-(2, 'images/products/ultraboost-side.jpg', FALSE),
-(3, 'images/products/converse-main.jpg', TRUE),
-(3, 'images/products/converse-side.jpg', FALSE);
-
+  (21, '/uploads/products/21_z7858027515364_30613057d8505362ed47a0a38b29660e.jpg', TRUE),
+  (21, '/uploads/products/21_z7858027515384_5b383f8bb834a5fd54e3390c57763f36.jpg', FALSE),
+  (21, '/uploads/products/21_z7858027629043_53718fa688d1b1a30eb62841b7e009bb.jpg', FALSE),
+  (21, '/uploads/products/21_z7858027629074_9baf4113431b5dee0bf6597d0858f72b.jpg', FALSE),
+  (22, '/uploads/products/22_z7858017557489_8772c6dcc92cfd5fcb9b8b2c2471d9e0.jpg', TRUE),
+  (22, '/uploads/products/22_z7858017557500_8cd4715e9fb7d96be27b6e3b5ce31158.jpg', FALSE),
+  (22, '/uploads/products/22_z7858017557501_2a14d9803ca4d2d1beb94156e3c1b2b8.jpg', FALSE),
+  (22, '/uploads/products/22_z7858017557502_d96df266da65b708e7b73ec9ba4cd71a.jpg', FALSE),
+  (22, '/uploads/products/22_z7858017612901_9e9a875b3b53daacf0d713d18fb36279.jpg', FALSE),
+  (22, '/uploads/products/22_z7858017669205_d3497c0ea543cdd3887e6f2a27306bd0.jpg', FALSE),
+  (22, '/uploads/products/22_z7858017669206_6eaef8e3d97eb414714ef7f30099fe38.jpg', FALSE),
+  (23, '/uploads/products/23_z7857973836706_677c37b68fb6442d713ea056617a512f.jpg', TRUE),
+  (23, '/uploads/products/23_z7857973836725_aee0b82c6479d25094c9afd7cd800a8b.jpg', FALSE),
+  (23, '/uploads/products/23_z7857973836726_74c956836ba89a9e6bff1d4d6f28564f.jpg', FALSE),
+  (23, '/uploads/products/23_z7857973946622_e035afe67dc1a54329645f8659fad69d.jpg', FALSE),
+  (23, '/uploads/products/23_z7857974003579_d05f172fee0c59e94a3b4201baf5ad26.jpg', FALSE),
+  (24, '/uploads/products/24_z7857966898557_1b527ce89cd7b05a3b5974b79f9462e8.jpg', TRUE),
+  (24, '/uploads/products/24_z7857966898569_8f031ba16b366dde240cc7e9cbd520e2.jpg', FALSE),
+  (24, '/uploads/products/24_z7857966898590_41a7c8aaf126e1d4849d46f57d4ce633.jpg', FALSE),
+  (24, '/uploads/products/24_z7857966898591_76b93dc5c0b3824a5f3e51fc67b7a946.jpg', FALSE),
+  (24, '/uploads/products/24_z7857966955657_ad26fe432d450a24bad5311a1f5a02e2.jpg', FALSE),
+  (24, '/uploads/products/24_z7857967012188_8250bb7fdabde5c33a60a4b9679ced4b.jpg', FALSE),
+  (25, '/uploads/products/25_z7857852792733_15f170796c4bb201a0a56d9a287ae2d8.jpg', TRUE),
+  (25, '/uploads/products/25_z7857852792816_e19a9b65bb8c8460987544827536141e.jpg', FALSE),
+  (25, '/uploads/products/25_z7857852901920_08dcfae62a1709b6a553e8ff7a28fe7b.jpg', FALSE),
+  (25, '/uploads/products/25_z7857852901959_916cc484938b74e95a3e97e8e8db8dd9.jpg', FALSE),
+  (25, '/uploads/products/25_z7857853009621_43c2758ada0948d0d157467bd5f91e40.jpg', FALSE),
+  (26, '/uploads/products/26_z7858007858531_697fcd9868fc5aa995963f2e9209cf76.jpg', TRUE),
+  (26, '/uploads/products/26_z7858007917026_e4c6454e81751ce26a332b4ee2225627.jpg', FALSE),
+  (26, '/uploads/products/26_z7858007917052_9682739cd32cffe0d4d38bc5e7fa8469.jpg', FALSE),
+  (26, '/uploads/products/26_z7858007975205_f86f47e02ff614ef44b4c98a1319c1d4.jpg', FALSE),
+  (26, '/uploads/products/26_z7858008031286_6c7c2910d1d7bde02259eb611432a77c.jpg', FALSE),
+  (27, '/uploads/products/27_z7858012517630_8bde13575eef5fb49f5d32b76c375738.jpg', TRUE),
+  (27, '/uploads/products/27_z7858012517646_fdd3e1caa6ac2d254db0f82a427a1055.jpg', FALSE),
+  (27, '/uploads/products/27_z7858012576740_6217da4cc06e6b07d51797ac684d566f.jpg', FALSE),
+  (27, '/uploads/products/27_z7858012632866_551e7291300ce205222ebdc2022cadd9.jpg', FALSE),
+  (27, '/uploads/products/27_z7858012632868_f16cd7ae42531401115b10e245d27c2c.jpg', FALSE),
+  (27, '/uploads/products/27_z7858012689431_dc92bc40c504bc36b4ae338ec16fd293.jpg', FALSE),
+  (28, '/uploads/products/28_z7858032122607_cde80f2c5ddea6b96c1d1da7e475fbb2.jpg', TRUE),
+  (28, '/uploads/products/28_z7858032122612_342cbf0a006e7e28e3188d0e497e17c5.jpg', FALSE),
+  (28, '/uploads/products/28_z7858032122613_d089b58eca4b009a6a45ee8ecac5cfbb.jpg', FALSE),
+  (28, '/uploads/products/28_z7858032122648_19d64328485472d6cc6f255ce919aecb.jpg', FALSE),
+  (28, '/uploads/products/28_z7858032235380_b010361775169a5772f9222abb8f2d9f.jpg', FALSE),
+  (29, '/uploads/products/29_z7858023479644_113082edd9e93b3393c9d9ce1766c330.jpg', TRUE),
+  (29, '/uploads/products/29_z7858023479645_f9d279f6af61016773326a5e1e704edc.jpg', FALSE),
+  (29, '/uploads/products/29_z7858023479682_6e206ad56b2153ab5755a86bb0271a27.jpg', FALSE),
+  (29, '/uploads/products/29_z7858023479683_d4c6050f866259a9e8c97183553311d4.jpg', FALSE),
+  (29, '/uploads/products/29_z7858023479684_db13f221a22e62ae4b63322eb248a5e2.jpg', FALSE),
+  (29, '/uploads/products/29_z7858023536358_7a433ba4381ea01a5b6b83e1e804f7a8.jpg', FALSE),
+  (13, '/uploads/products/13_z7857429447303_f1eecd36ee0aedfb059fdc2e03af60dc.jpg', TRUE),
+  (13, '/uploads/products/13_z7857429447354_f9f2ee0a152d99d650a08104adb6d49a.jpg', FALSE),
+  (13, '/uploads/products/13_z7857429556667_4e2bc47028806f40036c9f79b6daa6f4.jpg', FALSE),
+  (13, '/uploads/products/13_z7857429611652_f0c5df4b096ff3353e8cf45378cf242d.jpg', FALSE),
+  (14, '/uploads/products/14_z7858065990258_e7add3bce1e4e263329deadf69ce7870.jpg', TRUE),
+  (14, '/uploads/products/14_z7858065990289_522ca6c56c1648c4da6ac381b12ac2de.jpg', FALSE),
+  (14, '/uploads/products/14_z7858066105584_e8cfc75cee35eecb12b0d0efcc72624a.jpg', FALSE),
+  (14, '/uploads/products/14_z7858066105585_291cae49915a7604c81bdf2a34153fca.jpg', FALSE),
+  (15, '/uploads/products/15_z7857419645899_6985eafb6464dfbe5c1bf93894a310fa.jpg', TRUE),
+  (15, '/uploads/products/15_z7857419645936_7a8e49d6f4ea691f90878cf4ce02aad7.jpg', FALSE),
+  (15, '/uploads/products/15_z7857419700320_239d90e01e264d367a05137c79fc9441.jpg', FALSE),
+  (15, '/uploads/products/15_z7857419757173_91bd40a776462a274972656701745ae4.jpg', FALSE),
+  (15, '/uploads/products/15_z7857419812547_3ab949075808b7deb974c02ce6b8fe0b.jpg', FALSE),
+  (15, '/uploads/products/15_z7857419859682_d3bd84118053e8167d77eadd8777f4a5.jpg', FALSE),
+  (16, '/uploads/products/16_z7857422990718_e409dbf97fb17b33f07f84841f3eb476.jpg', TRUE),
+  (16, '/uploads/products/16_z7857423039615_ea054cd49fdd17799fda8a9be3ee6a71.jpg', FALSE),
+  (16, '/uploads/products/16_z7857423039646_b050a99f2a9ca9246fc3915af138e582.jpg', FALSE),
+  (16, '/uploads/products/16_z7857423149159_ef30df03c60a615a8bb6a8cf718653ea.jpg', FALSE),
+  (17, '/uploads/products/17_z7857844777834_75a5cac42ad24e8bacc9fb2e655395dc.jpg', TRUE),
+  (17, '/uploads/products/17_z7857844777844_fc1fe99f792671ad44f7c79d664400a6.jpg', FALSE),
+  (17, '/uploads/products/17_z7857844777933_ff0690d12f077b4a2f307f1afc701c2d.jpg', FALSE),
+  (17, '/uploads/products/17_z7857844831257_173904544a0e64a077d6dc3ba51be651.jpg', FALSE),
+  (17, '/uploads/products/17_z7857844937169_cf1eeb6ffc47492f062fb244419009be.jpg', FALSE),
+  (18, '/uploads/products/18_z7858076274702_b9277707116eaa8845a3f4ff6926d241.jpg', TRUE),
+  (18, '/uploads/products/18_z7858076274727_1c4a08285591d8df3082eed50716d680.jpg', FALSE),
+  (18, '/uploads/products/18_z7858076274729_96a64145694d2fb3020cbb05ebe73534.jpg', FALSE),
+  (19, '/uploads/products/19_z7857839245110_d97637e28d0f10bd9e3607eb37bf6406.jpg', TRUE),
+  (19, '/uploads/products/19_z7857839245128_6c569395ed40dc8bec3e5dee49dc3001.jpg', FALSE),
+  (19, '/uploads/products/19_z7857839298073_b13934d4a44a83013a9e0e0f8b2dbfde.jpg', FALSE),
+  (19, '/uploads/products/19_z7857839351392_5113110b59eba26bf67d7a7b2f7f63b3.jpg', FALSE),
+  (19, '/uploads/products/19_z7857839405533_73b30028caa9b773a1a404bee223bc72.jpg', FALSE),
+  (19, '/uploads/products/19_z7857839456620_3f1b58b7ff3a76f510c229d7f8bffc60.jpg', FALSE),
+  (20, '/uploads/products/20_z7857413317470_59aef6d1a01cc75e1777486a680d75f6.jpg', TRUE),
+  (20, '/uploads/products/20_z7857413317502_52bf88db6f864b935e1c668a9e9ba9a8.jpg', FALSE),
+  (20, '/uploads/products/20_z7857413420845_b06ecfc4c07657e44da2eea8a577c395.jpg', FALSE),
+  (20, '/uploads/products/20_z7857413420907_5633a9db8bd199d46ca66bd85540fc97.jpg', FALSE),
+  (20, '/uploads/products/20_z7857413521770_b32c9bc779c50ff6e7d838eb48b8d4bb.jpg', FALSE),
+  (5, '/uploads/products/5_z7857380679049_2de48a1bda79d4642d2b931217b2399f.jpg', TRUE),
+  (5, '/uploads/products/5_z7857380679103_2692ec5e46395a119dafb9c6bf1f1089.jpg', FALSE),
+  (5, '/uploads/products/5_z7857380723315_4b1009041b21c4b4a43e6a75a959ed28.jpg', FALSE),
+  (5, '/uploads/products/5_z7857380823614_f56043f3df1148186f78cd999d8ababf.jpg', FALSE),
+  (5, '/uploads/products/5_z7857380874036_2b68c23487609c9afc0f6c3ba49dbfd2.jpg', FALSE),
+  (6, '/uploads/products/6_z7857386840687_b0208bd341967bd9c740aec7d875cec8.jpg', TRUE),
+  (6, '/uploads/products/6_z7857386840747_cbe2bf847371eca0e400f61b58e287b9.jpg', FALSE),
+  (6, '/uploads/products/6_z7857386935454_7e52cd5a6fb601ddc47b57d17fd7f5dd.jpg', FALSE),
+  (6, '/uploads/products/6_z7857386935535_9816e1861727208b88a620d44585a8ec.jpg', FALSE),
+  (6, '/uploads/products/6_z7857387029832_66227faf87896c231b57d0c3fabf2c82.jpg', FALSE),
+  (7, '/uploads/products/7_z7857354067638_3a6517c9234bd73f5b4f6f88d494c288.jpg', TRUE),
+  (7, '/uploads/products/7_z7857354067691_1ca7f228c01ae0511fb44ce228827e50.jpg', FALSE),
+  (7, '/uploads/products/7_z7857354067692_16259eac9cdb140056eb088548368554.jpg', FALSE),
+  (7, '/uploads/products/7_z7857354108758_e41bbdd8b924c206e3e73796349b8bf9.jpg', FALSE),
+  (7, '/uploads/products/7_z7857354153906_df46372faac8ff9cd8b85c518268a099.jpg', FALSE),
+  (8, '/uploads/products/8_z7857348911762_e78d7e343af7c96eab8e0027c73dfba0.jpg', TRUE),
+  (8, '/uploads/products/8_z7857348955061_62f372bd75b1483a1cb867e24e4597e9.jpg', FALSE),
+  (8, '/uploads/products/8_z7857348999291_3e581c5c2512c752d7c5de86c32fbbbe.jpg', FALSE),
+  (8, '/uploads/products/8_z7857349044886_a88c597408b5f75455467b6f38438629.jpg', FALSE),
+  (8, '/uploads/products/8_z7857349090313_ad12df6922f45db2a1d8b91ab19c4546.jpg', FALSE),
+  (9, '/uploads/products/9_z7857374142590_f5a9ae22ebae4bf3b13b6a4708109ea5.jpg', TRUE),
+  (9, '/uploads/products/9_z7857374183633_d3b36a98748b08f7a2bf8d4e0c57dee4.jpg', FALSE),
+  (9, '/uploads/products/9_z7857374233515_c26bb7730ef50f467ce461282a96d5ad.jpg', FALSE),
+  (9, '/uploads/products/9_z7857374285635_5e0be79a3c34336d8561eee5bd43b8c8.jpg', FALSE),
+  (9, '/uploads/products/9_z7857374331605_437de86bccd590755dd61c360836f2c3.jpg', FALSE),
+  (10, '/uploads/products/10_z7857341664444_447532cf708006c02edb56f8bc5f18a8.jpg', TRUE),
+  (10, '/uploads/products/10_z7857341664498_63a69830bf71bee1549231fc4efece33.jpg', FALSE),
+  (10, '/uploads/products/10_z7857341754626_be3f74689291f9e7dec6bb188a10f6a3.jpg', FALSE),
+  (10, '/uploads/products/10_z7857341754699_1332aa0ad2fdc17be10d885720960e1f.jpg', FALSE),
+  (10, '/uploads/products/10_z7857341847835_227b829dd363b32953863ef7cc2e8f18.jpg', FALSE),
+  (11, '/uploads/products/11_z7857369302491_56503a5e00daffb5d658620dab5471aa.jpg', TRUE),
+  (11, '/uploads/products/11_z7857369302691_beb19f0c643a1937effcceb7adc0dcc1.jpg', FALSE),
+  (11, '/uploads/products/11_z7857369351475_83063e726d7dd8faca270cd79db47bb5.jpg', FALSE),
+  (11, '/uploads/products/11_z7857369399462_2c79c22db7715fd175916351294a579a.jpg', FALSE),
+  (11, '/uploads/products/11_z7857369447238_3289ae0517737e88881ee21aed097a48.jpg', FALSE),
+  (12, '/uploads/products/12_z7857333837746_c1214db89e4c035c220be6e5971d46c3.jpg', TRUE),
+  (12, '/uploads/products/12_z7857333879509_243fc4b75c5f858fa3842e786d902ea5.jpg', FALSE),
+  (12, '/uploads/products/12_z7857333929292_4ace5e7044489ef943a72bf0321fc78a.jpg', FALSE),
+  (12, '/uploads/products/12_z7857333929415_46924bc012af0ebdd7fff23c02f1a87b.jpg', FALSE),
+  (12, '/uploads/products/12_z7857333973908_55646ab8c130b0c454c35f76e7b661fa.jpg', FALSE);
 -- ======================
 -- Insert Product_Variant
 -- khớp với bảng Product_Variant hiện tại
 -- Size id: 1=36, 2=37, 3=38, 4=39, 5=40, 6=41, 7=42
 -- Color id: 1=Black, 2=White, 3=Red, 4=Blue
 -- ======================
-INSERT INTO Product_Variant (
-    productId, sizeId, colorId, sku, price, salePrice, stockQuantity, isActive
-) VALUES
-(1, 4, 1, 'NAZP-39-BLK', 3200000, 2990000, 20, TRUE),
-(1, 5, 1, 'NAZP-40-BLK', 3200000, 2990000, 25, TRUE),
-(1, 6, 2, 'NAZP-41-WHT', 3200000, 3050000, 15, TRUE),
-(2, 5, 1, 'AUBL-40-BLK', 3500000, 3300000, 18, TRUE),
-(2, 6, 4, 'AUBL-41-BLU', 3500000, 3350000, 12, TRUE),
-(3, 3, 3, 'CCTY-38-RED', 1900000, 1850000, 30, TRUE);
-
+INSERT INTO Product_Variant (productId, sizeId, colorId, sku, price, salePrice, stockQuantity, isActive) VALUES
+  (21, 4, 1, 'NK-DC0774-105-39-BLK', 3500000, NULL, 32, TRUE),
+  (22, 1, 1, 'NK-DM9922-105-36-BLK', 3990000, NULL, 26, TRUE),
+  (23, 5, 1, 'NK-HQ1657-004-40-BLK', 3590000, NULL, 16, TRUE),
+  (24, 5, 1, 'NK-HF1068-133-40-BLK', 2200000, NULL, 20, TRUE),
+  (25, 5, 1, 'NK-CW3403-003-40-BLK', 2200000, NULL, 22, TRUE),
+  (26, 4, 1, 'NK-FD4691-200-39-BLK', 2480000, NULL, 22, TRUE),
+  (27, 2, 1, 'NK-HJ5269-6000-37-BLK', 3200000, NULL, 20, TRUE),
+  (28, 5, 1, 'NK-HF7834-300-40-BLK', 4860000, NULL, 27, TRUE),
+  (29, 5, 1, 'NK-FZ5068-161-40-BLK', 2900000, NULL, 30, TRUE),
+  (13, 4, 1, 'CV-168504V-39-BLK', 2250000, NULL, 19, TRUE),
+  (14, 5, 1, 'CV-Sunflower-40-BLK', 2190000, NULL, 25, TRUE),
+  (15, 4, 1, 'CV-168786C-39-BLK', 1850000, NULL, 34, TRUE),
+  (16, 4, 1, 'CV-Top-39-BLK', 2200000, NULL, 33, TRUE),
+  (17, 4, 1, 'CV-Màu-39-BLK', 2200000, NULL, 23, TRUE),
+  (18, 4, 1, 'CV-Low-39-BLK', 1800000, NULL, 23, TRUE),
+  (19, 5, 1, 'CV-A01607C-40-BLK', 1800000, NULL, 34, TRUE),
+  (20, 5, 1, 'CV-CO6571-40-BLK', 8680000, NULL, 23, TRUE),
+  (5, 4, 1, 'AD-GZ8991-39-BLK', 1990000, NULL, 32, TRUE),
+  (6, 5, 1, 'AD-HQ8711-40-BLK', 1600000, NULL, 34, TRUE),
+  (7, 4, 1, 'AD-JP7723-39-BLK', 1950000, NULL, 17, TRUE),
+  (8, 4, 1, 'AD-GX4119-39-BLK', 2340000, NULL, 21, TRUE),
+  (9, 4, 1, 'AD-GW8567-39-BLK', 2850000, NULL, 32, TRUE),
+  (10, 4, 1, 'AD-HP5774-39-BLK', 2799000, NULL, 20, TRUE),
+  (11, 3, 1, 'AD-FX6671-38-BLK', 1850000, NULL, 27, TRUE),
+  (12, 7, 1, 'AD-GW3905-42-BLK', 1880000, NULL, 23, TRUE);
 -- ======================
 -- Insert Cart
 -- ======================
@@ -389,65 +544,21 @@ INSERT INTO Cart (userId) VALUES
 (5), -- Giỏ hàng của Customer 01
 (6); -- Giỏ hàng của Customer 02
 
-
 -- ======================
--- Insert Cart_Item
+-- Table: PasswordResetTokens
 -- ======================
-INSERT INTO Cart_Item (cartId, variantId, quantity) VALUES 
-(1, 2, 1), -- Khách 01: 1 đôi Nike Air Zoom Pegasus (Size 40, Black)
-(1, 4, 1), -- Khách 01: 1 đôi Adidas Ultraboost Light (Size 40, Black)
-(2, 6, 2); -- Khách 02: 2 đôi Converse Chuck Taylor (Size 38, Red)
+-- Luu lich su/reset token theo user. user_id chi la foreign key, KHONG unique.
+-- Neu database hien tai da tung duoc Hibernate tao unique index do mapping @OneToOne cu,
+-- can chay lenh ben duoi 1 lan de bo rang buoc cu gay loi duplicate user_id:
+-- ALTER TABLE PasswordResetTokens DROP INDEX UK13oafev0b7bbq0vcfksdxgefq;
+CREATE TABLE PasswordResetTokens (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    token VARCHAR(255) NOT NULL UNIQUE,
+    user_id INT NOT NULL,
+    expiryDate DATETIME NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE
+);
 
-
--- ======================
--- Insert Orders
--- ======================
-INSERT INTO Orders (
-    userId, orderCode, orderStatus, paymentStatus, paymentMethod, 
-    totalAmount, shippingFullName, shippingPhone, shippingAddress, note
-) VALUES 
-(5, 'ORD0001', 'PENDING', 'UNPAID', 'COD', 
- 6320000, 'Customer User 01', '0900000005', '123 Le Loi, Ben Thanh, Quan 1, Ho Chi Minh', 'Giao gio hanh chinh'),
-
-(6, 'ORD0002', 'CONFIRMED', 'PAID', 'BANK_TRANSFER', 
- 3730000, 'Customer User 02', '0900000006', '89 Hai Ba Trung, Da Kao, Quan 1, Ho Chi Minh', 'Khach da chuyen khoan');
-
-
-
--- ======================
--- Insert Order_Item
--- ======================
-INSERT INTO Order_Item (orderId, variantId, productName, unitPrice, quantity) VALUES 
-(1, 2, 'Nike Air Zoom Pegasus - Black - 40', 2990000, 1),
-(1, 4, 'Adidas Ultraboost Light - Black - 40', 3300000, 1),
-(2, 6, 'Converse Chuck Taylor - Red - 38', 1850000, 2);
-
-
--- ======================
--- Insert Payment
--- dùng PAID thay cho SUCCESS cho đồng bộ hơn
--- ======================
-INSERT INTO Payment (orderId, paymentMethod, amount, paymentStatus, paidAt) VALUES 
-(1, 'COD', 6320000, 'PENDING', NULL),
-(2, 'BANK_TRANSFER', 3730000, 'PAID', NOW());
-
-
--- ======================
--- Insert Order_Status_History
--- ======================
-INSERT INTO Order_Status_History (orderId, status, note) VALUES (1, 'PENDING', 'Khach hang vua tao don hang'), (2, 'PENDING', 'Khach hang vua tao don hang'), (2, 'CONFIRMED', 'He thong da xac nhan thanh toan chuyen khoan'); 
-
--- ======================
--- Insert Inventory_Transaction
--- ======================
--- Quản lý tồn kho: Dùng số âm cho việc xuất kho bán hàng
-INSERT INTO Inventory_Transaction (variantId, quantityChange) VALUES 
-(2, -1), -- Trừ 1 chiếc cho đơn ORD0001
-(4, -1), -- Trừ 1 chiếc cho đơn ORD0001
-(6, -2); -- Trừ 2 chiếc cho đơn ORD0002
-
-
-
-
+CREATE INDEX idx_password_reset_tokens_user_id ON PasswordResetTokens(user_id);
 
 

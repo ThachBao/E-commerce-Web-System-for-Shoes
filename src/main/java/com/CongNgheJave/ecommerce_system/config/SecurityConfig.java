@@ -17,6 +17,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.CongNgheJave.ecommerce_system.security.CustomAuthenticationEntryPoint;
+import com.CongNgheJave.ecommerce_system.security.CustomAccessDeniedHandler;
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -24,19 +27,26 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final UserDetailsService userDetailsService;
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
                 .csrf(csrf -> csrf.disable())
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint(authenticationEntryPoint)
+                        .accessDeniedHandler(accessDeniedHandler)
+                )
                 .authorizeHttpRequests(auth -> auth
                         // Cho phép truy cập công khai các đường dẫn này
-                        .requestMatchers("/", "/products/**", "/login", "/register", "/forgot-password", "/api/auth/**").permitAll()
-                        .requestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
+                        .requestMatchers("/", "/products/**", "/login", "/register", "/forgot-password", "/api/auth/**", "/admin/login", "/admin/logout").permitAll()
+                        .requestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**", "/uploads/**").permitAll()
                         // Yêu cầu đăng nhập với các đường dẫn khác
                         .requestMatchers("/cart-ui", "/carts/**", "/checkout-ui", "/api/orders/**").authenticated()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/admin/users", "/admin/users/**").hasRole("ADMIN")
+                        .requestMatchers("/admin", "/admin/**").hasAnyRole("ADMIN", "STAFF")
                         .anyRequest().permitAll() // Hoặc authenticated tuỳ chính sách
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -47,7 +57,7 @@ public class SecurityConfig {
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/")
-                        .deleteCookies("jwtToken")
+                        .deleteCookies("jwtToken", "adminJwtToken")
                         .clearAuthentication(true)
                 );
 

@@ -30,8 +30,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
 
-        // Skip auth endpoints
-        if (request.getServletPath().contains("/api/auth") || request.getServletPath().equals("/login") || request.getServletPath().equals("/register")) {
+        // Skip auth endpoints and static resources
+        String path = request.getServletPath();
+        if (path.contains("/api/auth") || path.equals("/login") || path.equals("/admin/login") || path.equals("/admin/logout") || path.equals("/register") ||
+            path.startsWith("/css/") || path.startsWith("/js/") || path.startsWith("/images/") ||
+            path.startsWith("/uploads/") || path.startsWith("/webjars/")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -45,9 +48,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         // If not in header, try to get from cookies (for Thymeleaf frontend)
+        boolean isAdminPath = path.startsWith("/admin");
         if (jwt == null && request.getCookies() != null) {
+            String cookieName = isAdminPath ? "adminJwtToken" : "jwtToken";
             for (Cookie cookie : request.getCookies()) {
-                if (cookie.getName().equals("jwtToken")) {
+                if (cookie.getName().equals(cookieName)) {
                     jwt = cookie.getValue();
                     break;
                 }
@@ -63,7 +68,41 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final Integer userId = jwtService.extractUserId(jwt);
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+            UserDetails userDetails;
+            try {
+                userDetails = this.userDetailsService.loadUserByUsername(username);
+            } catch (org.springframework.security.core.userdetails.UsernameNotFoundException e) {
+                // Nếu tài khoản không còn tồn tại trong DB mới, xoá cookie JWT lỗi thời này
+                String cookieName = isAdminPath ? "adminJwtToken" : "jwtToken";
+                Cookie expiredCookie = new Cookie(cookieName, null);
+                expiredCookie.setPath("/");
+                expiredCookie.setHttpOnly(true);
+                expiredCookie.setMaxAge(0);
+                response.addCookie(expiredCookie);
+                
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            // Kiểm tra tài khoản có bị khoá không (isActive = false).
+            // Nếu bị khoá: xoá cookie JWT và chuyển hướng về trang đăng nhập ngay lập tức.
+            if (!userDetails.isEnabled()) {
+                // Xoá cookie JWT để buộc đăng xuất
+                String cookieName = isAdminPath ? "adminJwtToken" : "jwtToken";
+                Cookie expiredCookie = new Cookie(cookieName, null);
+                expiredCookie.setPath("/");
+                expiredCookie.setHttpOnly(true);
+                expiredCookie.setMaxAge(0);
+                response.addCookie(expiredCookie);
+
+                // Redirect về trang login với thông báo tài khoản bị khoá
+                if (isAdminPath) {
+                    response.sendRedirect("/admin/login?error=Locked");
+                } else {
+                    response.sendRedirect("/login?error=Locked");
+                }
+                return;
+            }
 
             if (jwtService.isTokenValid(jwt, userDetails)) {
                 // Set name as userId instead of username, so CartController's auth.getName() gets the ID

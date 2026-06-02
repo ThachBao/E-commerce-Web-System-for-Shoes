@@ -136,7 +136,7 @@ public class OrderServiceImpl implements OrderService {
 
         boolean valid = switch (oldStatus) {
             case "PENDING" -> newStatus.equals("CONFIRMED");
-            case "CONFIRMED" -> newStatus.equals("PROCESSING");
+            case "CONFIRMED" -> newStatus.equals("PROCESSING") || newStatus.equals("SHIPPING");
             case "PROCESSING" -> newStatus.equals("SHIPPING");
             case "SHIPPING" -> newStatus.equals("COMPLETED");
             default -> false;
@@ -269,7 +269,7 @@ public class OrderServiceImpl implements OrderService {
     // Customer cancel order.
     @Override
     @Transactional
-    public void cancelOrder(Integer orderId, Integer customerId) {
+    public void cancelOrder(Integer orderId, Integer customerId, String note) {
         Order order = orderRepository.findDetailById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn hàng id = " + orderId));
 
@@ -285,7 +285,6 @@ public class OrderServiceImpl implements OrderService {
         }
 
         // Update order status
-        String oldStatus = order.getOrderStatus();
         order.setOrderStatus("CANCELLED");
         order.setPaymentStatus("CANCELLED");
 
@@ -298,7 +297,14 @@ public class OrderServiceImpl implements OrderService {
         OrderStatusHistory history = new OrderStatusHistory();
         history.setOrder(order);
         history.setStatus("CANCELLED");
-        history.setNote("Khách hàng hủy đơn");
+
+        String finalNote = "Hủy bởi: Khách hàng";
+        if (note != null && !note.trim().isEmpty()) {
+            finalNote += " - Lý do: " + note.trim();
+        } else {
+            finalNote += " - Không có lý do cụ thể";
+        }
+        history.setNote(finalNote);
         history.setCreatedAt(LocalDateTime.now());
 
         historyRepository.save(history);
@@ -322,7 +328,6 @@ public class OrderServiceImpl implements OrderService {
         }
 
         // Update order status
-        String oldStatus = order.getOrderStatus();
         order.setOrderStatus("CANCELLED");
         order.setPaymentStatus("CANCELLED");
 
@@ -335,7 +340,18 @@ public class OrderServiceImpl implements OrderService {
         OrderStatusHistory history = new OrderStatusHistory();
         history.setOrder(order);
         history.setStatus("CANCELLED");
-        history.setNote(note != null ? note : "Admin hủy đơn");
+
+        String finalNote = "Hủy bởi: Quản trị viên";
+        if (note != null && !note.trim().isEmpty()) {
+            if (note.contains("bởi:") || note.contains("hàng:")) {
+                finalNote = note.trim();
+            } else {
+                finalNote += " - Lý do: " + note.trim();
+            }
+        } else {
+            finalNote += " - Không có lý do cụ thể";
+        }
+        history.setNote(finalNote);
         history.setCreatedAt(LocalDateTime.now());
 
         historyRepository.save(history);

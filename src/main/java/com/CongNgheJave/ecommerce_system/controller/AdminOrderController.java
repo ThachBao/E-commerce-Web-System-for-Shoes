@@ -229,10 +229,20 @@ public class AdminOrderController {
 
             paymentService.markAsPaid(payment.getId());
 
-            redirectAttributes.addFlashAttribute(
-                    "successMessage",
-                    "Đã xác nhận thanh toán"
-            );
+            // Tự động chuyển trạng thái PENDING -> CONFIRMED khi xác nhận thanh toán BANK
+            Order order = orderService.getOrderDetail(id);
+            if ("PENDING".equals(order.getOrderStatus())) {
+                orderService.updateOrderStatus(id, "CONFIRMED", 3, "Hệ thống tự động xác nhận khi nhận tiền thanh toán (BANK)");
+                redirectAttributes.addFlashAttribute(
+                        "successMessage",
+                        "Đã xác nhận thanh toán và tự động xác nhận đơn hàng thành công"
+                );
+            } else {
+                redirectAttributes.addFlashAttribute(
+                        "successMessage",
+                        "Đã xác nhận thanh toán"
+                );
+            }
         } catch (InvalidOperationException ex) {
             redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
         }

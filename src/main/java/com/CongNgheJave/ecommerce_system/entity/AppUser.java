@@ -29,6 +29,15 @@ public class AppUser {
     @Column(name = "phone")
     private String phone;
 
+    @Column(name = "isActive")
+    private Boolean isActive = true;
+
+    @Column(name = "isSystem")
+    private Boolean isSystem = false;
+
+    @Column(name = "forceChangePassword")
+    private Boolean forceChangePassword = false;
+
     public AppUser() {
     }
 
@@ -90,5 +99,29 @@ public class AppUser {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public Boolean getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
+    }
+
+    public Boolean getIsSystem() {
+        return isSystem;
+    }
+
+    public void setIsSystem(Boolean isSystem) {
+        this.isSystem = isSystem;
+    }
+
+    public Boolean getForceChangePassword() {
+        return forceChangePassword;
+    }
+
+    public void setForceChangePassword(Boolean forceChangePassword) {
+        this.forceChangePassword = forceChangePassword;
     }
 }

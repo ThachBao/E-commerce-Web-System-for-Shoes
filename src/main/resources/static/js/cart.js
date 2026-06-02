@@ -71,26 +71,39 @@ let renderCart = (cart) => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td class="align-middle text-center">
-                <input class="form-check-input fs-5 mt-0 cart-item-checkbox" type="checkbox" value="${item.id}" checked onchange="recalcTotal()">
+                <input class="form-check-input fs-5 mt-0 cart-item-checkbox" type="checkbox" value="${item.id}" checked onchange="recalcTotal()" style="cursor: pointer; accent-color: var(--color-accent);">
             </td>
             <td class="align-middle ps-2">
                 <div class="d-flex align-items-center">
-                    <img src="${imgSrc}" class="rounded-3 border border-light me-3" style="width: 60px; height: 60px; object-fit: contain; background: #fff;">
+                    <img src="${imgSrc}" class="rounded-4 border border-light me-3 shadow-sm bg-white" style="width: 70px; height: 70px; object-fit: contain; padding: 4px;">
                     <div>
-                        <h6 class="mb-1 fw-bold text-dark">${productName}</h6>
-                        <small class="text-muted"><i class="bi bi-tag me-1"></i>${variantInfo}</small>
+                        <h6 class="mb-1 fw-bold text-dark" style="font-size: 1rem; letter-spacing: -0.2px;">${productName}</h6>
+                        <small class="text-muted d-block" style="font-size: 0.82rem;"><i class="bi bi-tag me-1 text-warning"></i>${variantInfo}</small>
                     </div>
                 </div>
             </td>
-            <td class="align-middle text-center">${formatVND(item.unitPrice)}</td>
+            <td class="align-middle text-center fw-semibold text-secondary" style="font-size: 0.95rem;">${formatVND(item.unitPrice)}</td>
             <td class="align-middle">
-                <div class="input-group input-group-sm mx-auto" style="width: 110px;">
-                    <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity(${item.id}, ${item.quantity - 1})"><i class="bi bi-dash fs-6"></i></button>
-                    <input type="text" class="form-control text-center fw-bold" value="${item.quantity}" readonly>
-                    <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity(${item.id}, ${item.quantity + 1})"><i class="bi bi-plus fs-6"></i></button>
+                <div class="d-flex align-items-center justify-content-center">
+                    <div class="d-flex align-items-center bg-light rounded-pill border p-1" style="height: 38px;">
+                        <button class="btn btn-link text-secondary p-0 px-2 border-0 shadow-none" type="button" onclick="updateQuantity(${item.id}, ${item.quantity - 1})" style="transition: transform 0.2s;">
+                            <i class="bi bi-dash-lg" style="font-size: 0.8rem;"></i>
+                        </button>
+                        <input type="text" class="form-control text-center fw-bold bg-transparent border-0 p-0 shadow-none" value="${item.quantity}" readonly style="width: 32px; font-size: 0.95rem; pointer-events: none; height: 100%;">
+                        <button class="btn btn-link text-secondary p-0 px-2 border-0 shadow-none" type="button" onclick="updateQuantity(${item.id}, ${item.quantity + 1})" style="transition: transform 0.2s;">
+                            <i class="bi bi-plus-lg" style="font-size: 0.8rem;"></i>
+                        </button>
+                    </div>
                 </div>
             </td>
-            <td class="align-middle fw-bold text-danger text-end pe-4">${formatVND(item.itemTotal)}</td>
+            <td class="align-middle text-end pe-4">
+                <div class="d-flex align-items-center justify-content-end gap-3">
+                    <span class="fw-bold text-dark" style="font-size: 1.05rem; color: #0f172a !important;">${formatVND(item.itemTotal)}</span>
+                    <button class="btn btn-link text-danger p-0 border-0 shadow-none btn-hover-lift" onclick="updateQuantity(${item.id}, 0)" title="Xoá khỏi giỏ" style="font-size: 1.15rem; line-height: 1;">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            </td>
         `;
         tbody.appendChild(tr);
     });

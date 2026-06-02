@@ -29,6 +29,10 @@ public class CustomUserDetailsService implements UserDetailsService {
         return new User(
                 appUser.getUsername(),
                 appUser.getPassword() == null ? "" : appUser.getPassword(),
+                Boolean.TRUE.equals(appUser.getIsActive()), // active mapped to enabled
+                true, // accountNonExpired
+                true, // credentialsNonExpired
+                true, // accountNonLocked
                 Collections.singletonList(new SimpleGrantedAuthority(appUser.getRole()))
         );
     }

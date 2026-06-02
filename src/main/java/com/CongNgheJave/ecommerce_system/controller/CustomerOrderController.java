@@ -50,11 +50,13 @@ public class CustomerOrderController {
     }
 
     @PostMapping("/{id}/cancel")
-    public String cancelOrder(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
+    public String cancelOrder(@PathVariable Integer id,
+                              @RequestParam(required = false) String note,
+                              RedirectAttributes redirectAttributes) {
         Integer userId = getCurrentUserId();
 
         try {
-            orderService.cancelOrder(id, userId);
+            orderService.cancelOrder(id, userId, note);
 
             redirectAttributes.addFlashAttribute(
                     "successMessage",

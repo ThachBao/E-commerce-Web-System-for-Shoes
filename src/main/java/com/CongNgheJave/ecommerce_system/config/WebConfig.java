@@ -19,12 +19,22 @@ public class WebConfig implements WebMvcConfigurer {
     private void exposeDirectory(String dirName, ResourceHandlerRegistry registry) {
         Path uploadDir = Paths.get(dirName);
         String uploadPath = uploadDir.toFile().getAbsolutePath().replace("\\", "/");
+        String resourceLocation = uploadDir.toUri().toString();
+        if (!resourceLocation.endsWith("/")) {
+            resourceLocation += "/";
+        }
+        
+        System.out.println("========== [RESOURCE EXPOSE] ==========");
+        System.out.println("Folder: " + dirName);
+        System.out.println("Absolute Path: " + uploadPath);
+        System.out.println("Resource Location: " + resourceLocation);
+        System.out.println("=======================================");
         
         if (dirName.startsWith("../")) {
             dirName = dirName.replace("../", "");
         }
         
         registry.addResourceHandler("/" + dirName + "/**")
-                .addResourceLocations("file:///" + uploadPath + "/");
+                .addResourceLocations(resourceLocation);
     }
 }

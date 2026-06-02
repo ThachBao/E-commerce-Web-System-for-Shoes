@@ -86,51 +86,60 @@
                 </div>
             </div>
         </div>
+
+        <!-- Edit Profile Modal -->
+        <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow rounded-4">
+                    <div class="modal-header border-bottom-0 pb-0 pt-4 px-4">
+                        <h5 class="modal-title fw-bold" id="editProfileModalLabel">Chỉnh sửa hồ sơ</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="/profile/update" method="post">
+                        <div class="modal-body px-4 py-4">
+                            <div class="mb-3">
+                                <label class="form-label text-muted fw-bold small text-uppercase">Họ và tên</label>
+                                <input type="text" class="form-control bg-light" name="fullName" th:value="${user.fullName}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-muted fw-bold small text-uppercase">Email</label>
+                                <input type="email" class="form-control bg-light" name="email" th:value="${user.email}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-muted fw-bold small text-uppercase">Số điện thoại</label>
+                                <input type="tel" class="form-control bg-light" name="phone" th:value="${user.phone}" 
+                                       pattern="0[3|5|7|8|9][0-9]{8}" 
+                                       title="Vui lòng nhập đúng định dạng số điện thoại Việt Nam (10 số, bắt đầu bằng 03, 05, 07, 08, hoặc 09)">
+                            </div>
+                        </div>
+                        <div class="modal-footer border-top-0 pb-4 px-4">
+                            <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Hủy</button>
+                            <button type="submit" class="btn btn-primary rounded-pill px-4">Lưu thay đổi</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <script th:inline="javascript">
+            document.addEventListener('DOMContentLoaded', function() {
+                /*[[${successMessage} != null]]*/
+                var hasSuccess = /*[[${successMessage != null}]]*/ false;
+                var successMsg = /*[[${successMessage}]]*/ '';
+                
+                if (hasSuccess) {
+                    showToast(successMsg, 'success');
+                }
+
+                var hasError = /*[[${errorMessage != null}]]*/ false;
+                var errorMsg = /*[[${errorMessage}]]*/ '';
+                
+                if (hasError) {
+                    showToast(errorMsg, 'danger');
+                }
+            });
+        </script>
     </div>
 </section>
-
-<!-- Edit Profile Modal -->
-<div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow rounded-4">
-            <div class="modal-header border-bottom-0 pb-0 pt-4 px-4">
-                <h5 class="modal-title fw-bold" id="editProfileModalLabel">Chỉnh sửa hồ sơ</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form action="/profile/update" method="post">
-                <div class="modal-body px-4 py-4">
-                    <div class="mb-3">
-                        <label class="form-label text-muted fw-bold small text-uppercase">Họ và tên</label>
-                        <input type="text" class="form-control bg-light" name="fullName" th:value="${user.fullName}" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label text-muted fw-bold small text-uppercase">Email</label>
-                        <input type="email" class="form-control bg-light" name="email" th:value="${user.email}" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label text-muted fw-bold small text-uppercase">Số điện thoại</label>
-                        <input type="tel" class="form-control bg-light" name="phone" th:value="${user.phone}">
-                    </div>
-                </div>
-                <div class="modal-footer border-top-0 pb-4 px-4">
-                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Hủy</button>
-                    <button type="submit" class="btn btn-primary rounded-pill px-4">Lưu thay đổi</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<script th:inline="javascript">
-    document.addEventListener('DOMContentLoaded', function() {
-        /*[[${successMessage} != null]]*/
-        var hasSuccess = /*[[${successMessage != null}]]*/ false;
-        var successMsg = /*[[${successMessage}]]*/ '';
-        
-        if (hasSuccess) {
-            showToast(successMsg, 'success');
-        }
-    });
-</script>
 </body>
 </html>

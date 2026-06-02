@@ -13,84 +13,84 @@
         <div class="row g-5">
             <div class="col-lg-7">
                 <div class="cart-container shadow-sm border-0 bg-white rounded-4 p-4 p-md-5">
-                    <h4 class="fw-bold mb-4 pb-3" style="border-bottom: 2px solid #f1f1f1;"><i class="bi bi-truck text-primary me-2"></i> Thông tin giao hàng</h4>
+                    <h4 class="fw-bold mb-4 pb-3" style="border-bottom: 2px solid #f8fafc;"><i class="bi bi-truck text-warning me-2"></i> Thông tin giao hàng</h4>
                     <form id="form-checkout">
                         <div class="row g-3 mb-3">
                             <div class="col-sm-6">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control bg-light" id="shippingFullName" placeholder="Họ và tên người nhận" th:value="${currentUser != null ? currentUser.fullName : ''}" required>
-                                    <label for="shippingFullName">Họ và tên người nhận</label>
+                                    <input type="text" class="form-control" id="shippingFullName" placeholder="Họ và tên người nhận" th:value="${currentUser != null ? currentUser.fullName : ''}" required>
+                                    <label for="shippingFullName" class="text-muted">Họ và tên người nhận</label>
                                 </div>
                             </div>
                             <div class="col-sm-6">
                                 <div class="form-floating">
-                                    <input type="tel" class="form-control bg-light" id="shippingPhone" placeholder="Số điện thoại" th:value="${currentUser != null && currentUser.phone != null ? currentUser.phone : ''}" pattern="(0[3|5|7|8|9])+([0-9]{8})" title="Vui lòng nhập đúng định dạng số điện thoại Việt Nam (10 số, bắt đầu bằng 03, 05, 07, 08, hoặc 09)" required>
-                                    <label for="shippingPhone">Số điện thoại</label>
+                                    <input type="tel" class="form-control" id="shippingPhone" placeholder="Số điện thoại" th:value="${currentUser != null && currentUser.phone != null ? currentUser.phone : ''}" pattern="0[35789][0-9]{8}" title="Vui lòng nhập đúng định dạng số điện thoại Việt Nam (10 số, bắt đầu bằng 03, 05, 07, 08, hoặc 09)" required>
+                                    <label for="shippingPhone" class="text-muted">Số điện thoại</label>
                                 </div>
                             </div>
                             <div class="col-sm-4">
                                 <div class="form-floating">
-                                    <select class="form-select bg-light" id="province" required>
+                                    <select class="form-select" id="province" required>
                                         <option value="" disabled selected>Chọn Tỉnh/Thành phố</option>
                                     </select>
-                                    <label for="province">Tỉnh/Thành phố</label>
+                                    <label for="province" class="text-muted">Tỉnh/Thành phố</label>
                                 </div>
                             </div>
                             <div class="col-sm-4">
                                 <div class="form-floating">
-                                    <select class="form-select bg-light" id="district" required disabled>
+                                    <select class="form-select" id="district" required disabled>
                                         <option value="" disabled selected>Chọn Quận/Huyện</option>
                                     </select>
-                                    <label for="district">Quận/Huyện</label>
+                                    <label for="district" class="text-muted">Quận/Huyện</label>
                                 </div>
                             </div>
                             <div class="col-sm-4">
                                 <div class="form-floating">
-                                    <select class="form-select bg-light" id="ward" required disabled>
+                                    <select class="form-select" id="ward" required disabled>
                                         <option value="" disabled selected>Chọn Phường/Xã</option>
                                     </select>
-                                    <label for="ward">Phường/Xã</label>
+                                    <label for="ward" class="text-muted">Phường/Xã</label>
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control bg-light" id="addressDetail" placeholder="Số nhà, Tên đường..." required>
-                                    <label for="addressDetail">Số nhà, Tên đường (Địa chỉ chi tiết)</label>
+                                    <input type="text" class="form-control" id="addressDetail" placeholder="Số nhà, Tên đường..." required>
+                                    <label for="addressDetail" class="text-muted">Số nhà, Tên đường (Địa chỉ chi tiết)</label>
                                 </div>
                                 <input type="hidden" id="shippingAddress" value="">
                             </div>
                         </div>
                         <div class="mb-4 form-floating">
-                            <textarea class="form-control border-light-subtle shadow-none bg-light" id="note" style="height: 100px" placeholder="Ghi chú"></textarea>
+                            <textarea class="form-control" id="note" style="height: 100px" placeholder="Ghi chú"></textarea>
                             <label for="note" class="text-muted">Ghi chú (Tùy chọn)</label>
                         </div>
                         
-                        <h4 class="fw-bold mb-4 mt-5 pb-3" style="border-bottom: 2px solid #f1f1f1;"><i class="bi bi-wallet2 text-primary me-2"></i> Phương thức thanh toán</h4>
+                        <h4 class="fw-bold mb-4 mt-5 pb-3" style="border-bottom: 2px solid #f8fafc;"><i class="bi bi-wallet2 text-warning me-2"></i> Phương thức thanh toán</h4>
                         <div class="mb-5">
-                            <div class="form-check border border-light-subtle rounded-3 p-3 mb-3 shadow-sm" style="background: #f8f9fa; transition: 0.2s;" onmouseover="this.style.borderColor='#0d6efd'; this.style.backgroundColor='#fff'" onmouseout="this.style.borderColor='var(--bs-border-color)'; this.style.backgroundColor='#f8f9fa'">
-                                <input class="form-check-input ms-1 mt-2" type="radio" name="paymentMethodRadio" id="paymentCOD" value="COD" checked>
-                                <label class="form-check-label fw-semibold ms-2 d-flex align-items-center gap-3 w-100" style="cursor:pointer;" for="paymentCOD">
+                            <div class="form-check payment-card p-3 mb-3 shadow-sm d-flex align-items-center">
+                                <input class="form-check-input ms-1 mt-0" type="radio" name="paymentMethodRadio" id="paymentCOD" value="COD" checked style="cursor: pointer; accent-color: var(--color-accent);">
+                                <label class="form-check-label fw-semibold ms-3 d-flex align-items-center gap-3 w-100" style="cursor:pointer;" for="paymentCOD">
                                     <i class="bi bi-cash-coin fs-3 text-success"></i>
                                     <div>
-                                        <div class="d-block text-dark">Thanh toán khi nhận hàng (COD)</div>
-                                        <small class="text-muted fw-normal">Thanh toán bằng tiền mặt khi giao hàng</small>
+                                        <div class="d-block text-dark fw-bold">Thanh toán khi nhận hàng (COD)</div>
+                                        <small class="text-muted fw-normal">Thanh toán bằng tiền mặt khi giao hàng tận nơi</small>
                                     </div>
                                 </label>
                             </div>
-                            <div class="form-check border border-light-subtle rounded-3 p-3 shadow-sm" style="background: #f8f9fa; transition: 0.2s;" onmouseover="this.style.borderColor='#0d6efd'; this.style.backgroundColor='#fff'" onmouseout="this.style.borderColor='var(--bs-border-color)'; this.style.backgroundColor='#f8f9fa'">
-                                <input class="form-check-input ms-1 mt-2" type="radio" name="paymentMethodRadio" id="paymentBank" value="BANK_TRANSFER">
-                                <label class="form-check-label fw-semibold ms-2 d-flex align-items-center gap-3 w-100" style="cursor:pointer;" for="paymentBank">
-                                    <i class="bi bi-bank fs-3 text-primary"></i>
+                            <div class="form-check payment-card p-3 shadow-sm d-flex align-items-center">
+                                <input class="form-check-input ms-1 mt-0" type="radio" name="paymentMethodRadio" id="paymentBank" value="BANK_TRANSFER" style="cursor: pointer; accent-color: var(--color-accent);">
+                                <label class="form-check-label fw-semibold ms-3 d-flex align-items-center gap-3 w-100" style="cursor:pointer;" for="paymentBank">
+                                    <i class="bi bi-bank fs-3 text-warning"></i>
                                     <div>
-                                        <div class="d-block text-dark">Chuyển khoản ngân hàng</div>
-                                        <small class="text-muted fw-normal">Quét mã QR để thanh toán nhanh chóng</small>
+                                        <div class="d-block text-dark fw-bold">Chuyển khoản ngân hàng</div>
+                                        <small class="text-muted fw-normal">Quét mã QR để hoàn tất thanh toán nhanh chóng</small>
                                     </div>
                                 </label>
                             </div>
                             <input type="hidden" id="paymentMethod" value="COD">
                         </div>
                         
-                        <button type="submit" class="btn btn-dark btn-lg w-100 fw-bold mt-3 py-3 shadow" id="btn-checkout" style="transition: all 0.3s; border-radius: 12px; font-size: 1.1rem; letter-spacing: 0.5px;">
+                        <button type="submit" class="btn btn-warning btn-lg btn-hover-lift w-100 fw-bold mt-3 py-3 shadow-sm" id="btn-checkout" style="font-size: 1.1rem; letter-spacing: 0.5px;">
                             XÁC NHẬN ĐẶT HÀNG <i class="bi bi-arrow-right ms-2"></i>
                         </button>
                     </form>
@@ -98,23 +98,23 @@
             </div>
             
             <div class="col-lg-5">
-                <div class="cart-container shadow border-0 bg-white rounded-4 p-4 position-sticky" style="top: 20px;">
-                    <h4 class="fw-bold mb-4"><i class="bi bi-receipt text-primary me-2"></i> Tóm tắt đơn hàng</h4>
+                <div class="cart-container shadow-sm border-0 bg-white rounded-4 p-4 position-sticky" style="top: 100px;">
+                    <h4 class="fw-bold mb-4"><i class="bi bi-receipt text-warning me-2"></i> Tóm tắt đơn hàng</h4>
                     <div id="checkout-cart-items" class="mb-4 pe-2" style="max-height: 450px; overflow-y: auto; overflow-x: hidden;">
-                        <div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><div class="mt-2 text-muted">Đang tải...</div></div>
+                        <div class="text-center py-5"><div class="spinner-border text-warning" role="status"></div><div class="mt-2 text-muted">Đang tải đơn hàng...</div></div>
                     </div>
-                    <div class="bg-light p-3 rounded-3 mt-4">
-                        <div class="d-flex justify-content-between mb-2 text-muted">
-                            <span>Tạm tính:</span>
-                            <span id="cart-subtotal-display">...</span>
+                    <div class="p-3 rounded-4 mt-4" style="background-color: #f8fafc; border: 1px solid rgba(15, 23, 42, 0.04);">
+                        <div class="d-flex justify-content-between mb-2 text-muted" style="font-size: 0.92rem;">
+                            <span>Tạm tính</span>
+                            <span id="cart-subtotal-display" class="fw-semibold text-dark">...</span>
                         </div>
-                        <div class="d-flex justify-content-between mb-3 text-muted">
-                            <span>Phí vận chuyển:</span>
-                            <span>Miễn phí</span>
+                        <div class="d-flex justify-content-between mb-3 text-muted" style="font-size: 0.92rem;">
+                            <span>Phí vận chuyển</span>
+                            <span class="text-success fw-semibold">Miễn phí</span>
                         </div>
-                        <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary-subtle">
-                            <span class="fs-5 fw-bold text-dark">Tổng cộng:</span>
-                            <span class="fs-3 fw-bold text-danger" id="cart-subtotal">...</span>
+                        <div class="d-flex justify-content-between align-items-center pt-3 border-top" style="border-color: #e2e8f0 !important;">
+                            <span class="fs-5 fw-bold text-dark">Tổng cộng</span>
+                            <span class="fs-3 fw-bold text-warning" id="cart-subtotal">...</span>
                         </div>
                     </div>
                 </div>
@@ -124,12 +124,36 @@
         <style>
             /* Custom Scrollbar for cart items */
             #checkout-cart-items::-webkit-scrollbar { width: 6px; }
-            #checkout-cart-items::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
-            #checkout-cart-items::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
-            #checkout-cart-items::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+            #checkout-cart-items::-webkit-scrollbar-track { background: #f8fafc; border-radius: 10px; }
+            #checkout-cart-items::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+            #checkout-cart-items::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
             
-            /* Radio button sync */
-            .form-check-input:checked + label .text-dark { color: #0d6efd !important; }
+            /* Modern Payment Card Styles */
+            .payment-card {
+                background: #f8fafc;
+                border: 1px solid #e2e8f0 !important;
+                border-radius: 16px !important;
+                transition: all var(--transition-fast) !important;
+                cursor: pointer;
+            }
+            .payment-card:hover {
+                border-color: var(--color-accent) !important;
+                background: #ffffff !important;
+                box-shadow: var(--shadow-sm) !important;
+            }
+            .form-check-input:checked + label .text-dark {
+                color: var(--color-accent) !important;
+            }
+            
+            /* Custom Checkout Item Hover */
+            .checkout-item-card {
+                transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+            }
+            .checkout-item-card:hover {
+                transform: translateY(-2px);
+                border-color: rgba(217, 119, 6, 0.25) !important;
+                box-shadow: var(--shadow-md) !important;
+            }
         </style>
 
         <script>
@@ -170,7 +194,7 @@
                     }
                     
                     if (itemsToRender.length === 0) {
-                        container.innerHTML = '<div class="alert alert-warning text-center border-0 shadow-sm"><i class="bi bi-exclamation-circle fs-4 d-block mb-2"></i>Giỏ hàng trống hoặc chưa chọn sản phẩm. Vui lòng quay lại giỏ hàng.</div>';
+                        container.innerHTML = '<div class="alert alert-warning text-center border-0 shadow-sm rounded-4 py-4"><i class="bi bi-exclamation-circle fs-3 d-block mb-2 text-warning"></i>Giỏ hàng trống hoặc chưa chọn sản phẩm.<br><a href="/cart-ui" class="btn btn-sm btn-dark mt-3 rounded-pill">Quay lại giỏ hàng</a></div>';
                         document.getElementById('cart-subtotal').innerText = '0 đ';
                         document.getElementById('cart-subtotal-display').innerText = '0 đ';
                         document.getElementById('btn-checkout').disabled = true;
@@ -182,10 +206,7 @@
                     itemsToRender.forEach(item => {
                         newSubTotal += item.itemTotal;
                         const div = document.createElement('div');
-                        div.className = 'd-flex align-items-center mb-3 bg-white p-3 rounded-3 border border-light-subtle shadow-sm position-relative';
-                        div.style.transition = 'transform 0.2s ease, box-shadow 0.2s ease';
-                        div.onmouseover = () => { div.style.transform = 'translateY(-2px)'; div.className = 'd-flex align-items-center mb-3 bg-white p-3 rounded-3 border border-primary-subtle shadow position-relative'; };
-                        div.onmouseout = () => { div.style.transform = 'translateY(0)'; div.className = 'd-flex align-items-center mb-3 bg-white p-3 rounded-3 border border-light-subtle shadow-sm position-relative'; };
+                        div.className = 'd-flex align-items-center mb-3 bg-white p-3 rounded-4 border border-light-subtle shadow-sm position-relative checkout-item-card';
                         
                         const imgSrc = item.imageUrl || 'https://via.placeholder.com/70?text=No+Image';
                         const productName = item.productName || 'Sản phẩm ' + item.sku;
@@ -194,14 +215,14 @@
 
                         div.innerHTML = `
                             <div class="flex-shrink-0 position-relative me-3">
-                                <img src="${imgSrc}" class="rounded-3 border border-light" style="width: 75px; height: 75px; object-fit: contain; background: #fff;">
+                                <img src="${imgSrc}" class="rounded-4 border border-light bg-white" style="width: 70px; height: 70px; object-fit: contain; padding: 4px;">
                             </div>
                             <div class="flex-grow-1 min-w-0 pe-2">
-                                <h6 class="mb-1 text-truncate fw-bold text-dark" style="font-size: 0.95rem; line-height: 1.4;">${productName}</h6>
-                                <small class="text-muted d-block text-truncate mb-2"><i class="bi bi-tag me-1"></i>${variantInfo}</small>
+                                <h6 class="mb-1 text-truncate fw-bold text-dark" style="font-size: 0.95rem; line-height: 1.4; letter-spacing: -0.2px;">${productName}</h6>
+                                <small class="text-muted d-block text-truncate mb-2" style="font-size: 0.8rem;"><i class="bi bi-tag me-1 text-warning"></i>${variantInfo}</small>
                                 <div class="d-flex justify-content-between align-items-center mt-1">
-                                    <div class="fw-bold text-danger fs-6">${localFormatVND(item.itemTotal)}</div>
-                                    <div class="text-muted small fw-bold bg-light px-2 py-1 rounded border">SL: ${item.quantity}</div>
+                                    <div class="fw-bold text-dark fs-6" style="color: #0f172a !important;">${localFormatVND(item.itemTotal)}</div>
+                                    <div class="text-muted small fw-bold bg-light px-3 py-1 rounded-pill border" style="font-size: 0.75rem;">SL: ${item.quantity}</div>
                                 </div>
                             </div>
                         `;

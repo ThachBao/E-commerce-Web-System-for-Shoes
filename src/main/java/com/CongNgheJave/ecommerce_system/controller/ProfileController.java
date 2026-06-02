@@ -57,9 +57,15 @@ public class ProfileController {
         
         AppUser user = userRepository.findById(userId).orElse(null);
         if (user != null) {
+            if (phone != null && !phone.trim().isEmpty()) {
+                if (!phone.trim().matches("0[35789]\\d{8}")) {
+                    redirectAttributes.addFlashAttribute("errorMessage", "Số điện thoại không đúng định dạng Việt Nam (10 số, bắt đầu bằng 03, 05, 07, 08, hoặc 09)!");
+                    return "redirect:/profile";
+                }
+            }
             user.setFullName(fullName);
             user.setEmail(email);
-            user.setPhone(phone);
+            user.setPhone(phone != null ? phone.trim() : null);
             userRepository.save(user);
             redirectAttributes.addFlashAttribute("successMessage", "Cập nhật thông tin thành công!");
         }

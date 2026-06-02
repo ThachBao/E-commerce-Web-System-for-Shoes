@@ -40,7 +40,7 @@ public interface OrderService {
     Order placeOrder(Integer userId, CheckoutRequest request);
 
     // Customer cancel order.
-    void cancelOrder(Integer orderId, Integer customerId);
+    void cancelOrder(Integer orderId, Integer customerId, String note);
 
     // Admin cancel order.
     void adminCancelOrder(Integer orderId, Integer adminId, String note);

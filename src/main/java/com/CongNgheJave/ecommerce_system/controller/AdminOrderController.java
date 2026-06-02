@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
 
@@ -20,11 +21,26 @@ public class AdminOrderController {
 
     private final OrderService orderService;
     private final PaymentService paymentService;
+    private final com.CongNgheJave.ecommerce_system.repository.OrderRepository orderRepository;
 
     public AdminOrderController(OrderService orderService,
-                                PaymentService paymentService) {
+                                PaymentService paymentService,
+                                com.CongNgheJave.ecommerce_system.repository.OrderRepository orderRepository) {
         this.orderService = orderService;
         this.paymentService = paymentService;
+        this.orderRepository = orderRepository;
+    }
+
+    @GetMapping("/latest-count")
+    @ResponseBody
+    public Long getOrderCount() {
+        return orderRepository.count();
+    }
+
+    @GetMapping("/pending-count")
+    @ResponseBody
+    public Long getPendingCount() {
+        return orderRepository.countByOrderStatus("PENDING");
     }
 
     /*
@@ -95,7 +111,8 @@ public class AdminOrderController {
      */
     @PostMapping("/{id}/status")
     public String updateStatus(@PathVariable Integer id,
-                               @ModelAttribute OrderStatusUpdateRequest request,
+                               @ModelAttribute OrderStatusUpdateRequest requestDto,
+                               HttpServletRequest request,
                                RedirectAttributes redirectAttributes) {
 
         /*
@@ -108,9 +125,9 @@ public class AdminOrderController {
         try {
             orderService.updateOrderStatus(
                     id,
-                    request.getNewStatus(),
+                    requestDto.getNewStatus(),
                     temporaryStaffId,
-                    request.getNote()
+                    requestDto.getNote()
             );
 
             redirectAttributes.addFlashAttribute(
@@ -121,7 +138,8 @@ public class AdminOrderController {
             redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
         }
 
-        return "redirect:/admin/orders/" + id;
+        String referer = request.getHeader("Referer");
+        return "redirect:" + (referer != null ? referer : "/admin/orders/" + id);
     }
 
     /**
@@ -134,6 +152,7 @@ public class AdminOrderController {
     @PostMapping("/{id}/cancel")
     public String cancelOrder(@PathVariable Integer id,
                               @RequestParam(required = false) String note,
+                              HttpServletRequest request,
                               RedirectAttributes redirectAttributes) {
 
         /*
@@ -153,7 +172,8 @@ public class AdminOrderController {
             redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
         }
 
-        return "redirect:/admin/orders/" + id;
+        String referer = request.getHeader("Referer");
+        return "redirect:" + (referer != null ? referer : "/admin/orders/" + id);
     }
 
     /**
@@ -167,6 +187,7 @@ public class AdminOrderController {
     @PostMapping("/{id}/complete")
     public String completeOrder(@PathVariable Integer id,
                                 @RequestParam(required = false) String note,
+                                HttpServletRequest request,
                                 RedirectAttributes redirectAttributes) {
 
         /*
@@ -186,7 +207,8 @@ public class AdminOrderController {
             redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
         }
 
-        return "redirect:/admin/orders/" + id;
+        String referer = request.getHeader("Referer");
+        return "redirect:" + (referer != null ? referer : "/admin/orders/" + id);
     }
 
     /**
@@ -198,6 +220,7 @@ public class AdminOrderController {
      */
     @PostMapping("/{id}/mark-paid")
     public String markPaymentAsPaid(@PathVariable Integer id,
+                                    HttpServletRequest request,
                                     RedirectAttributes redirectAttributes) {
 
         try {
@@ -206,14 +229,25 @@ public class AdminOrderController {
 
             paymentService.markAsPaid(payment.getId());
 
-            redirectAttributes.addFlashAttribute(
-                    "successMessage",
-                    "Đã xác nhận thanh toán"
-            );
+            // Tự động chuyển trạng thái PENDING -> CONFIRMED khi xác nhận thanh toán BANK
+            Order order = orderService.getOrderDetail(id);
+            if ("PENDING".equals(order.getOrderStatus())) {
+                orderService.updateOrderStatus(id, "CONFIRMED", 3, "Hệ thống tự động xác nhận khi nhận tiền thanh toán (BANK)");
+                redirectAttributes.addFlashAttribute(
+                        "successMessage",
+                        "Đã xác nhận thanh toán và tự động xác nhận đơn hàng thành công"
+                );
+            } else {
+                redirectAttributes.addFlashAttribute(
+                        "successMessage",
+                        "Đã xác nhận thanh toán"
+                );
+            }
         } catch (InvalidOperationException ex) {
             redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
         }
 
-        return "redirect:/admin/orders/" + id;
+        String referer = request.getHeader("Referer");
+        return "redirect:" + (referer != null ? referer : "/admin/orders/" + id);
     }
 }

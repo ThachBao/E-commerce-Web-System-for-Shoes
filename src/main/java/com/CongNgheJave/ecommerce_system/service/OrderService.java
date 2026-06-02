@@ -1,6 +1,7 @@
 package com.CongNgheJave.ecommerce_system.service;
 
 import com.CongNgheJave.ecommerce_system.dto.request.CheckoutRequest;
+import com.CongNgheJave.ecommerce_system.dto.response.OrderResponse;
 import com.CongNgheJave.ecommerce_system.entity.Order;
 import com.CongNgheJave.ecommerce_system.entity.OrderStatusHistory;
 import com.CongNgheJave.ecommerce_system.entity.Payment;
@@ -11,36 +12,39 @@ import java.util.Optional;
 
 public interface OrderService {
 
-    // Luồng 1 + 2: Admin xem danh sách đơn hàng và lọc theo trạng thái.
+    // Checkout - tạo đơn hàng từ giỏ hàng (dùng bởi OrderController).
+    OrderResponse checkout(Integer userId, CheckoutRequest request);
+
+    // Admin xem danh sách đơn hàng và lọc theo trạng thái.
     Page<Order> getAdminOrders(String status, int page, int size);
 
-    // Luồng 3: Admin xem chi tiết đơn hàng.
+    // Admin xem chi tiết đơn hàng.
     Order getOrderDetail(Integer orderId);
 
-    // Luồng 8: Customer xem lịch sử đơn hàng.
+    // Customer xem lịch sử đơn hàng.
     List<Order> getOrdersByCustomer(Integer userId);
 
-    // Luồng 9: Customer xem chi tiết đơn hàng của mình.
+    // Customer xem chi tiết đơn hàng của mình.
     Order getCustomerOrderDetail(Integer orderId, Integer customerId);
 
-    // Luồng 4 + 5 + 6 + 7: Admin cập nhật trạng thái và ghi lịch sử.
+    // Admin cập nhật trạng thái và ghi lịch sử.
     void updateOrderStatus(Integer orderId, String newStatus, Integer changedByUserId, String note);
 
-    // Luồng 7: Xem lịch sử trạng thái.
+    // Xem lịch sử trạng thái.
     List<OrderStatusHistory> getStatusHistory(Integer orderId);
 
-    // Luồng 10: Hiển thị thông tin thanh toán.
+    // Hiển thị thông tin thanh toán.
     Optional<Payment> getPaymentByOrderId(Integer orderId);
 
-    // NEW: Checkout - tạo đơn hàng từ giỏ hàng.
+    // Tạo đơn hàng từ giỏ hàng (internal).
     Order placeOrder(Integer userId, CheckoutRequest request);
 
-    // NEW: Customer cancel order.
-    void cancelOrder(Integer orderId, Integer customerId);
+    // Customer cancel order.
+    void cancelOrder(Integer orderId, Integer customerId, String note);
 
-    // NEW: Admin cancel order.
+    // Admin cancel order.
     void adminCancelOrder(Integer orderId, Integer adminId, String note);
 
-    // NEW: Admin complete order.
+    // Admin complete order.
     void completeOrder(Integer orderId, Integer adminId, String note);
 }

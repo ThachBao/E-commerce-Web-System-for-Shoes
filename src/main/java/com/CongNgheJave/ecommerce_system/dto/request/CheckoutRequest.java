@@ -1,6 +1,7 @@
 package com.CongNgheJave.ecommerce_system.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import java.util.List;
 
 public class CheckoutRequest {
 
@@ -8,6 +9,10 @@ public class CheckoutRequest {
     private String shippingFullName;
 
     @NotBlank(message = "Số điện thoại không được để trống")
+    @jakarta.validation.constraints.Pattern(
+        regexp = "0[35789]\\d{8}",
+        message = "Số điện thoại không đúng định dạng Việt Nam (10 số, bắt đầu bằng 03, 05, 07, 08, hoặc 09)"
+    )
     private String shippingPhone;
 
     @NotBlank(message = "Địa chỉ giao hàng không được để trống")
@@ -25,6 +30,8 @@ public class CheckoutRequest {
     private String paymentMethod;
 
     private String note;
+
+    private List<Integer> selectedCartItemIds;
 
     public CheckoutRequest() {
     }
@@ -99,5 +106,13 @@ public class CheckoutRequest {
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    public List<Integer> getSelectedCartItemIds() {
+        return selectedCartItemIds;
+    }
+
+    public void setSelectedCartItemIds(List<Integer> selectedCartItemIds) {
+        this.selectedCartItemIds = selectedCartItemIds;
     }
 }

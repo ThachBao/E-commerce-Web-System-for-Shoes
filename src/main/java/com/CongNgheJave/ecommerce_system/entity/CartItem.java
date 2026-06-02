@@ -19,8 +19,8 @@ public class CartItem {
     @JoinColumn(name = "variantId")
     private ProductVariant variant;
 
-    @Column(name = "quantity")
-    private Integer quantity;
+    @Column(name = "quantity", nullable = false)
+    private Integer quantity = 1;
 
     public CartItem() {
     }

@@ -13,6 +13,10 @@ import java.util.Optional;
 
 public interface OrderRepository extends JpaRepository<Order, Integer> {
 
+    Optional<Order> findByOrderCode(String orderCode);
+
+    long countByOrderStatus(String orderStatus);
+
     // Customer xem lịch sử đơn hàng.
     @EntityGraph(attributePaths = {"user"})
     List<Order> findByUser_IdOrderByPlacedAtDesc(Integer userId);

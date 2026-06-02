@@ -19,71 +19,44 @@ public class CustomerOrderController {
         this.orderService = orderService;
     }
 
-    /*
-     * Customer xem lịch sử đơn hàng.
-     *
-     * URL:
-     * GET /orders
-     */
+    private Integer getCurrentUserId() {
+        org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !auth.getName().equals("anonymousUser")) {
+            try {
+                return Integer.parseInt(auth.getName());
+            } catch (NumberFormatException e) {
+                // Ignore and fallback
+            }
+        }
+        throw new RuntimeException("Vui lòng đăng nhập để xem đơn hàng");
+    }
+
     @GetMapping
     public String myOrders(Model model) {
-
-        /*
-         * Tạm thời dùng customer id = 5.
-         * Theo database mẫu, customer01 thường là id = 5.
-         * Sau khi phần Security hoàn thành, thay bằng user đang đăng nhập.
-         */
-        Integer temporaryCustomerId = 5;
-
-        model.addAttribute("orders", orderService.getOrdersByCustomer(temporaryCustomerId));
-
+        Integer userId = getCurrentUserId();
+        model.addAttribute("orders", orderService.getOrdersByCustomer(userId));
         return "customer/orders/history";
     }
 
-    /*
-     * Customer xem chi tiết đơn hàng của mình.
-     * Hiển thị thông tin thanh toán của đơn hàng.
-     *
-     * URL:
-     * GET /orders/{id}
-     */
     @GetMapping("/{id}")
     public String myOrderDetail(@PathVariable Integer id, Model model) {
-
-        /*
-         * Tạm thời dùng customer id = 5.
-         * Nếu customer id 5 cố xem đơn của user khác, service sẽ chặn.
-         */
-        Integer temporaryCustomerId = 5;
-
-        Order order = orderService.getCustomerOrderDetail(id, temporaryCustomerId);
+        Integer userId = getCurrentUserId();
+        Order order = orderService.getCustomerOrderDetail(id, userId);
         Payment payment = orderService.getPaymentByOrderId(id).orElse(null);
 
         model.addAttribute("order", order);
         model.addAttribute("payment", payment);
-
         return "customer/orders/detail";
     }
 
-    /**
-     * Customer cancel order.
-     * Chỉ được cancel nếu trạng thái là PENDING hoặc CONFIRMED.
-     *
-     * URL:
-     * POST /orders/{id}/cancel
-     */
     @PostMapping("/{id}/cancel")
     public String cancelOrder(@PathVariable Integer id,
+                              @RequestParam(required = false) String note,
                               RedirectAttributes redirectAttributes) {
-
-        /*
-         * Tạm thời dùng customer id = 5.
-         * Sau khi phần Security hoàn thành, thay bằng user đang đăng nhập.
-         */
-        Integer temporaryCustomerId = 5;
+        Integer userId = getCurrentUserId();
 
         try {
-            orderService.cancelOrder(id, temporaryCustomerId);
+            orderService.cancelOrder(id, userId, note);
 
             redirectAttributes.addFlashAttribute(
                     "successMessage",

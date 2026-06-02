@@ -14,6 +14,12 @@ public class AppUser {
     @Column(name = "username")
     private String username;
 
+    @Column(name = "passwordHash")
+    private String password;
+
+    @Column(name = "role")
+    private String role = "ROLE_USER";
+
     @Column(name = "email")
     private String email;
 
@@ -22,6 +28,15 @@ public class AppUser {
 
     @Column(name = "phone")
     private String phone;
+
+    @Column(name = "isActive")
+    private Boolean isActive = true;
+
+    @Column(name = "isSystem")
+    private Boolean isSystem = false;
+
+    @Column(name = "forceChangePassword")
+    private Boolean forceChangePassword = false;
 
     public AppUser() {
     }
@@ -41,6 +56,22 @@ public class AppUser {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     // Dùng cho thông tin customer.
@@ -68,5 +99,29 @@ public class AppUser {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public Boolean getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
+    }
+
+    public Boolean getIsSystem() {
+        return isSystem;
+    }
+
+    public void setIsSystem(Boolean isSystem) {
+        this.isSystem = isSystem;
+    }
+
+    public Boolean getForceChangePassword() {
+        return forceChangePassword;
+    }
+
+    public void setForceChangePassword(Boolean forceChangePassword) {
+        this.forceChangePassword = forceChangePassword;
     }
 }

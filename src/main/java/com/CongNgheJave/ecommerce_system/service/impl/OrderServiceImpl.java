@@ -1,6 +1,7 @@
 package com.CongNgheJave.ecommerce_system.service.impl;
 
 import com.CongNgheJave.ecommerce_system.dto.request.CheckoutRequest;
+import com.CongNgheJave.ecommerce_system.dto.response.OrderResponse;
 import com.CongNgheJave.ecommerce_system.entity.*;
 import com.CongNgheJave.ecommerce_system.exception.InvalidOperationException;
 import com.CongNgheJave.ecommerce_system.exception.ResourceNotFoundException;
@@ -47,6 +48,19 @@ public class OrderServiceImpl implements OrderService {
         this.paymentService = paymentService;
     }
 
+    // Checkout - tạo đơn hàng và trả về OrderResponse (dùng bởi OrderController).
+    @Override
+    @Transactional
+    public OrderResponse checkout(Integer userId, CheckoutRequest request) {
+        Order order = placeOrder(userId, request);
+        OrderResponse response = new OrderResponse();
+        response.setOrderCode(order.getOrderCode());
+        response.setTotalAmount(order.getTotalAmount());
+        response.setPaymentMethod(order.getPaymentMethod());
+        response.setOrderStatus(order.getOrderStatus());
+        return response;
+    }
+
     // Admin xem danh sách đơn hàng và lọc theo trạng thái.
     @Override
     @Transactional(readOnly = true)
@@ -83,11 +97,7 @@ public class OrderServiceImpl implements OrderService {
         return order;
     }
 
-    // Admin cập nhật trạng thái:
-    // PENDING -> CONFIRMED
-    // CONFIRMED -> PROCESSING
-    // PROCESSING -> SHIPPING
-    // Đồng thời ghi lịch sử vào Order_Status_History.
+    // Admin cập nhật trạng thái: PENDING -> CONFIRMED -> PROCESSING -> SHIPPING -> COMPLETED.
     @Override
     @Transactional
     public void updateOrderStatus(Integer orderId, String newStatus, Integer changedByUserId, String note) {
@@ -105,11 +115,10 @@ public class OrderServiceImpl implements OrderService {
 
         OrderStatusHistory history = new OrderStatusHistory();
         history.setOrder(order);
-        history.setOldStatus(oldStatus);
-        history.setNewStatus(newStatus);
-        history.setChangedBy(changedBy);
-        history.setNote(note);
-        history.setChangedAt(LocalDateTime.now());
+        history.setStatus(newStatus);
+        // Include changedBy info in the note if needed, or just keep original note
+        history.setNote(note != null ? note : "Changed by user " + changedByUserId);
+        history.setCreatedAt(LocalDateTime.now());
 
         historyRepository.save(history);
         orderRepository.save(order);
@@ -127,7 +136,7 @@ public class OrderServiceImpl implements OrderService {
 
         boolean valid = switch (oldStatus) {
             case "PENDING" -> newStatus.equals("CONFIRMED");
-            case "CONFIRMED" -> newStatus.equals("PROCESSING");
+            case "CONFIRMED" -> newStatus.equals("PROCESSING") || newStatus.equals("SHIPPING");
             case "PROCESSING" -> newStatus.equals("SHIPPING");
             case "SHIPPING" -> newStatus.equals("COMPLETED");
             default -> false;
@@ -142,7 +151,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional(readOnly = true)
     public List<OrderStatusHistory> getStatusHistory(Integer orderId) {
-        return historyRepository.findByOrder_IdOrderByChangedAtDesc(orderId);
+        return historyRepository.findByOrder_IdOrderByCreatedAtDesc(orderId);
     }
 
     // Hiển thị thông tin thanh toán.
@@ -152,7 +161,7 @@ public class OrderServiceImpl implements OrderService {
         return paymentRepository.findByOrder_Id(orderId);
     }
 
-    // NEW: Checkout - tạo đơn hàng từ giỏ hàng.
+    // Tạo đơn hàng từ giỏ hàng.
     @Override
     @Transactional
     public Order placeOrder(Integer userId, CheckoutRequest request) {
@@ -185,11 +194,7 @@ public class OrderServiceImpl implements OrderService {
         // Shipping info
         order.setShippingFullName(request.getShippingFullName());
         order.setShippingPhone(request.getShippingPhone());
-        order.setShippingAddressLine(request.getShippingAddressLine());
-        order.setShippingWard(request.getShippingWard());
-        order.setShippingDistrict(request.getShippingDistrict());
-        order.setShippingCity(request.getShippingCity());
-        order.setShippingCountry(request.getShippingCountry());
+        order.setShippingAddress(request.getShippingAddressLine());
         order.setNote(request.getNote());
 
         // Calculate totals
@@ -201,9 +206,6 @@ public class OrderServiceImpl implements OrderService {
             subTotal = subTotal.add(lineTotal);
         }
 
-        order.setSubTotal(subTotal);
-        order.setShippingFee(BigDecimal.ZERO);
-        order.setDiscountAmount(BigDecimal.ZERO);
         order.setTotalAmount(subTotal);
         order.setPlacedAt(LocalDateTime.now());
 
@@ -224,7 +226,7 @@ public class OrderServiceImpl implements OrderService {
             // Snapshot product name with color and size
             String colorName = (color != null && color.getName() != null) ? color.getName() : "Unknown";
             String sizeName = (size != null && size.getName() != null) ? size.getName() : "Unknown";
-            
+
             String productName;
             if (product != null && product.getName() != null) {
                 productName = product.getName() + " - " + colorName + " - " + sizeName;
@@ -252,11 +254,9 @@ public class OrderServiceImpl implements OrderService {
         // Create order status history
         OrderStatusHistory history = new OrderStatusHistory();
         history.setOrder(order);
-        history.setOldStatus(null);
-        history.setNewStatus("PENDING");
-        history.setChangedBy(user);
+        history.setStatus("PENDING");
         history.setNote("Đơn hàng được tạo");
-        history.setChangedAt(LocalDateTime.now());
+        history.setCreatedAt(LocalDateTime.now());
         historyRepository.save(history);
 
         // Clear cart
@@ -266,10 +266,10 @@ public class OrderServiceImpl implements OrderService {
         return order;
     }
 
-    // NEW: Customer cancel order.
+    // Customer cancel order.
     @Override
     @Transactional
-    public void cancelOrder(Integer orderId, Integer customerId) {
+    public void cancelOrder(Integer orderId, Integer customerId, String note) {
         Order order = orderRepository.findDetailById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn hàng id = " + orderId));
 
@@ -285,7 +285,6 @@ public class OrderServiceImpl implements OrderService {
         }
 
         // Update order status
-        String oldStatus = order.getOrderStatus();
         order.setOrderStatus("CANCELLED");
         order.setPaymentStatus("CANCELLED");
 
@@ -297,17 +296,22 @@ public class OrderServiceImpl implements OrderService {
         // Create history
         OrderStatusHistory history = new OrderStatusHistory();
         history.setOrder(order);
-        history.setOldStatus(oldStatus);
-        history.setNewStatus("CANCELLED");
-        history.setChangedBy(order.getUser());
-        history.setNote("Khách hàng hủy đơn");
-        history.setChangedAt(LocalDateTime.now());
+        history.setStatus("CANCELLED");
+
+        String finalNote = "Hủy bởi: Khách hàng";
+        if (note != null && !note.trim().isEmpty()) {
+            finalNote += " - Lý do: " + note.trim();
+        } else {
+            finalNote += " - Không có lý do cụ thể";
+        }
+        history.setNote(finalNote);
+        history.setCreatedAt(LocalDateTime.now());
 
         historyRepository.save(history);
         orderRepository.save(order);
     }
 
-    // NEW: Admin cancel order.
+    // Admin cancel order.
     @Override
     @Transactional
     public void adminCancelOrder(Integer orderId, Integer adminId, String note) {
@@ -324,7 +328,6 @@ public class OrderServiceImpl implements OrderService {
         }
 
         // Update order status
-        String oldStatus = order.getOrderStatus();
         order.setOrderStatus("CANCELLED");
         order.setPaymentStatus("CANCELLED");
 
@@ -336,17 +339,26 @@ public class OrderServiceImpl implements OrderService {
         // Create history
         OrderStatusHistory history = new OrderStatusHistory();
         history.setOrder(order);
-        history.setOldStatus(oldStatus);
-        history.setNewStatus("CANCELLED");
-        history.setChangedBy(admin);
-        history.setNote(note != null ? note : "Admin hủy đơn");
-        history.setChangedAt(LocalDateTime.now());
+        history.setStatus("CANCELLED");
+
+        String finalNote = "Hủy bởi: Quản trị viên";
+        if (note != null && !note.trim().isEmpty()) {
+            if (note.contains("bởi:") || note.contains("hàng:")) {
+                finalNote = note.trim();
+            } else {
+                finalNote += " - Lý do: " + note.trim();
+            }
+        } else {
+            finalNote += " - Không có lý do cụ thể";
+        }
+        history.setNote(finalNote);
+        history.setCreatedAt(LocalDateTime.now());
 
         historyRepository.save(history);
         orderRepository.save(order);
     }
 
-    // NEW: Admin complete order.
+    // Admin complete order.
     @Override
     @Transactional
     public void completeOrder(Integer orderId, Integer adminId, String note) {
@@ -380,11 +392,9 @@ public class OrderServiceImpl implements OrderService {
         // Create history
         OrderStatusHistory history = new OrderStatusHistory();
         history.setOrder(order);
-        history.setOldStatus(oldStatus);
-        history.setNewStatus("COMPLETED");
-        history.setChangedBy(admin);
+        history.setStatus("COMPLETED");
         history.setNote(note != null ? note : "Đơn hàng hoàn thành");
-        history.setChangedAt(LocalDateTime.now());
+        history.setCreatedAt(LocalDateTime.now());
 
         historyRepository.save(history);
         orderRepository.save(order);

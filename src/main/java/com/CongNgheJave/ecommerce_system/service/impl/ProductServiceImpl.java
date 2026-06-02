@@ -222,8 +222,12 @@ public class ProductServiceImpl implements ProductService {
 
     private ProductResponse mapToResponse(Product product) {
         ProductResponse response = modelMapper.map(product, ProductResponse.class);
-        response.setCategoryName(product.getCategory().getName());
+        if (product.getCategory() != null) {
+            response.setCategoryId(product.getCategory().getId());
+            response.setCategoryName(product.getCategory().getName());
+        }
         if (product.getBrand() != null) {
+            response.setBrandId(product.getBrand().getId());
             response.setBrandName(product.getBrand().getName());
         }
 

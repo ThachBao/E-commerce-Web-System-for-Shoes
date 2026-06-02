@@ -1,15 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/admin_layout :: layout(~{::title}, ~{::section})}">
 <head>
-    <meta charset="UTF-8">
     <title>Order Detail</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-
-<body class="bg-light">
-
-<div class="container mt-4 mb-5">
+<body>
+<section>
 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
@@ -84,23 +79,6 @@
                     </div>
                 </div>
 
-                <div class="col-md-4">
-                    <label class="text-muted">Sub Total</label>
-                    <div class="fw-semibold"
-                         th:text="${#numbers.formatDecimal(order.subTotal, 0, 'COMMA', 0, 'POINT')} + ' VND'"></div>
-                </div>
-
-                <div class="col-md-4">
-                    <label class="text-muted">Shipping Fee</label>
-                    <div class="fw-semibold"
-                         th:text="${#numbers.formatDecimal(order.shippingFee, 0, 'COMMA', 0, 'POINT')} + ' VND'"></div>
-                </div>
-
-                <div class="col-md-4">
-                    <label class="text-muted">Discount</label>
-                    <div class="fw-semibold"
-                         th:text="${#numbers.formatDecimal(order.discountAmount, 0, 'COMMA', 0, 'POINT')} + ' VND'"></div>
-                </div>
 
                 <div class="col-md-4">
                     <label class="text-muted">Total Amount</label>
@@ -137,19 +115,9 @@
                     <div class="fw-semibold" th:text="${order.shippingPhone}"></div>
                 </div>
 
-                <div class="col-md-4">
-                    <label class="text-muted">Country</label>
-                    <div class="fw-semibold" th:text="${order.shippingCountry}"></div>
-                </div>
-
                 <div class="col-md-12">
                     <label class="text-muted">Address</label>
-                    <div class="fw-semibold">
-                        <span th:text="${order.shippingAddressLine}"></span>,
-                        <span th:text="${order.shippingWard}"></span>,
-                        <span th:text="${order.shippingDistrict}"></span>,
-                        <span th:text="${order.shippingCity}"></span>
-                    </div>
+                    <div class="fw-semibold" th:text="${order.shippingAddress}"></div>
                 </div>
 
                 <div class="col-md-12">
@@ -172,9 +140,6 @@
                 <thead class="table-dark">
                 <tr>
                     <th>Product</th>
-                    <th>SKU</th>
-                    <th>Size</th>
-                    <th>Color</th>
                     <th>Unit Price</th>
                     <th>Quantity</th>
                     <th>Line Total</th>
@@ -184,16 +149,13 @@
                 <tbody>
                 <tr th:each="item : ${order.items}">
                     <td class="text-start" th:text="${item.productName}"></td>
-                    <td th:text="${item.sku}"></td>
-                    <td th:text="${item.sizeName}"></td>
-                    <td th:text="${item.colorName}"></td>
                     <td th:text="${#numbers.formatDecimal(item.unitPrice, 0, 'COMMA', 0, 'POINT')} + ' VND'"></td>
                     <td th:text="${item.quantity}"></td>
-                    <td th:text="${#numbers.formatDecimal(item.lineTotal, 0, 'COMMA', 0, 'POINT')} + ' VND'"></td>
+                    <td th:text="${#numbers.formatDecimal(item.unitPrice * item.quantity, 0, 'COMMA', 0, 'POINT')} + ' VND'"></td>
                 </tr>
 
                 <tr th:if="${#lists.isEmpty(order.items)}">
-                    <td colspan="7" class="text-muted py-4">
+                    <td colspan="4" class="text-muted py-4">
                         No items found
                     </td>
                 </tr>
@@ -216,15 +178,7 @@
                     <div class="fw-semibold" th:text="${payment.paymentMethod}"></div>
                 </div>
 
-                <div class="col-md-4">
-                    <label class="text-muted">Provider</label>
-                    <div class="fw-semibold" th:text="${payment.paymentProvider != null ? payment.paymentProvider : 'N/A'}"></div>
-                </div>
 
-                <div class="col-md-4">
-                    <label class="text-muted">Transaction Code</label>
-                    <div class="fw-semibold" th:text="${payment.transactionCode != null ? payment.transactionCode : 'N/A'}"></div>
-                </div>
 
                 <div class="col-md-4">
                     <label class="text-muted">Amount</label>
@@ -244,15 +198,147 @@
                 </div>
 
             </div>
+            
+            <!-- Nút Xác nhận đã thanh toán -->
+            <div class="mt-3" th:if="${payment.paymentStatus != 'PAID' and order.orderStatus != 'CANCELLED' and order.orderStatus != 'COMPLETED'}">
+                <form th:action="@{/admin/orders/{id}/mark-paid(id=${order.id})}" method="post">
+                    <button type="submit" class="btn btn-success" onclick="return confirm('Xác nhận đã nhận được tiền thanh toán cho đơn hàng này?');">
+                        <i class="bi bi-check-circle me-1"></i> Xác nhận đã nhận chuyển khoản / thanh toán
+                    </button>
+                </form>
+            </div>
         </div>
+    </div>
 
-        <div class="card-body" th:if="${payment == null}">
-            <p class="text-muted mb-0">No payment information found</p>
+    <!-- Quick Actions Card for easy sequential order processing -->
+    <div class="card mb-4" th:if="${order.orderStatus != 'CANCELLED' and order.orderStatus != 'COMPLETED'}">
+        <div class="card-header fw-bold bg-light">
+            Quick Actions (Thao tác nhanh)
+        </div>
+        <div class="card-body">
+            <div class="d-flex gap-2 align-items-center flex-wrap">
+                <!-- COD ORDER FLOW -->
+                <th:block th:if="${order.paymentMethod == 'COD'}">
+                    <!-- PENDING status for COD -->
+                    <th:block th:if="${order.orderStatus == 'PENDING'}">
+                        <!-- Xác nhận -->
+                        <form th:action="@{/admin/orders/{id}/status(id=${order.id})}" method="post" style="display:inline;">
+                            <input type="hidden" name="newStatus" value="CONFIRMED" />
+                            <button type="submit" class="btn btn-primary px-4 py-2 fw-semibold shadow-sm"
+                                    onclick="return showGlobalConfirm(event, 'Xác nhận đơn hàng này?', this.closest('form'));">
+                                <i class="bi bi-check2-circle me-1"></i> Xác nhận đơn hàng
+                            </button>
+                        </form>
+                        <!-- Reject (Từ chối) -->
+                        <form th:action="@{/admin/orders/{id}/cancel(id=${order.id})}" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-danger px-4 py-2 fw-semibold shadow-sm"
+                                    onclick="return confirmReject(event, this.closest('form'));">
+                                <i class="bi bi-x-circle me-1"></i> Reject (Từ chối)
+                            </button>
+                        </form>
+                    </th:block>
+
+                    <!-- CONFIRMED status for COD -->
+                    <th:block th:if="${order.orderStatus == 'CONFIRMED'}">
+                        <!-- Xử lý (Giao) -->
+                        <form th:action="@{/admin/orders/{id}/status(id=${order.id})}" method="post" style="display:inline;">
+                            <input type="hidden" name="newStatus" value="SHIPPING" />
+                            <button type="submit" class="btn btn-warning px-4 py-2 fw-semibold shadow-sm"
+                                    onclick="return showGlobalConfirm(event, 'Chuyển đơn hàng sang trạng thái Giao hàng (Xử lý)?', this.closest('form'));">
+                                <i class="bi bi-gear-fill me-1"></i> Xử lý & Giao hàng
+                            </button>
+                        </form>
+                    </th:block>
+
+                    <!-- SHIPPING status for COD -->
+                    <th:block th:if="${order.orderStatus == 'SHIPPING'}">
+                        <!-- Unpaid COD -->
+                        <th:block th:if="${order.paymentStatus != 'PAID'}">
+                            <!-- Nhận tiền -->
+                            <form th:action="@{/admin/orders/{id}/mark-paid(id=${order.id})}" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-success px-4 py-2 fw-semibold shadow-sm"
+                                        onclick="return showGlobalConfirm(event, 'Xác nhận đã nhận tiền cho đơn hàng này?', this.closest('form'));">
+                                    <i class="bi bi-cash-coin me-1"></i> Nhận tiền mặt (COD)
+                                </button>
+                            </form>
+                            <!-- Hoàn trả hàng -->
+                            <form th:action="@{/admin/orders/{id}/cancel(id=${order.id})}" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-dark px-4 py-2 fw-semibold shadow-sm"
+                                        onclick="return confirmReturn(event, this.closest('form'));">
+                                    <i class="bi bi-arrow-counterclockwise me-1"></i> Hoàn trả hàng
+                                </button>
+                            </form>
+                        </th:block>
+
+                        <!-- Paid COD -->
+                        <th:block th:if="${order.paymentStatus == 'PAID'}">
+                            <!-- Hoàn thành đơn -->
+                            <form th:action="@{/admin/orders/{id}/complete(id=${order.id})}" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-success px-4 py-2 fw-semibold shadow-sm"
+                                        onclick="return showGlobalConfirm(event, 'Xác nhận hoàn thành đơn hàng?', this.closest('form'));">
+                                    <i class="bi bi-check-circle-fill me-1"></i> Hoàn thành đơn hàng
+                                </button>
+                            </form>
+                        </th:block>
+                    </th:block>
+                </th:block>
+
+                <!-- NON-COD ORDER FLOW -->
+                <th:block th:if="${order.paymentMethod != 'COD'}">
+                    <!-- PENDING status for BANK (Unpaid) -->
+                    <th:block th:if="${order.orderStatus == 'PENDING'}">
+                        <!-- Nhận tiền -->
+                        <form th:action="@{/admin/orders/{id}/mark-paid(id=${order.id})}" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-success px-4 py-2 fw-semibold shadow-sm"
+                                    onclick="return showGlobalConfirm(event, 'Xác nhận đã nhận tiền thanh toán (BANK) cho đơn hàng này?', this.closest('form'));">
+                                <i class="bi bi-cash-coin me-1"></i> Nhận tiền chuyển khoản (BANK)
+                            </button>
+                        </form>
+                        <!-- Reject (Từ chối) -->
+                        <form th:action="@{/admin/orders/{id}/cancel(id=${order.id})}" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-danger px-4 py-2 fw-semibold shadow-sm"
+                                    onclick="return confirmReject(event, this.closest('form'));">
+                                <i class="bi bi-x-circle me-1"></i> Reject (Từ chối)
+                            </button>
+                        </form>
+                    </th:block>
+
+                    <!-- CONFIRMED status for BANK (Paid) -->
+                    <th:block th:if="${order.orderStatus == 'CONFIRMED'}">
+                        <!-- Xử lý & Giao hàng -->
+                        <form th:action="@{/admin/orders/{id}/status(id=${order.id})}" method="post" style="display:inline;">
+                            <input type="hidden" name="newStatus" value="SHIPPING" />
+                            <button type="submit" class="btn btn-warning px-4 py-2 fw-semibold shadow-sm"
+                                    onclick="return showGlobalConfirm(event, 'Chuyển đơn hàng sang trạng thái Giao hàng (Xử lý)?', this.closest('form'));">
+                                <i class="bi bi-gear-fill me-1"></i> Xử lý & Giao hàng
+                            </button>
+                        </form>
+                    </th:block>
+
+                    <!-- SHIPPING status for BANK -->
+                    <th:block th:if="${order.orderStatus == 'SHIPPING'}">
+                        <!-- Hoàn thành đơn -->
+                        <form th:action="@{/admin/orders/{id}/complete(id=${order.id})}" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-success px-4 py-2 fw-semibold shadow-sm"
+                                    onclick="return showGlobalConfirm(event, 'Xác nhận hoàn thành đơn hàng?', this.closest('form'));">
+                                <i class="bi bi-check-circle-fill me-1"></i> Hoàn thành đơn hàng
+                            </button>
+                        </form>
+                        <!-- Hoàn trả hàng -->
+                        <form th:action="@{/admin/orders/{id}/cancel(id=${order.id})}" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-dark px-4 py-2 fw-semibold shadow-sm"
+                                    onclick="return confirmReturn(event, this.closest('form'));">
+                                <i class="bi bi-arrow-counterclockwise me-1"></i> Hoàn trả hàng
+                            </button>
+                        </form>
+                    </th:block>
+                </th:block>
+            </div>
         </div>
     </div>
 
     <!-- LUỒNG 4, 5, 6, 7: Admin cập nhật trạng thái và hệ thống ghi lịch sử -->
-    <div class="card mb-4">
+    <div class="card mb-4" th:if="${order.orderStatus != 'CANCELLED' and order.orderStatus != 'COMPLETED'}">
         <div class="card-header fw-bold">
             Update Order Status
         </div>
@@ -304,9 +390,7 @@
             <table class="table table-bordered text-center align-middle mb-0">
                 <thead class="table-dark">
                 <tr>
-                    <th>Old Status</th>
-                    <th>New Status</th>
-                    <th>Changed By</th>
+                    <th>Status</th>
                     <th>Note</th>
                     <th>Changed At</th>
                 </tr>
@@ -314,15 +398,13 @@
 
                 <tbody>
                 <tr th:each="history : ${histories}">
-                    <td th:text="${history.oldStatus != null ? history.oldStatus : 'N/A'}"></td>
-                    <td th:text="${history.newStatus}"></td>
-                    <td th:text="${history.changedBy != null ? history.changedBy.fullName : 'N/A'}"></td>
+                    <td th:text="${history.status}"></td>
                     <td th:text="${history.note != null ? history.note : 'N/A'}"></td>
-                    <td th:text="${history.changedAt != null ? #temporals.format(history.changedAt, 'dd/MM/yyyy HH:mm') : 'N/A'}"></td>
+                    <td th:text="${history.createdAt != null ? #temporals.format(history.createdAt, 'dd/MM/yyyy HH:mm') : 'N/A'}"></td>
                 </tr>
 
                 <tr th:if="${#lists.isEmpty(histories)}">
-                    <td colspan="5" class="text-muted py-4">
+                    <td colspan="3" class="text-muted py-4">
                         No status history found
                     </td>
                 </tr>
@@ -331,7 +413,102 @@
         </div>
     </div>
 
-</div>
+    <script th:inline="javascript">
+        function showReasonModal(title, placeholder, onConfirm) {
+            const existing = document.getElementById('global-reason-modal');
+            if (existing) existing.remove();
 
+            const modalHtml = `
+                <div class="modal fade" id="global-reason-modal" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content border-0 shadow-lg rounded-4">
+                            <div class="modal-header border-bottom-0 pb-0 pt-4 px-4">
+                                <h5 class="modal-title fw-bold text-dark d-flex align-items-center">
+                                    <i class="bi bi-chat-left-text text-warning me-2 fs-4"></i>
+                                    <span>${title}</span>
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body px-4 py-3">
+                                <div class="form-group mb-0">
+                                    <label class="form-label text-muted fw-bold small text-uppercase mb-2">Lý do thực hiện</label>
+                                    <textarea id="global-reason-textarea" class="form-control bg-light border-0 rounded-3 p-3 text-dark" rows="3" placeholder="${placeholder}" style="resize: none; font-size: 0.95rem;"></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer border-top-0 pb-4 pt-2 px-4 gap-2">
+                                <button type="button" class="btn btn-light rounded-pill px-4 fw-semibold" data-bs-dismiss="modal">Hủy bỏ</button>
+                                <button type="button" id="global-reason-confirm-btn" class="btn btn-primary rounded-pill px-4 fw-semibold">Xác nhận</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+            const modalElement = document.getElementById('global-reason-modal');
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
+
+            const confirmBtn = document.getElementById('global-reason-confirm-btn');
+            const textarea = document.getElementById('global-reason-textarea');
+
+            modalElement.addEventListener('shown.bs.modal', () => {
+                textarea.focus();
+            });
+
+            confirmBtn.onclick = () => {
+                const value = textarea.value.trim();
+                modal.hide();
+                modalElement.addEventListener('hidden.bs.modal', () => {
+                    modalElement.remove();
+                });
+                onConfirm(value);
+            };
+        }
+
+        function confirmReject(event, form) {
+            if (event) event.preventDefault();
+            showReasonModal(
+                "Từ chối giao hàng",
+                "Nhập lý do từ chối giao hàng (ví dụ: Khách yêu cầu hủy, không liên lạc được...)",
+                function(reason) {
+                    const noteVal = "Từ chối giao hàng: " + (reason || "Không có lý do cụ thể");
+                    let noteInput = form.querySelector('input[name="note"]');
+                    if (!noteInput) {
+                        noteInput = document.createElement('input');
+                        noteInput.type = 'hidden';
+                        noteInput.name = 'note';
+                        form.appendChild(noteInput);
+                    }
+                    noteInput.value = noteVal;
+                    form.submit();
+                }
+            );
+            return false;
+        }
+
+        function confirmReturn(event, form) {
+            if (event) event.preventDefault();
+            showReasonModal(
+                "Hoàn trả hàng & Hủy đơn",
+                "Nhập lý do hoàn trả hàng (ví dụ: Khách không nhận hàng, hàng bị lỗi...)",
+                function(reason) {
+                    const noteVal = "Hoàn trả hàng: " + (reason || "Không có lý do cụ thể");
+                    let noteInput = form.querySelector('input[name="note"]');
+                    if (!noteInput) {
+                        noteInput = document.createElement('input');
+                        noteInput.type = 'hidden';
+                        noteInput.name = 'note';
+                        form.appendChild(noteInput);
+                    }
+                    noteInput.value = noteVal;
+                    form.submit();
+                }
+            );
+            return false;
+        }
+    </script>
+</section>
 </body>
 </html>

@@ -123,7 +123,10 @@ public class AdminProductController {
                                 RedirectAttributes ra,
                                 Model model) {
         if (result.hasErrors()) {
+            ProductResponse response = productService.getProductById(id);
             model.addAttribute("productId", id);
+            model.addAttribute("productCode", response.getCode());
+            model.addAttribute("thumbnailUrl", response.getThumbnailUrl());
             model.addAttribute("categories", categoryService.getAllActiveCategories());
             model.addAttribute("brands", brandService.getAllActiveBrands());
             return "admin/product/edit";

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/admin_layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Thêm Thương hiệu</title>
+</head>
+<body>
+    <section>
+        <div class="mb-4">
+            <a href="/admin/brands" class="text-decoration-none text-secondary"><i class="bi bi-arrow-left"></i> Quay lại danh sách</a>
+            <h2 class="h4 mt-2">Thêm Thương hiệu mới</h2>
+        </div>
+
+        <div class="card border-0 shadow-sm" style="max-width: 800px;">
+            <div class="card-body p-4">
+                <form th:action="@{/admin/brands/add}" th:object="${brandRequest}" method="post" enctype="multipart/form-data">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Mã Thương hiệu <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" th:field="*{code}" th:classappend="${#fields.hasErrors('code')} ? 'is-invalid'">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('code')}" th:errors="*{code}"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Tên Thương hiệu <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" th:field="*{name}" th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Mô tả</label>
+                        <textarea class="form-control" th:field="*{description}" rows="3"></textarea>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Logo</label>
+                            <input type="file" class="form-control" name="logoFile" accept=".jpg,.jpeg,.png,.webp">
+                            <div class="form-text">Định dạng hỗ trợ: JPG, PNG, WEBP (< 5MB)</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Trạng thái</label>
+                            <div class="form-check form-switch mt-2">
+                                <input class="form-check-input" type="checkbox" role="switch" th:field="*{isActive}" id="activeSwitch" checked>
+                                <label class="form-check-label" for="activeSwitch">Hoạt động</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="text-secondary mb-4">
+                    <div class="text-end">
+                        <a href="/admin/brands" class="btn btn-light me-2">Hủy bỏ</a>
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i> Lưu thương hiệu</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

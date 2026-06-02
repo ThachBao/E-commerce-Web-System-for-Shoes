@@ -1,92 +1,10 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org"
-    th:replace="~{fragments/shop_layout :: layout(~{::title}, ~{::section})}">
-
+<html lang="en">
 <head>
-    <title>Giỏ hàng của bạn - ShoeStore</title>
+    <meta charset="UTF-8">
+    <title>Title</title>
 </head>
-
 <body>
-    <section class="container mt-5 mb-5">
-        <div class="row align-items-center mb-4">
-            <div class="col">
-                <h2 class="fw-bold mb-0" style="font-size: 1.8rem; letter-spacing: -0.5px;">Giỏ hàng của bạn</h2>
-            </div>
-            <div class="col-auto">
-                <button class="btn btn-outline-danger btn-hover-lift rounded-pill btn-sm fw-semibold" onclick="clearCart()">
-                    <i class="bi bi-trash3 me-1"></i> Xoá tất cả sản phẩm
-                </button>
-            </div>
-        </div>
 
-        <div class="row g-4">
-            <!-- Khu vực Giỏ hàng -->
-            <div class="col-lg-8">
-                <div class="cart-container shadow-sm border border-0 bg-white rounded-4 p-4">
-                    <div class="table-responsive">
-                        <table class="table table-borderless align-middle m-0">
-                            <thead class="border-bottom text-muted" style="font-size: 0.85rem; letter-spacing: 0.5px; text-transform: uppercase;">
-                                <tr>
-                                    <th style="width: 40px;" class="text-center">
-                                        <input class="form-check-input fs-5 mt-0 border-secondary" type="checkbox" id="selectAll" checked
-                                            onchange="toggleSelectAll(this)">
-                                    </th>
-                                    <th>Sản phẩm</th>
-                                    <th class="text-center">Đơn giá</th>
-                                    <th class="text-center">Số lượng</th>
-                                    <th class="text-end pe-3">Thành tiền</th>
-                                </tr>
-                            </thead>
-                            <tbody id="cart-items">
-                                <tr>
-                                    <td colspan="5" class="text-center py-5">
-                                        <div class="spinner-border text-warning" role="status"></div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Tool giả lập thêm vào giỏ hàng (Ẩn đi) -->
-                <div class="cart-container mt-4 border border-info bg-light shadow-sm rounded-4 p-4 d-none">
-                    <h5 class="fw-bold mb-3 text-info"><i class="bi bi-bug"></i> Test Tool: Giả lập Add To Cart</h5>
-                    <p class="text-muted small mb-3">Nhập ID của biến thể đang có thật trong Database (VD: 2, 4, 6).</p>
-                    <form id="form-add-to-cart" class="row g-3 align-items-end">
-                        <div class="col-md-5">
-                            <label class="form-label fw-semibold">Variant ID</label>
-                            <input type="number" class="form-control" id="input-variant-id" required value="2">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">Số lượng</label>
-                            <input type="number" class="form-control" id="input-quantity" required value="1" min="1">
-                        </div>
-                        <div class="col-md-3">
-                            <button type="submit" class="btn btn-primary w-100 fw-bold" id="btn-add-cart">THÊM</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Khu vực Tổng tiền -->
-            <div class="col-lg-4 mt-0">
-                <div class="cart-container checkout-box shadow-sm border border-0 bg-white rounded-4 p-4 position-sticky"
-                    style="top: 100px;">
-                    <h4 class="fw-bold mb-4" style="font-size: 1.3rem;">Tóm tắt đơn hàng</h4>
-                    <div class="d-flex justify-content-between mb-4 border-bottom pb-3">
-                        <span class="text-muted small fw-medium">Tạm tính</span>
-                        <span class="fw-bold fs-4 text-warning" id="cart-subtotal">...</span>
-                    </div>
-                    <button class="btn btn-warning btn-lg btn-hover-lift w-100 fw-bold py-3 mt-2" onclick="doCheckout(event)">
-                        TIẾN HÀNH THANH TOÁN <i class="bi bi-arrow-right ms-2"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Container for custom toasts dynamically created by JS -->
-        <div id="toast-container"></div>
-    </section>
 </body>
-
 </html>

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/shop_layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Chi tiết đơn hàng | ShoeStore</title>
+</head>
+<body>
+<section class="py-5 bg-light">
+    <div class="container py-4">
+        <div class="row mb-4">
+            <div class="col-12 d-flex justify-content-between align-items-center">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb bg-transparent p-0 m-0">
+                        <li class="breadcrumb-item"><a href="/" class="text-decoration-none text-dark">Trang chủ</a></li>
+                        <li class="breadcrumb-item"><a href="/orders" class="text-decoration-none text-dark">Đơn hàng của tôi</a></li>
+                        <li class="breadcrumb-item active" aria-current="page" th:text="${order.orderCode}">Mã đơn</li>
+                    </ol>
+                </nav>
+                <a th:href="@{/orders}" class="btn btn-outline-dark btn-sm rounded-pill px-3">
+                    <i class="bi bi-arrow-left me-1"></i> Quay lại
+                </a>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8 mb-4">
+                <!-- Cancellation Information Card (If Cancelled) -->
+                <div th:if="${order.orderStatus == 'CANCELLED'}" class="card shadow-sm border-0 rounded-4 mb-4 bg-danger bg-opacity-10">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="bi bi-x-circle-fill text-danger fs-3 me-3"></i>
+                            <div>
+                                <h5 class="mb-1 fw-bold text-danger">Đơn hàng đã bị hủy</h5>
+                                <p class="text-muted small mb-0">Thông tin chi tiết về việc hủy đơn hàng này</p>
+                            </div>
+                        </div>
+                        <div th:each="history : ${order.statusHistories}" th:if="${history.status == 'CANCELLED'}">
+                            <div class="p-3 bg-white bg-opacity-75 rounded-3 border border-danger border-opacity-25">
+                                <span class="fw-bold text-dark d-block mb-1" th:text="${history.note}">Thông tin hủy</span>
+                                <small class="text-muted"><i class="bi bi-clock me-1"></i>Thời gian: <span th:text="${history.createdAt != null ? #temporals.format(history.createdAt, 'dd/MM/yyyy HH:mm') : 'N/A'}"></span></small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thông tin đơn hàng cơ bản -->
+                <div class="card shadow-sm border-0 rounded-4 mb-4">
+                    <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center rounded-top-4">
+                        <h5 class="mb-0 fw-bold"><i class="bi bi-receipt me-2 text-warning"></i>Chi tiết đơn hàng <span class="text-primary" th:text="'#' + ${order.orderCode}"></span></h5>
+                        <span th:switch="${order.orderStatus}">
+                            <span th:case="'PENDING'" class="badge bg-warning text-dark py-2 px-3 rounded-pill"><i class="bi bi-hourglass-split me-1"></i> Chờ duyệt</span>
+                            <span th:case="'CONFIRMED'" class="badge bg-primary py-2 px-3 rounded-pill"><i class="bi bi-check-circle me-1"></i> Đã xác nhận</span>
+                            <span th:case="'PROCESSING'" class="badge bg-info text-dark py-2 px-3 rounded-pill"><i class="bi bi-box-seam me-1"></i> Đang chuẩn bị</span>
+                            <span th:case="'SHIPPING'" class="badge bg-secondary py-2 px-3 rounded-pill"><i class="bi bi-truck me-1"></i> Đang giao</span>
+                            <span th:case="'COMPLETED'" class="badge bg-success py-2 px-3 rounded-pill"><i class="bi bi-bag-check me-1"></i> Hoàn thành</span>
+                            <span th:case="'CANCELLED'" class="badge bg-danger py-2 px-3 rounded-pill"><i class="bi bi-x-circle me-1"></i> Đã hủy</span>
+                        </span>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <p class="text-muted small mb-1 text-uppercase fw-bold">Ngày đặt hàng</p>
+                                <p class="fw-medium mb-0" th:text="${order.placedAt != null ? #temporals.format(order.placedAt, 'dd/MM/yyyy HH:mm') : 'N/A'}"></p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="text-muted small mb-1 text-uppercase fw-bold">Tổng tiền</p>
+                                <p class="fw-bold text-danger fs-5 mb-0" th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' đ'"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Danh sách sản phẩm -->
+                <div class="card shadow-sm border-0 rounded-4">
+                    <div class="card-header bg-white border-bottom py-3 rounded-top-4">
+                        <h5 class="mb-0 fw-bold"><i class="bi bi-box me-2 text-warning"></i>Sản phẩm đã mua</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table align-middle border-0 mb-0">
+                                <thead class="table-light">
+                                <tr>
+                                    <th class="ps-4 border-0">Sản phẩm</th>
+                                    <th class="text-center border-0">Đơn giá</th>
+                                    <th class="text-center border-0">Số lượng</th>
+                                    <th class="text-end pe-4 border-0">Thành tiền</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="item : ${order.items}">
+                                    <td class="ps-4 py-3 border-bottom">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-light rounded d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px;">
+                                                <i class="bi bi-image text-muted"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-1 fw-bold" th:text="${item.productName}">Tên sản phẩm</h6>
+                                                <!-- Optional: Có thể hiển thị size/màu ở đây nếu có trong order.items -->
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-center border-bottom" th:text="${#numbers.formatDecimal(item.unitPrice, 0, 'COMMA', 0, 'POINT')} + ' đ'"></td>
+                                    <td class="text-center border-bottom"><span class="badge bg-light text-dark border px-2 py-1" th:text="'x' + ${item.quantity}"></span></td>
+                                    <td class="text-end pe-4 border-bottom fw-bold" th:text="${#numbers.formatDecimal(item.unitPrice * item.quantity, 0, 'COMMA', 0, 'POINT')} + ' đ'"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <!-- Địa chỉ giao hàng -->
+                <div class="card shadow-sm border-0 rounded-4 mb-4">
+                    <div class="card-header bg-white border-bottom py-3 rounded-top-4">
+                        <h5 class="mb-0 fw-bold"><i class="bi bi-geo-alt me-2 text-warning"></i>Giao hàng đến</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <h6 class="fw-bold mb-2" th:text="${order.shippingFullName}">Tên người nhận</h6>
+                        <p class="mb-2"><i class="bi bi-telephone text-muted me-2"></i><span th:text="${order.shippingPhone}">Số điện thoại</span></p>
+                        <p class="mb-0"><i class="bi bi-house text-muted me-2"></i><span th:text="${order.shippingAddress}">Địa chỉ</span></p>
+                    </div>
+                </div>
+
+                <!-- Thông tin thanh toán -->
+                <div class="card shadow-sm border-0 rounded-4">
+                    <div class="card-header bg-white border-bottom py-3 rounded-top-4">
+                        <h5 class="mb-0 fw-bold"><i class="bi bi-credit-card me-2 text-warning"></i>Thanh toán</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="text-muted">Phương thức:</span>
+                            <span class="fw-semibold" th:text="${order.paymentMethod == 'COD' ? 'Thanh toán khi nhận hàng (COD)' : order.paymentMethod}"></span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="text-muted">Trạng thái:</span>
+                            <span th:switch="${order.paymentStatus}">
+                                <span th:case="'PAID'" class="badge bg-success">Đã thanh toán</span>
+                                <span th:case="'PENDING'" class="badge bg-warning text-dark">Chờ thanh toán</span>
+                                <span th:case="'UNPAID'" class="badge bg-danger">Chưa thanh toán</span>
+                            </span>
+                        </div>
+                        
+                        <div th:if="${order.orderStatus == 'PENDING' || order.orderStatus == 'CONFIRMED'}" class="mt-4 pt-3 border-top">
+                            <form th:action="@{/orders/{id}/cancel(id=${order.id})}" method="post" onsubmit="return confirmCustomerCancel(event, this);">
+                                <button type="submit" class="btn btn-outline-danger w-100 rounded-pill">
+                                    <i class="bi bi-x-circle me-1"></i> Hủy đơn hàng
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Javascript modal helpers -->
+    <script th:inline="javascript">
+        function showReasonModal(title, placeholder, onConfirm) {
+            const existing = document.getElementById('global-reason-modal');
+            if (existing) existing.remove();
+
+            const modalHtml = `
+                <div class="modal fade" id="global-reason-modal" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content border-0 shadow-lg rounded-4">
+                            <div class="modal-header border-bottom-0 pb-0 pt-4 px-4">
+                                <h5 class="modal-title fw-bold text-dark d-flex align-items-center">
+                                    <i class="bi bi-chat-left-text text-warning me-2 fs-4"></i>
+                                    <span>${title}</span>
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body px-4 py-3">
+                                <div class="form-group mb-0">
+                                    <label class="form-label text-muted fw-bold small text-uppercase mb-2">Lý do hủy đơn</label>
+                                    <textarea id="global-reason-textarea" class="form-control bg-light border-0 rounded-3 p-3 text-dark" rows="3" placeholder="${placeholder}" style="resize: none; font-size: 0.95rem;"></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer border-top-0 pb-4 pt-2 px-4 gap-2">
+                                <button type="button" class="btn btn-light rounded-pill px-4 fw-semibold" data-bs-dismiss="modal">Hủy bỏ</button>
+                                <button type="button" id="global-reason-confirm-btn" class="btn btn-primary rounded-pill px-4 fw-semibold">Xác nhận hủy</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+            const modalElement = document.getElementById('global-reason-modal');
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
+
+            const confirmBtn = document.getElementById('global-reason-confirm-btn');
+            const textarea = document.getElementById('global-reason-textarea');
+
+            modalElement.addEventListener('shown.bs.modal', () => {
+                textarea.focus();
+            });
+
+            confirmBtn.onclick = () => {
+                const value = textarea.value.trim();
+                modal.hide();
+                modalElement.addEventListener('hidden.bs.modal', () => {
+                    modalElement.remove();
+                });
+                onConfirm(value);
+            };
+        }
+
+        function confirmCustomerCancel(event, form) {
+            if (event) event.preventDefault();
+            showReasonModal(
+                "Hủy đơn hàng của bạn",
+                "Nhập lý do hủy đơn hàng của bạn (ví dụ: Muốn đổi sản phẩm khác, thay đổi ý định...)",
+                function(reason) {
+                    const noteVal = reason ? reason.trim() : "";
+                    let noteInput = form.querySelector('input[name="note"]');
+                    if (!noteInput) {
+                        noteInput = document.createElement('input');
+                        noteInput.type = 'hidden';
+                        noteInput.name = 'note';
+                        form.appendChild(noteInput);
+                    }
+                    noteInput.value = noteVal;
+                    form.submit();
+                }
+            );
+            return false;
+        }
+    </script>
+</section>
+</body>
+</html>

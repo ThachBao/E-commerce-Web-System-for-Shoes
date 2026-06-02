@@ -1,10 +1,426 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/shop_layout :: layout(~{::title}, ~{::section})}">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <title th:text="${product.name} + ' - ShoeStore'">Chi tiết sản phẩm</title>
 </head>
 <body>
+    <section class="container py-4">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/" class="text-decoration-none text-dark">Trang chủ</a></li>
+                <li class="breadcrumb-item"><a href="/products" class="text-decoration-none text-dark">Sản phẩm</a></li>
+                <li class="breadcrumb-item active" aria-current="page" th:text="${product.name}">Tên SP</li>
+            </ol>
+        </nav>
 
+        <div class="row bg-white p-4 p-md-5 rounded-4 shadow-sm mb-5 overflow-hidden py-4 reveal reveal-up">
+            <!-- Hình ảnh sản phẩm -->
+            <div class="col-md-6 mb-4 mb-md-0 d-flex flex-column justify-content-between">
+                <div class="mb-3 text-center rounded-4 shadow-sm" style="height: 400px; display: flex; align-items: center; justify-content: center; background-color: #f8fafc; border: 1px solid rgba(15, 23, 42, 0.03); padding: 20px;">
+                    <img th:if="${product.thumbnailUrl != null}" th:src="${product.thumbnailUrl}" class="img-fluid rounded-3" alt="Thumbnail" style="max-height: 100%; object-fit: contain; transition: transform var(--transition-slow);" id="mainImage">
+                    <span th:unless="${product.thumbnailUrl != null}" class="text-muted"><i class="bi bi-image" style="font-size: 5rem;"></i></span>
+                </div>
+                <!-- Gallery nhỏ -->
+                <div class="d-flex gap-2 overflow-auto py-2" th:if="${product.thumbnailUrl != null or (product.imageUrls != null and !product.imageUrls.isEmpty())}">
+                    <img th:if="${product.thumbnailUrl != null}" th:src="${product.thumbnailUrl}" class="img-thumbnail cursor-pointer gallery-img" style="width: 75px; height: 75px; object-fit: contain; cursor: pointer; padding: 4px; background: #fff;" onclick="document.getElementById('mainImage').src=this.src;">
+                    <img th:if="${product.imageUrls != null}" th:each="imgUrl : ${product.imageUrls}" th:src="${imgUrl}" class="img-thumbnail cursor-pointer gallery-img" style="width: 75px; height: 75px; object-fit: contain; cursor: pointer; padding: 4px; background: #fff;" onclick="document.getElementById('mainImage').src=this.src;">
+                </div>
+            </div>
+ 
+            <!-- Thông tin chi tiết -->
+            <div class="col-md-6 d-flex flex-column justify-content-between ps-md-4">
+                <div>
+                    <div class="mb-3 d-flex align-items-center">
+                        <span class="badge bg-dark bg-opacity-10 text-dark-emphasis rounded-pill px-3 py-2 fw-semibold" th:text="${product.brandName ?: 'Khác'}">Brand</span>
+                        <span class="badge border border-secondary-subtle bg-white text-secondary rounded-pill px-3 py-2 ms-2 fw-semibold" th:text="'Mã: ' + ${product.code}">Code</span>
+                    </div>
+                    <h1 class="h3 fw-bold mb-3 text-dark" style="letter-spacing: -0.5px; font-size: 1.8rem;" th:text="${product.name}">Tên Sản Phẩm</h1>
+                    
+                    <!-- Hidden container for raw description to be processed by JS -->
+                    <div id="raw-description" style="display: none;" 
+                         th:text="${product.description}"
+                         th:data-brand="${product.brandName ?: 'Khác'}"
+                         th:data-code="${product.code}"
+                         th:data-category="${product.categoryName ?: 'Sneaker'}"></div>
+
+                    <!-- Quick Specs Badge Row -->
+                    <div id="quick-specs-container" class="row g-2 mb-4">
+                        <!-- Will be dynamically populated by JavaScript -->
+                    </div>
+ 
+                    <form action="/cart/add" method="post" id="form-add-to-cart">
+                        <input type="hidden" name="productId" th:value="${product.id}">
+                        
+                        <!-- Chọn Biến thể (Màu và Size) -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-dark" style="font-size: 0.95rem;">Chọn Màu sắc & Kích cỡ:</label>
+                            <select name="variantId" id="input-variant-id" class="form-select form-select-lg" required style="border-radius: 14px !important;">
+                                <option value="">-- Chọn một tùy chọn --</option>
+                                <option th:each="variant : ${variants}" 
+                                        th:value="${variant.id}" 
+                                        th:data-price="${variant.salePrice != null ? variant.salePrice : variant.price}"
+                                        th:data-original-price="${variant.salePrice != null ? variant.price : null}"
+                                        th:text="${variant.colorName} + ' - Size ' + ${variant.sizeName} + ' (Còn ' + ${variant.stockQuantity} + ')'"
+                                        th:disabled="${variant.stockQuantity <= 0}"></option>
+                            </select>
+                        </div>
+ 
+                        <!-- Hiển thị giá động theo biến thể được chọn bằng Javascript -->
+                        <div class="mb-4 p-3 rounded-4" id="priceDisplay" style="background-color: #f8fafc; border: 1px solid rgba(15, 23, 42, 0.04);">
+                            <span class="text-secondary fw-semibold" style="font-size: 0.9rem;"><i class="bi bi-info-circle me-2 text-warning"></i>Vui lòng chọn Màu & Size để xem giá.</span>
+                        </div>
+ 
+                        <div class="d-flex gap-3 mb-4">
+                            <div style="width: 110px;">
+                                <label class="form-label fw-bold text-dark" style="font-size: 0.95rem;">Số lượng:</label>
+                                <input type="number" name="quantity" id="input-quantity" class="form-control form-control-lg text-center" value="1" min="1" required style="border-radius: 14px !important; font-weight: 700; height: calc(2.2rem + 10px);">
+                            </div>
+                            <div class="flex-grow-1 align-self-end d-flex gap-2">
+                                <button type="button" class="btn btn-warning btn-lg fw-bold flex-grow-1 btn-hover-lift d-flex align-items-center justify-content-center gap-2" id="btn-add-cart" onclick="handleAddToCart(false)" style="height: calc(2.2rem + 10px);">
+                                    <i class="bi bi-cart-plus fs-5"></i> Thêm vào giỏ
+                                </button>
+                                <button type="button" class="btn btn-dark btn-lg fw-bold flex-grow-1 btn-hover-lift" id="btn-buy-now" onclick="handleAddToCart(true)" style="height: calc(2.2rem + 10px);">
+                                    Mua ngay
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+ 
+                <!-- Chính sách cửa hàng (Dạng Grid ngang cao cấp) -->
+                <div class="mt-4 pt-4" style="border-top: 1px dashed #cbd5e1;">
+                    <div class="row g-3">
+                        <div class="col-sm-4">
+                            <div class="d-flex align-items-center gap-2 text-muted">
+                                <i class="bi bi-truck text-warning fs-4"></i>
+                                <span style="font-size: 0.8rem; line-height: 1.3; font-weight: 500;">Freeship từ 1.000.000đ</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="d-flex align-items-center gap-2 text-muted">
+                                <i class="bi bi-arrow-repeat text-warning fs-4"></i>
+                                <span style="font-size: 0.8rem; line-height: 1.3; font-weight: 500;">Đổi trả trong 7 ngày</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="d-flex align-items-center gap-2 text-muted">
+                                <i class="bi bi-shield-check text-warning fs-4"></i>
+                                <span style="font-size: 0.8rem; line-height: 1.3; font-weight: 500;">100% Chính hãng</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Phần Thông Tin Chi Tiết & Thông Số Kỹ Thuật Premium -->
+        <div class="bg-white p-4 p-md-5 rounded-4 shadow-sm mb-5 reveal reveal-up">
+            <h3 class="fw-bold mb-4 text-dark d-flex align-items-center gap-2" style="font-size: 1.5rem;">
+                <i class="bi bi-info-circle-fill text-warning"></i>
+                Chi tiết sản phẩm
+            </h3>
+            
+            <div class="row g-4">
+                <!-- Cột Trái: Mô tả chi tiết sản phẩm -->
+                <div class="col-lg-7 border-end-lg pe-lg-4" style="border-right: 1px solid #f1f5f9;">
+                    <h5 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2" style="font-size: 1.1rem;">
+                        <i class="bi bi-file-earmark-text text-secondary"></i>
+                        Đặc điểm nổi bật
+                    </h5>
+                    <div id="detailed-description-text" class="text-muted" style="line-height: 1.8; font-size: 0.98rem; text-align: justify;">
+                        <!-- Được điền tự động bằng JavaScript -->
+                        <p class="text-muted italic">Đang tải mô tả sản phẩm...</p>
+                    </div>
+                </div>
+                
+                <!-- Cột Phải: Bảng thông số chi tiết -->
+                <div class="col-lg-5 ps-lg-4">
+                    <h5 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2" style="font-size: 1.1rem;">
+                        <i class="bi bi-sliders text-secondary"></i>
+                        Thông số kỹ thuật
+                    </h5>
+                    <div class="specs-table-premium rounded-4 overflow-hidden border" style="border-color: #f1f5f9 !important; background-color: #fff;">
+                        <!-- Được điền tự động bằng JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Script xử lý thay đổi giá khi chọn biến thể -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const variantSelect = document.querySelector('select[name="variantId"]');
+                const priceDisplay = document.getElementById('priceDisplay');
+
+                variantSelect.addEventListener('change', function() {
+                    const selectedOption = this.options[this.selectedIndex];
+                    if (!selectedOption.value) {
+                        priceDisplay.innerHTML = '<span class="text-muted">Vui lòng chọn Màu & Size để xem giá.</span>';
+                        return;
+                    }
+
+                    const price = parseFloat(selectedOption.getAttribute('data-price'));
+                    const originalPrice = selectedOption.getAttribute('data-original-price');
+                    
+                    const formatVND = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format;
+
+                    let html = `<h2 class="text-danger fw-bold mb-0">${formatVND(price)}</h2>`;
+                    
+                    if (originalPrice && originalPrice !== 'null') {
+                        html += `<div class="text-muted text-decoration-line-through small">${formatVND(parseFloat(originalPrice))}</div>`;
+                    }
+
+                    priceDisplay.innerHTML = html;
+                });
+
+                // --- Xử lý tách mô tả sản phẩm thông minh ---
+                const rawDescEl = document.getElementById('raw-description');
+                const quickSpecsContainer = document.getElementById('quick-specs-container');
+                const detailedDescText = document.getElementById('detailed-description-text');
+                const specsTable = document.querySelector('.specs-table-premium');
+
+                if (rawDescEl) {
+                    const rawDesc = rawDescEl.textContent.trim();
+                    const brandName = rawDescEl.getAttribute('data-brand') || 'Khác';
+                    const productCode = rawDescEl.getAttribute('data-code') || '';
+                    const categoryName = rawDescEl.getAttribute('data-category') || 'Sneaker';
+
+                    if (!rawDesc) {
+                        if (detailedDescText) {
+                            detailedDescText.innerHTML = '<p class="text-muted italic">Chưa có mô tả cho sản phẩm này.</p>';
+                        }
+                        if (specsTable) {
+                            specsTable.innerHTML = `
+                                <div class="d-flex justify-content-between p-3 border-bottom" style="border-bottom: 1px solid #f1f5f9 !important;">
+                                    <span class="text-secondary fw-semibold"><i class="bi bi-award me-2 text-warning"></i>Thương hiệu</span>
+                                    <span class="text-dark fw-bold">${brandName}</span>
+                                </div>
+                                <div class="d-flex justify-content-between p-3" style="background-color: #f8fafc;">
+                                    <span class="text-secondary fw-semibold"><i class="bi bi-qr-code me-2 text-warning"></i>Mã sản phẩm</span>
+                                    <span class="text-dark fw-bold">${productCode}</span>
+                                </div>
+                            `;
+                        }
+                    } else {
+                        const lines = rawDesc.split('\n');
+                        const specs = {};
+                        const paragraphs = [];
+
+                        for (let line of lines) {
+                            line = line.trim();
+                            if (!line) continue;
+
+                            // Kiểm tra xem dòng có phải là thuộc tính dạng key: value không
+                            const colonIndex = line.indexOf(':');
+                            if (colonIndex > 0 && colonIndex < 30) {
+                                const key = line.substring(0, colonIndex).trim();
+                                const val = line.substring(colonIndex + 1).trim();
+                                const lowerKey = key.toLowerCase();
+
+                                if (lowerKey.includes('chất liệu') || 
+                                    lowerKey.includes('giới tính') || 
+                                    lowerKey.includes('màu sắc') || 
+                                    lowerKey.includes('kiểu dáng') || 
+                                    lowerKey.includes('mặt hàng')) {
+                                    specs[key] = val;
+                                    continue;
+                                }
+                            }
+                            paragraphs.push(line);
+                        }
+
+                        // Hiển thị Quick Specs dưới tên sản phẩm
+                        if (quickSpecsContainer) {
+                            let quickHtml = '';
+                            const specKeys = Object.keys(specs);
+                            
+                            // Nếu có thông số tự động tách
+                            specKeys.forEach(key => {
+                                let icon = 'bi-layers';
+                                const k = key.toLowerCase();
+                                if (k.includes('giới tính')) icon = 'bi-gender-ambiguous';
+                                else if (k.includes('màu sắc')) icon = 'bi-palette';
+                                else if (k.includes('kiểu dáng')) icon = 'bi-activity';
+
+                                quickHtml += `
+                                    <div class="col-6 col-sm-4">
+                                        <div class="p-3 rounded-4 d-flex align-items-center gap-2 border bg-light bg-opacity-70" style="height: 100%; border-color: rgba(15, 23, 42, 0.05) !important;">
+                                            <div class="d-flex align-items-center justify-content-center bg-dark bg-opacity-10 text-dark rounded-circle" style="width: 38px; height: 38px; min-width: 38px;">
+                                                <i class="bi ${icon} fs-6"></i>
+                                            </div>
+                                            <div>
+                                                <div class="text-secondary" style="font-size: 0.72rem; font-weight: 500;">${key}</div>
+                                                <div class="fw-bold text-dark" style="font-size: 0.82rem; letter-spacing: -0.2px;">${specs[key]}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                            });
+
+                            // Thêm mã sản phẩm vào Quick Specs nếu ít hơn 3 thông số
+                            if (specKeys.length < 3) {
+                                quickHtml += `
+                                    <div class="col-6 col-sm-4">
+                                        <div class="p-3 rounded-4 d-flex align-items-center gap-2 border bg-light bg-opacity-70" style="height: 100%; border-color: rgba(15, 23, 42, 0.05) !important;">
+                                            <div class="d-flex align-items-center justify-content-center bg-dark bg-opacity-10 text-dark rounded-circle" style="width: 38px; height: 38px; min-width: 38px;">
+                                                <i class="bi bi-qr-code fs-6"></i>
+                                            </div>
+                                            <div>
+                                                <div class="text-secondary" style="font-size: 0.72rem; font-weight: 500;">Mã SP</div>
+                                                <div class="fw-bold text-dark" style="font-size: 0.82rem; letter-spacing: -0.2px;">${productCode}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                            }
+
+                            quickSpecsContainer.innerHTML = quickHtml;
+                        }
+
+                        // Hiển thị Mô tả chi tiết ở cột trái
+                        if (detailedDescText) {
+                            if (paragraphs.length === 0) {
+                                detailedDescText.innerHTML = '<p class="text-muted italic">Đang cập nhật thêm mô tả sản phẩm.</p>';
+                            } else {
+                                detailedDescText.innerHTML = paragraphs.map(p => {
+                                    if (p.startsWith('-') || p.startsWith('•')) {
+                                        return `
+                                            <div class="d-flex gap-2 mb-2.5 ps-2 align-items-start">
+                                                <span class="text-warning fw-bold fs-5" style="line-height: 1;">•</span>
+                                                <span style="font-size: 0.95rem;">${p.substring(1).trim()}</span>
+                                            </div>
+                                        `;
+                                    }
+                                    return `<p class="mb-3" style="text-align: justify; text-indent: 10px; font-size: 0.95rem;">${p}</p>`;
+                                }).join('');
+                            }
+                        }
+
+                        // Hiển thị Bảng thông số chi tiết ở cột phải
+                        if (specsTable) {
+                            let tableHtml = '';
+                            let rowIdx = 0;
+
+                            // 1. Thương hiệu
+                            tableHtml += `
+                                <div class="d-flex justify-content-between p-3 border-bottom" style="border-bottom: 1px solid #f1f5f9 !important; ${rowIdx++ % 2 === 1 ? 'background-color: #f8fafc;' : ''}">
+                                    <span class="text-secondary fw-semibold"><i class="bi bi-award me-2 text-warning"></i>Thương hiệu</span>
+                                    <span class="text-dark fw-bold">${brandName}</span>
+                                </div>
+                            `;
+
+                            // 2. Mã sản phẩm
+                            tableHtml += `
+                                <div class="d-flex justify-content-between p-3 border-bottom" style="border-bottom: 1px solid #f1f5f9 !important; ${rowIdx++ % 2 === 1 ? 'background-color: #f8fafc;' : ''}">
+                                    <span class="text-secondary fw-semibold"><i class="bi bi-qr-code me-2 text-warning"></i>Mã sản phẩm</span>
+                                    <span class="text-dark fw-bold">${productCode}</span>
+                                </div>
+                            `;
+
+                            // 3. Phân loại (Sneaker, Running...)
+                            tableHtml += `
+                                <div class="d-flex justify-content-between p-3 border-bottom" style="border-bottom: 1px solid #f1f5f9 !important; ${rowIdx++ % 2 === 1 ? 'background-color: #f8fafc;' : ''}">
+                                    <span class="text-secondary fw-semibold"><i class="bi bi-tags me-2 text-warning"></i>Phân loại</span>
+                                    <span class="text-dark fw-bold">${categoryName}</span>
+                                </div>
+                            `;
+
+                            // 4. Các thông số trích xuất được
+                            Object.keys(specs).forEach(key => {
+                                let icon = 'bi-layers';
+                                const k = key.toLowerCase();
+                                if (k.includes('giới tính')) icon = 'bi-gender-ambiguous';
+                                else if (k.includes('màu sắc')) icon = 'bi-palette';
+                                else if (k.includes('kiểu dáng')) icon = 'bi-activity';
+
+                                tableHtml += `
+                                    <div class="d-flex justify-content-between p-3 border-bottom" style="border-bottom: 1px solid #f1f5f9 !important; ${rowIdx++ % 2 === 1 ? 'background-color: #f8fafc;' : ''}">
+                                        <span class="text-secondary fw-semibold"><i class="bi ${icon} me-2 text-warning"></i>${key}</span>
+                                        <span class="text-dark fw-bold">${specs[key]}</span>
+                                    </div>
+                                `;
+                            });
+
+                            // 5. Chính sách đổi trả mặc định
+                            tableHtml += `
+                                <div class="d-flex justify-content-between p-3" style="${rowIdx++ % 2 === 1 ? 'background-color: #f8fafc;' : ''}">
+                                    <span class="text-secondary fw-semibold"><i class="bi bi-arrow-repeat me-2 text-warning"></i>Chính sách</span>
+                                    <span class="text-dark fw-bold">7 ngày đổi trả miễn phí</span>
+                                </div>
+                            `;
+
+                            specsTable.innerHTML = tableHtml;
+                        }
+                    }
+                }
+            });
+
+            // Handle Add to Cart / Buy Now via AJAX
+            async function handleAddToCart(isBuyNow) {
+                const variantId = document.getElementById('input-variant-id').value;
+                const quantity = document.getElementById('input-quantity').value;
+
+                if (!variantId) {
+                    showToast('Vui lòng chọn Màu sắc & Kích cỡ!', 'danger');
+                    return;
+                }
+
+                if (!quantity || quantity < 1) {
+                    showToast('Số lượng không hợp lệ!', 'danger');
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/carts/items', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            variantId: parseInt(variantId),
+                            quantity: parseInt(quantity)
+                        })
+                    });
+
+                    if (response.status === 401 || response.status === 403) {
+                        const currentUrl = encodeURIComponent(window.location.pathname + window.location.search);
+                        showGlobalConfirm(null, 'Vui lòng đăng nhập để tiếp tục mua sắm!', `/login?redirect=${currentUrl}`, 'Đăng nhập', 'Để sau');
+                        return;
+                    }
+
+                    const data = await response.json();
+
+                    if (response.ok && data.success) {
+                        if (isBuyNow) {
+                            // Fetch cart to get the cart item ID
+                            const cartRes = await fetch('/carts');
+                            const cartData = await cartRes.json();
+                            if (cartData.success && cartData.data && cartData.data.items) {
+                                // Find the cart item with this variantId
+                                const cartItem = cartData.data.items.find(i => i.variantId === parseInt(variantId));
+                                if (cartItem) {
+                                    sessionStorage.setItem('selectedCartItemIds', JSON.stringify([cartItem.id]));
+                                    window.location.href = '/checkout-ui';
+                                    return;
+                                }
+                            }
+                            // Fallback if not found
+                            window.location.href = '/cart-ui';
+                        } else {
+                            showToast('Đã thêm sản phẩm vào giỏ hàng!', 'success');
+                            // Update cart count if applicable
+                            if(typeof window.updateGlobalCartBadge === 'function') window.updateGlobalCartBadge();
+                        }
+                    } else {
+                        showToast(data.message || 'Lỗi khi thêm vào giỏ hàng', 'danger');
+                    }
+                } catch (error) {
+                    console.error(error);
+                    showToast('Lỗi kết nối máy chủ', 'danger');
+                }
+            }
+        </script>
+    </section>
 </body>
 </html>

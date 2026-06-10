@@ -116,12 +116,29 @@ public class AdminCategoryController {
 
     // Xử lý xóa
     @GetMapping("/delete/{id}")
-    public String deleteCategory(@PathVariable Integer id, RedirectAttributes ra) {
+    public String deleteCategory(
+            @PathVariable Integer id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) String keyword,
+            RedirectAttributes ra) {
         try {
             categoryService.deleteCategory(id);
             ra.addFlashAttribute("success", "Xóa danh mục thành công!");
+            
+            // Kiểm tra nếu trang hiện tại bị trống sau khi xóa, thì lùi lại 1 trang
+            if (page > 0) {
+                Page<CategoryResponse> categoryPage = categoryService.getCategories(keyword, PageRequest.of(page, 10));
+                if (categoryPage.getContent().isEmpty()) {
+                    page = page - 1;
+                }
+            }
         } catch (Exception e) {
             ra.addFlashAttribute("error", "Lỗi: " + e.getMessage());
+        }
+        
+        ra.addAttribute("page", page);
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            ra.addAttribute("keyword", keyword);
         }
         return "redirect:/admin/categories";
     }

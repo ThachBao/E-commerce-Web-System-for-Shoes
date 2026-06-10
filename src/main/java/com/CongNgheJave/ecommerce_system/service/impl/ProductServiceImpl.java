@@ -12,6 +12,7 @@ import com.CongNgheJave.ecommerce_system.exception.ResourceNotFoundException;
 import com.CongNgheJave.ecommerce_system.repository.BrandRepository;
 import com.CongNgheJave.ecommerce_system.repository.CategoryRepository;
 import com.CongNgheJave.ecommerce_system.repository.ProductImageRepository;
+import com.CongNgheJave.ecommerce_system.repository.CartItemRepository;
 import com.CongNgheJave.ecommerce_system.repository.ProductRepository;
 import com.CongNgheJave.ecommerce_system.service.FileStorageService;
 import com.CongNgheJave.ecommerce_system.service.ProductService;
@@ -36,16 +37,18 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryRepository categoryRepository;
     private final BrandRepository brandRepository;
     private final ProductImageRepository productImageRepository;
+    private final CartItemRepository cartItemRepository;
     private final FileStorageService fileStorageService;
     private final ModelMapper modelMapper;
 
     @Override
-    public Page<ProductResponse> searchProducts(String keyword, Integer categoryId, Integer brandId, String gender, Pageable pageable) {
+    public Page<ProductResponse> searchProducts(String keyword, Integer categoryId, Integer brandId, String gender, Boolean isActive, Pageable pageable) {
         Page<Product> products = productRepository.searchProducts(
                 (keyword != null && !keyword.trim().isEmpty()) ? keyword : null,
                 categoryId,
                 brandId,
                 (gender != null && !gender.trim().isEmpty()) ? gender : null,
+                isActive,
                 pageable
         );
         return products.map(this::mapToResponse);
@@ -203,12 +206,34 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public void deleteProduct(Integer id) {
+    public String deleteProduct(Integer id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy sản phẩm với ID: " + id));
-        // Đồ án này ưu tiên Soft Delete
-        product.setIsActive(false);
-        productRepository.save(product);
+
+        // Kiểm tra xem sản phẩm đã có trong đơn hàng nào chưa
+        boolean isOrdered = productRepository.isProductOrdered(id);
+
+        if (isOrdered) {
+            // Đã có đơn hàng -> Soft Delete (Khóa/Ẩn sản phẩm)
+            product.setIsActive(false);
+            productRepository.save(product);
+            return "SOFT_DELETED";
+        } else {
+            // Chưa có đơn hàng -> Hard Delete (Xóa hoàn toàn)
+            
+            // 1. Xóa các tệp hình ảnh thực tế trên ổ đĩa
+            List<ProductImage> images = productImageRepository.findByProductId(id);
+            for (ProductImage img : images) {
+                fileStorageService.deleteFile(img.getImageUrl());
+            }
+
+            // 2. Xóa các liên kết trong giỏ hàng (CartItem)
+            cartItemRepository.deleteByProductId(id);
+
+            // 3. Xóa sản phẩm (CascadeType.ALL tự động xóa ProductImage và ProductVariant trong DB)
+            productRepository.delete(product);
+            return "HARD_DELETED";
+        }
     }
 
     @Override
@@ -243,6 +268,29 @@ public class ProductServiceImpl implements ProductService {
             }
         }
         response.setImageUrls(imageUrls);
+
+        // Tính giá nhỏ nhất từ các biến thể hoạt động
+        java.math.BigDecimal minPrice = null;
+        java.math.BigDecimal minSalePrice = null;
+        java.math.BigDecimal minEffectivePrice = null;
+        if (product.getVariants() != null) {
+            for (com.CongNgheJave.ecommerce_system.entity.ProductVariant variant : product.getVariants()) {
+                if (Boolean.TRUE.equals(variant.getIsActive())) {
+                    java.math.BigDecimal currentPrice = variant.getPrice();
+                    java.math.BigDecimal currentSalePrice = variant.getSalePrice();
+                    java.math.BigDecimal effectivePrice = (currentSalePrice != null) ? currentSalePrice : currentPrice;
+                    if (effectivePrice != null) {
+                        if (minEffectivePrice == null || effectivePrice.compareTo(minEffectivePrice) < 0) {
+                            minEffectivePrice = effectivePrice;
+                            minPrice = currentPrice;
+                            minSalePrice = currentSalePrice;
+                        }
+                    }
+                }
+            }
+        }
+        response.setPrice(minPrice);
+        response.setSalePrice(minSalePrice);
 
         return response;
     }

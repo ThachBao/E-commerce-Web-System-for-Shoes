@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -29,6 +30,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderStatusHistoryRepository historyRepository;
     private final PaymentRepository paymentRepository;
     private final CartRepository cartRepository;
+    private final CartItemRepository cartItemRepository;
     private final InventoryService inventoryService;
     private final PaymentService paymentService;
 
@@ -37,6 +39,7 @@ public class OrderServiceImpl implements OrderService {
                             OrderStatusHistoryRepository historyRepository,
                             PaymentRepository paymentRepository,
                             CartRepository cartRepository,
+                            CartItemRepository cartItemRepository,
                             InventoryService inventoryService,
                             PaymentService paymentService) {
         this.orderRepository = orderRepository;
@@ -44,6 +47,7 @@ public class OrderServiceImpl implements OrderService {
         this.historyRepository = historyRepository;
         this.paymentRepository = paymentRepository;
         this.cartRepository = cartRepository;
+        this.cartItemRepository = cartItemRepository;
         this.inventoryService = inventoryService;
         this.paymentService = paymentService;
     }
@@ -178,9 +182,24 @@ public class OrderServiceImpl implements OrderService {
             throw new InvalidOperationException("Giỏ hàng trống, không thể đặt hàng");
         }
 
-        // Validate stock cho tất cả items
-        for (CartItem cartItem : cart.getItems()) {
-            inventoryService.validateStock(cartItem.getVariant(), cartItem.getQuantity());
+        // Lọc danh sách sản phẩm cần đặt hàng theo selectedCartItemIds nếu được truyền lên
+        List<CartItem> itemsToOrder;
+        if (request.getSelectedCartItemIds() != null && !request.getSelectedCartItemIds().isEmpty()) {
+            itemsToOrder = cart.getItems().stream()
+                    .filter(item -> request.getSelectedCartItemIds().contains(item.getId()))
+                    .collect(Collectors.toList());
+            if (itemsToOrder.isEmpty()) {
+                throw new InvalidOperationException("Các sản phẩm đã chọn không hợp lệ hoặc không còn trong giỏ hàng");
+            }
+        } else {
+            itemsToOrder = cart.getItems();
+        }
+
+        // Validate stock cho các sản phẩm được chọn và thực hiện khóa dòng (Pessimistic Lock)
+        for (CartItem cartItem : itemsToOrder) {
+            ProductVariant lockedVariant = inventoryService.lockVariant(cartItem.getVariant().getId());
+            inventoryService.validateStock(lockedVariant, cartItem.getQuantity());
+            cartItem.setVariant(lockedVariant); // Gán biến thể đã được khóa và nạp mới nhất
         }
 
         // Tạo order
@@ -199,7 +218,7 @@ public class OrderServiceImpl implements OrderService {
 
         // Calculate totals
         BigDecimal subTotal = BigDecimal.ZERO;
-        for (CartItem cartItem : cart.getItems()) {
+        for (CartItem cartItem : itemsToOrder) {
             ProductVariant variant = cartItem.getVariant();
             BigDecimal price = variant.getSalePrice() != null ? variant.getSalePrice() : variant.getPrice();
             BigDecimal lineTotal = price.multiply(BigDecimal.valueOf(cartItem.getQuantity()));
@@ -213,7 +232,7 @@ public class OrderServiceImpl implements OrderService {
         order = orderRepository.save(order);
 
         // Create order items with snapshot
-        for (CartItem cartItem : cart.getItems()) {
+        for (CartItem cartItem : itemsToOrder) {
             ProductVariant variant = cartItem.getVariant();
             Product product = variant.getProduct();
             Size size = variant.getSize();
@@ -259,8 +278,9 @@ public class OrderServiceImpl implements OrderService {
         history.setCreatedAt(LocalDateTime.now());
         historyRepository.save(history);
 
-        // Clear cart
-        cart.getItems().clear();
+        // Remove only the purchased items from cart
+        cart.getItems().removeAll(itemsToOrder);
+        cartItemRepository.deleteAll(itemsToOrder);
         cartRepository.save(cart);
 
         return order;

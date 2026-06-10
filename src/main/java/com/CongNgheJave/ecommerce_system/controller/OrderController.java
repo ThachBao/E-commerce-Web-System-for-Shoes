@@ -1,5 +1,5 @@
 package com.CongNgheJave.ecommerce_system.controller;
-
+ 
 import com.CongNgheJave.ecommerce_system.dto.request.CheckoutRequest;
 import com.CongNgheJave.ecommerce_system.dto.response.ApiResponse;
 import com.CongNgheJave.ecommerce_system.dto.response.OrderDetailResponse;
@@ -12,31 +12,35 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+ 
 @RestController
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
 public class OrderController {
-
+ 
     private final OrderService orderService;
     private final OrderRepository orderRepository;
-
+ 
     private Integer getCurrentUserId() {
         org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && !auth.getName().equals("anonymousUser")) {
             try {
                 return Integer.parseInt(auth.getName());
             } catch (NumberFormatException e) {
-                // Ignore and fallback
+                // Ignore
             }
         }
-        return 5; // Hardcode mapping to user 5 for testing/fallback
+        return null;
     }
-
+ 
     @PostMapping("/checkout")
     public ResponseEntity<ApiResponse<OrderResponse>> checkout(@Valid @RequestBody CheckoutRequest request) {
         try {
             Integer userId = getCurrentUserId();
+            if (userId == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(ApiResponse.error("Vui lòng đăng nhập để đặt hàng"));
+            }
             OrderResponse response = orderService.checkout(userId, request);
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(ApiResponse.success("Đặt hàng thành công", response));
@@ -45,13 +49,23 @@ public class OrderController {
                     .body(ApiResponse.error(e.getMessage()));
         }
     }
-
+ 
     @GetMapping("/{orderCode}")
     public ResponseEntity<ApiResponse<OrderDetailResponse>> getOrderDetails(@PathVariable String orderCode) {
         try {
+            Integer userId = getCurrentUserId();
+            if (userId == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(ApiResponse.error("Vui lòng đăng nhập để xem chi tiết đơn hàng"));
+            }
             Order order = orderRepository.findByOrderCode(orderCode)
                     .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng"));
-
+ 
+            if (order.getUser() == null || !order.getUser().getId().equals(userId)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(ApiResponse.error("Bạn không có quyền truy cập đơn hàng này"));
+            }
+ 
             OrderDetailResponse response = new OrderDetailResponse();
             response.setOrderCode(order.getOrderCode());
             response.setOrderStatus(order.getOrderStatus());
@@ -62,7 +76,7 @@ public class OrderController {
             response.setShippingPhone(order.getShippingPhone());
             response.setShippingAddress(order.getShippingAddress());
             response.setPlacedAt(order.getPlacedAt());
-
+ 
             return ResponseEntity.ok(ApiResponse.success("Chi tiết đơn hàng", response));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)

@@ -11,8 +11,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Controller
 @RequestMapping("/checkout")
+@Slf4j
 public class CheckoutController {
 
     private final OrderService orderService;
@@ -67,7 +70,7 @@ public class CheckoutController {
             
         } catch (Exception ex) {
             // Log lỗi để debug
-            ex.printStackTrace();
+            log.error("Lỗi khi thanh toán: ", ex);
             model.addAttribute("errorMessage", "❌ Lỗi: " + ex.getMessage());
             return "checkout-form";
         }

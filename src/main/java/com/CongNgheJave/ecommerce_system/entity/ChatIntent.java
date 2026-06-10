@@ -1,0 +1,19 @@
+package com.CongNgheJave.ecommerce_system.entity;
+
+public enum ChatIntent {
+    SMALL_TALK,
+    SIZE_GUIDE_RAG,
+    POLICY_RAG,
+    PRODUCT_SEARCH,
+    PRODUCT_RECOMMENDATION,
+    PRODUCT_DETAIL,
+    PRODUCT_STOCK_RANKING,
+    PRODUCT_SIZE,
+    PRODUCT_PRICE,
+    PRODUCT_STOCK,
+    ORDER_LIST,
+    ORDER_LATEST,
+    ORDER_BY_CODE,
+    AUTH_REQUIRED,
+    UNKNOWN
+}

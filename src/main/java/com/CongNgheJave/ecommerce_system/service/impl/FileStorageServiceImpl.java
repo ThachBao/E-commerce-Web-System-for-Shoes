@@ -16,7 +16,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class FileStorageServiceImpl implements FileStorageService {
 
     private final String uploadDir = "uploads/products/";
@@ -78,6 +81,9 @@ public class FileStorageServiceImpl implements FileStorageService {
         if (fileName.startsWith("/") || fileName.startsWith("http://") || fileName.startsWith("https://")) {
             return fileName;
         }
+        if (fileName.startsWith("images/")) {
+            return "/" + fileName;
+        }
         return urlPrefix + fileName;
     }
 
@@ -89,7 +95,7 @@ public class FileStorageServiceImpl implements FileStorageService {
                 Files.deleteIfExists(filePath);
             } catch (IOException ex) {
                 // Chỉ log ra lỗi, không ném exception làm gián đoạn luồng chính
-                System.err.println("Lỗi khi xóa file: " + fileName);
+                log.error("Lỗi khi xóa file: {}", fileName, ex);
             }
         }
     }

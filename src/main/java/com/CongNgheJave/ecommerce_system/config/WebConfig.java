@@ -7,7 +7,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Configuration
+@Slf4j
 public class WebConfig implements WebMvcConfigurer {
 
     @Override
@@ -24,11 +27,11 @@ public class WebConfig implements WebMvcConfigurer {
             resourceLocation += "/";
         }
         
-        System.out.println("========== [RESOURCE EXPOSE] ==========");
-        System.out.println("Folder: " + dirName);
-        System.out.println("Absolute Path: " + uploadPath);
-        System.out.println("Resource Location: " + resourceLocation);
-        System.out.println("=======================================");
+        log.info("========== [RESOURCE EXPOSE] ==========");
+        log.info("Folder: {}", dirName);
+        log.info("Absolute Path: {}", uploadPath);
+        log.info("Resource Location: {}", resourceLocation);
+        log.info("=======================================");
         
         if (dirName.startsWith("../")) {
             dirName = dirName.replace("../", "");

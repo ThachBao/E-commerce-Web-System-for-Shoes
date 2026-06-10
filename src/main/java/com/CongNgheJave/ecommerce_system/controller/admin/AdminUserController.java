@@ -48,6 +48,9 @@ public class AdminUserController {
     @PostMapping("/toggle/{id}")
     public String toggleUserActive(
             @PathVariable Integer id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String role,
             Authentication auth,
             RedirectAttributes ra) {
         try {
@@ -59,12 +62,19 @@ public class AdminUserController {
         } catch (Exception e) {
             ra.addFlashAttribute("error", "Không thể cập nhật: " + e.getMessage());
         }
+        
+        ra.addAttribute("page", page);
+        if (keyword != null && !keyword.trim().isEmpty()) ra.addAttribute("keyword", keyword);
+        if (role != null && !role.trim().isEmpty()) ra.addAttribute("role", role);
         return "redirect:/admin/users";
     }
 
     @PostMapping("/reset-password/{id}")
     public String resetPassword(
             @PathVariable Integer id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String role,
             Authentication auth,
             RedirectAttributes ra) {
         try {
@@ -76,6 +86,10 @@ public class AdminUserController {
         } catch (Exception e) {
             ra.addFlashAttribute("error", "Không thể đặt lại mật khẩu: " + e.getMessage());
         }
+        
+        ra.addAttribute("page", page);
+        if (keyword != null && !keyword.trim().isEmpty()) ra.addAttribute("keyword", keyword);
+        if (role != null && !role.trim().isEmpty()) ra.addAttribute("role", role);
         return "redirect:/admin/users";
     }
 
@@ -97,6 +111,9 @@ public class AdminUserController {
     @PostMapping("/delete/{id}")
     public String deleteUser(
             @PathVariable Integer id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String role,
             Authentication auth,
             RedirectAttributes ra) {
         try {
@@ -105,9 +122,21 @@ public class AdminUserController {
 
             userService.deleteUser(id, creatorUsername, creatorRole);
             ra.addFlashAttribute("success", "Xóa tài khoản thành công!");
+            
+            // Kiểm tra nếu trang hiện tại bị trống sau khi xóa, thì lùi lại 1 trang
+            if (page > 0) {
+                Page<AppUser> userPage = userService.searchUsers(keyword, role, PageRequest.of(page, 10));
+                if (userPage.getContent().isEmpty()) {
+                    page = page - 1;
+                }
+            }
         } catch (Exception e) {
             ra.addFlashAttribute("error", "Không thể xóa tài khoản: " + e.getMessage());
         }
+        
+        ra.addAttribute("page", page);
+        if (keyword != null && !keyword.trim().isEmpty()) ra.addAttribute("keyword", keyword);
+        if (role != null && !role.trim().isEmpty()) ra.addAttribute("role", role);
         return "redirect:/admin/users";
     }
 }

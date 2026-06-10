@@ -25,8 +25,8 @@
                             <div class="mb-4">
                                 <label class="form-label">Mã Hex</label>
                                 <div class="input-group">
-                                    <input type="color" name="hexCode" class="form-control form-control-color w-25" value="#ff0000" title="Chọn màu">
-                                    <input type="text" class="form-control w-75" placeholder="#ff0000" readonly>
+                                    <input type="color" name="hexCode" id="addColorPicker" class="form-control form-control-color w-25" value="#ff0000" title="Chọn màu">
+                                    <input type="text" id="addColorHex" class="form-control w-75" value="#ff0000" placeholder="#ff0000">
                                 </div>
                             </div>
                             <div class="d-grid">
@@ -71,13 +71,13 @@
                                         </td>
                                         <td class="text-end">
                                             <button type="button" class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="modal" th:data-bs-target="'#editColorModal' + ${color.id}"><i class="bi bi-pencil"></i></button>
-                                            <a th:href="@{/admin/attributes/colors/delete/{id}(id=${color.id})}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Xóa màu sắc này?');"><i class="bi bi-trash"></i></a>
+                                            <a th:href="@{/admin/attributes/colors/delete/{id}(id=${color.id}, page=${currentPage}, keyword=${keyword})}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Xóa màu sắc này?');"><i class="bi bi-trash"></i></a>
                                             
                                             <!-- Modal Edit Color -->
                                             <div class="modal fade text-start" th:id="'editColorModal' + ${color.id}" tabindex="-1" aria-hidden="true">
                                                 <div class="modal-dialog">
                                                     <div class="modal-content">
-                                                        <form th:action="@{/admin/attributes/colors/edit/{id}(id=${color.id})}" method="post">
+                                                        <form th:action="@{/admin/attributes/colors/edit/{id}(id=${color.id}, page=${currentPage}, keyword=${keyword})}" method="post">
                                                             <div class="modal-header">
                                                                 <h5 class="modal-title">Cập nhật Màu sắc</h5>
                                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -90,8 +90,8 @@
                                                                 <div class="mb-3">
                                                                     <label class="form-label">Mã Hex</label>
                                                                     <div class="input-group">
-                                                                        <input type="color" name="hexCode" class="form-control form-control-color w-25" th:value="${color.hexCode ?: '#000000'}" title="Chọn màu">
-                                                                        <input type="text" class="form-control w-75" th:value="${color.hexCode}" readonly>
+                                                                        <input type="color" name="hexCode" th:id="'editColorPicker' + ${color.id}" class="form-control form-control-color w-25" th:value="${color.hexCode ?: '#000000'}" th:data-id="${color.id}" title="Chọn màu">
+                                                                        <input type="text" th:id="'editColorHex' + ${color.id}" class="form-control w-75" th:value="${color.hexCode ?: '#000000'}" th:data-id="${color.id}" placeholder="#000000">
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -130,6 +130,52 @@
                 </div>
             </div>
         </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Xử lý đồng bộ cho Form Thêm mới
+                const addColorPicker = document.getElementById('addColorPicker');
+                const addColorHex = document.getElementById('addColorHex');
+
+                if (addColorPicker && addColorHex) {
+                    addColorPicker.addEventListener('input', function() {
+                        addColorHex.value = this.value;
+                    });
+                    
+                    addColorHex.addEventListener('input', function() {
+                        let val = this.value.trim();
+                        if (val && !val.startsWith('#')) {
+                            val = '#' + val;
+                        }
+                        if (/^#[0-9A-F]{6}$/i.test(val)) {
+                            addColorPicker.value = val;
+                        }
+                    });
+                }
+
+                // Xử lý đồng bộ cho các Form Cập nhật (trong Modals)
+                document.querySelectorAll('input[type="color"][id^="editColorPicker"]').forEach(picker => {
+                    const id = picker.getAttribute('data-id');
+                    const textInput = document.getElementById('editColorHex' + id);
+                    
+                    if (textInput) {
+                        picker.addEventListener('input', function() {
+                            textInput.value = this.value;
+                        });
+                        
+                        textInput.addEventListener('input', function() {
+                            let val = this.value.trim();
+                            if (val && !val.startsWith('#')) {
+                                val = '#' + val;
+                            }
+                            if (/^#[0-9A-F]{6}$/i.test(val)) {
+                                picker.value = val;
+                            }
+                        });
+                    }
+                });
+            });
+        </script>
     </section>
 </body>
 </html>

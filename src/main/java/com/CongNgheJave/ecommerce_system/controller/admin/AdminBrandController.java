@@ -104,12 +104,29 @@ public class AdminBrandController {
     }
 
     @GetMapping("/delete/{id}")
-    public String deleteBrand(@PathVariable Integer id, RedirectAttributes ra) {
+    public String deleteBrand(
+            @PathVariable Integer id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) String keyword,
+            RedirectAttributes ra) {
         try {
             brandService.deleteBrand(id);
             ra.addFlashAttribute("success", "Xóa thương hiệu thành công!");
+            
+            // Kiểm tra nếu trang hiện tại bị trống sau khi xóa, thì lùi lại 1 trang
+            if (page > 0) {
+                Page<BrandResponse> brandPage = brandService.getBrands(keyword, PageRequest.of(page, 10));
+                if (brandPage.getContent().isEmpty()) {
+                    page = page - 1;
+                }
+            }
         } catch (Exception e) {
             ra.addFlashAttribute("error", "Lỗi: " + e.getMessage());
+        }
+        
+        ra.addAttribute("page", page);
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            ra.addAttribute("keyword", keyword);
         }
         return "redirect:/admin/brands";
     }

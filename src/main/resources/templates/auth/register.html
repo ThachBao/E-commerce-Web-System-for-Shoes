@@ -4,11 +4,11 @@
     <title>Đăng ký | ShoeStore</title>
 </head>
 <body>
-<section class="container py-5 my-4">
+<section class="container py-4 py-md-5 my-2 my-md-4">
     <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-6">
+        <div class="col-md-8 col-lg-6 reveal reveal-up">
             <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
-                <div class="card-body p-5">
+                <div class="card-body p-3 p-md-5">
                     <div class="text-center mb-4">
                         <i class="bi bi-person-plus text-warning fs-1 mb-2 d-inline-block"></i>
                         <h3 class="fw-bold text-uppercase">Tạo tài khoản mới</h3>
@@ -19,50 +19,68 @@
                     <div th:if="${param.error != null and param.error[0] == 'UsernameExists'}" class="alert alert-danger py-2 small fw-medium">
                         <i class="bi bi-exclamation-circle me-1"></i> Tên đăng nhập đã tồn tại, vui lòng chọn tên khác!
                     </div>
+                    <div th:if="${param.error != null and param.error[0] == 'EmailExists'}" class="alert alert-danger py-2 small fw-medium">
+                        <i class="bi bi-exclamation-circle me-1"></i> Email đã được sử dụng, vui lòng dùng email khác!
+                    </div>
+                    <div th:if="${param.error != null and param.error[0] == 'InvalidInput'}" class="alert alert-danger py-2 small fw-medium">
+                        <i class="bi bi-exclamation-circle me-1"></i> Thông tin không hợp lệ, vui lòng kiểm tra lại!
+                    </div>
                     
-                    <form action="/register" method="post" id="registerForm">
+                    <form action="/register" method="post" id="registerForm" novalidate>
                         <input type="hidden" name="redirect" th:if="${redirect != null}" th:value="${redirect}">
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control rounded-pill px-4" id="firstName" name="firstName" placeholder="Họ" required>
-                                    <label for="firstName" class="px-4">Họ</label>
+                                    <input type="text" class="form-control rounded-pill px-4" id="firstName" name="firstName" placeholder="Họ" required minlength="1" maxlength="50">
+                                    <label for="firstName" class="px-4">Họ <span class="text-danger">*</span></label>
                                 </div>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control rounded-pill px-4" id="lastName" name="lastName" placeholder="Tên" required>
-                                    <label for="lastName" class="px-4">Tên</label>
+                                    <input type="text" class="form-control rounded-pill px-4" id="lastName" name="lastName" placeholder="Tên" required minlength="1" maxlength="50">
+                                    <label for="lastName" class="px-4">Tên <span class="text-danger">*</span></label>
                                 </div>
                             </div>
                         </div>
                         
                         <div class="form-floating mb-3">
-                            <input type="text" class="form-control rounded-pill px-4" id="username" name="username" placeholder="Tên đăng nhập" required>
-                            <label for="username" class="px-4">Tên đăng nhập</label>
+                            <input type="text" class="form-control rounded-pill px-4" id="username" name="username" placeholder="Tên đăng nhập" required minlength="3" maxlength="30" pattern="^[a-zA-Z0-9_]+$">
+                            <label for="username" class="px-4">Tên đăng nhập <span class="text-danger">*</span></label>
+                            <div class="form-text text-muted mt-1 ms-3" style="font-size: 0.75rem;">3-30 ký tự, chỉ chữ cái, số và dấu gạch dưới</div>
                         </div>
                         
                         <div class="form-floating mb-3">
-                            <input type="email" class="form-control rounded-pill px-4" id="email" name="email" placeholder="Email" required>
-                            <label for="email" class="px-4">Địa chỉ Email</label>
+                            <input type="email" class="form-control rounded-pill px-4" id="email" name="email" placeholder="Email" required maxlength="100">
+                            <label for="email" class="px-4">Địa chỉ Email <span class="text-danger">*</span></label>
+                        </div>
+                        
+                        <div class="form-floating mb-3">
+                            <input type="tel" class="form-control rounded-pill px-4" id="phone" name="phone" placeholder="Số điện thoại" pattern="0[35789][0-9]{8}" maxlength="10">
+                            <label for="phone" class="px-4">Số điện thoại (tùy chọn)</label>
                         </div>
                         
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <div class="form-floating">
-                                    <input type="password" class="form-control rounded-pill px-4" id="password" name="password" placeholder="Mật khẩu" required>
-                                    <label for="password" class="px-4">Mật khẩu</label>
+                                    <input type="password" class="form-control rounded-pill px-4" id="password" name="password" placeholder="Mật khẩu" required minlength="8" maxlength="50" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@$!%*?&]).{8,}">
+                                    <label for="password" class="px-4">Mật khẩu <span class="text-danger">*</span></label>
                                 </div>
+                                <div class="form-text text-muted mt-1 ms-3" style="font-size: 0.75rem;">Tối thiểu 8 ký tự, gồm chữ hoa, thường, số và ký tự đặc biệt (@$!%*?&)</div>
                             </div>
                             <div class="col-md-6 mb-4">
                                 <div class="form-floating">
-                                    <input type="password" class="form-control rounded-pill px-4" id="confirmPassword" name="confirmPassword" placeholder="Xác nhận mật khẩu" required>
-                                    <label for="confirmPassword" class="px-4">Xác nhận mật khẩu</label>
+                                    <input type="password" class="form-control rounded-pill px-4" id="confirmPassword" name="confirmPassword" placeholder="Xác nhận mật khẩu" required minlength="8">
+                                    <label for="confirmPassword" class="px-4">Xác nhận mật khẩu <span class="text-danger">*</span></label>
                                 </div>
                             </div>
                         </div>
                         
-                        <div class="form-check mb-4 px-2 ms-2">
+                        <!-- Validation error display -->
+                        <div id="registerErrors" class="alert alert-danger py-2 small fw-medium mb-3 d-none">
+                            <i class="bi bi-exclamation-circle me-1"></i> <span id="registerErrorMsg"></span>
+                        </div>
+                        
+                        <div class="form-check mb-4">
                             <input class="form-check-input" type="checkbox" id="terms" required>
                             <label class="form-check-label text-muted" for="terms" style="font-size: 0.9rem;">
                                 Tôi đồng ý với các <a href="#" class="text-primary text-decoration-none">Điều khoản dịch vụ</a> và <a href="#" class="text-primary text-decoration-none">Chính sách bảo mật</a>
@@ -81,6 +99,60 @@
             </div>
         </div>
     </div>
+    
+    <!-- Client-side validation script -->
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            const errBox = document.getElementById('registerErrors');
+            const errMsg = document.getElementById('registerErrorMsg');
+            errBox.classList.add('d-none');
+            
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const username = document.getElementById('username').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const terms = document.getElementById('terms').checked;
+            
+            function showError(msg) {
+                errMsg.textContent = msg;
+                errBox.classList.remove('d-none');
+                e.preventDefault();
+            }
+            
+            if (!firstName || !lastName) {
+                return showError('Vui lòng nhập đầy đủ Họ và Tên.');
+            }
+            
+            if (username.length < 3 || username.length > 30) {
+                return showError('Tên đăng nhập phải từ 3 đến 30 ký tự.');
+            }
+            
+            if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+                return showError('Tên đăng nhập chỉ được chứa chữ cái, số và dấu gạch dưới (_).');
+            }
+            
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            if (!emailRegex.test(email)) {
+                return showError('Vui lòng nhập email hợp lệ (ví dụ: ten@domain.com).');
+            }
+            
+            const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+            if (!passRegex.test(password)) {
+                return showError('Mật khẩu phải dài ít nhất 8 ký tự, bao gồm ít nhất 1 chữ hoa, 1 chữ thường, 1 số và 1 ký tự đặc biệt.');
+            }
+            
+            if (password !== confirmPassword) {
+                return showError('Mật khẩu xác nhận không khớp.');
+            }
+            
+            if (!terms) {
+                return showError('Bạn cần đồng ý với Điều khoản dịch vụ.');
+            }
+        });
+    </script>
+    
     <style>
         .btn-register {
             transition: all 0.3s ease;

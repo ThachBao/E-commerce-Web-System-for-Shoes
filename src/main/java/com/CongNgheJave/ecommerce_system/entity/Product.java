@@ -60,11 +60,5 @@ public class Product {
     @ToString.Exclude
     private List<ProductVariant> variants = new ArrayList<>();
 
-    public Boolean getActive() {
-        return isActive;
-    }
 
-    public void setActive(Boolean active) {
-        this.isActive = active;
-    }
 }

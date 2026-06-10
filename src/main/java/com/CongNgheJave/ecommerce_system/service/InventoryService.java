@@ -19,4 +19,9 @@ public interface InventoryService {
      * Restore stock to a variant and create inventory transaction.
      */
     void restoreStock(ProductVariant variant, Integer quantity);
+
+    /**
+     * Lock the variant in the database for pessimistic write update.
+     */
+    ProductVariant lockVariant(Integer variantId);
 }

@@ -14,17 +14,22 @@ import com.CongNgheJave.ecommerce_system.repository.PasswordResetTokenRepository
 import com.CongNgheJave.ecommerce_system.service.EmailService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.ui.Model;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
 
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
@@ -38,19 +43,29 @@ public class AuthController {
     private String baseUrl;
 
     @GetMapping("/login")
-    public String loginPage(@RequestParam(required = false) String redirect, org.springframework.ui.Model model) {
+    public String loginPage(@RequestParam(required = false) String redirect, Model model) {
         model.addAttribute("redirect", redirect);
         return "auth/login";
     }
 
     @PostMapping("/login")
-    public String authenticate(@RequestParam String username, @RequestParam String password, @RequestParam(required = false) String redirect, HttpServletResponse response) {
+    public String loginUser(
+            @Valid @ModelAttribute com.CongNgheJave.ecommerce_system.dto.auth.LoginRequestDTO request,
+            org.springframework.validation.BindingResult bindingResult,
+            HttpServletResponse response
+    ) {
+        String redirect = request.getRedirect();
+        if (bindingResult.hasErrors()) {
+            String redirectParam = (redirect != null && !redirect.trim().isEmpty()) ? "&redirect=" + redirect : "";
+            return "redirect:/login?error=InvalidInput" + redirectParam;
+        }
+
         try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(username, password)
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
             );
 
-            AppUser user = userRepository.findByUsername(username).orElseThrow();
+            AppUser user = userRepository.findByUsername(request.getUsername()).orElseThrow();
             
             // Block Admin/Staff accounts from client login
             if ("ROLE_ADMIN".equals(user.getRole()) || "ROLE_STAFF".equals(user.getRole()) || "ROLE_ROOT_ADMIN".equals(user.getRole())) {
@@ -62,8 +77,10 @@ public class AuthController {
 
             Cookie cookie = new Cookie("jwtToken", jwtToken);
             cookie.setHttpOnly(true);
+            cookie.setSecure(true); // Requires HTTPS on VPS
             cookie.setPath("/");
             cookie.setMaxAge(24 * 60 * 60); // 1 day
+            cookie.setAttribute("SameSite", "Strict"); // Prevent CSRF
             response.addCookie(cookie);
 
             if (redirect != null && !redirect.trim().isEmpty()) {
@@ -80,24 +97,37 @@ public class AuthController {
     }
 
     @GetMapping("/register")
-    public String registerPage(@RequestParam(required = false) String redirect, org.springframework.ui.Model model) {
+    public String registerPage(@RequestParam(required = false) String redirect, Model model) {
         model.addAttribute("redirect", redirect);
         return "auth/register";
     }
 
     @PostMapping("/register")
     public String registerUser(
-            @RequestParam String username,
-            @RequestParam String email,
-            @RequestParam String password,
-            @RequestParam String firstName,
-            @RequestParam String lastName,
-            @RequestParam(required = false) String redirect
+            @Valid @ModelAttribute com.CongNgheJave.ecommerce_system.dto.auth.RegisterRequestDTO request,
+            org.springframework.validation.BindingResult bindingResult
     ) {
-        String redirectParam = (redirect != null && !redirect.trim().isEmpty()) ? "&redirect=" + redirect : "";
+        String redirectParam = (request.getRedirect() != null && !request.getRedirect().trim().isEmpty()) ? "&redirect=" + request.getRedirect() : "";
         
+        if (bindingResult.hasErrors()) {
+            return "redirect:/register?error=InvalidInput" + redirectParam;
+        }
+        
+        String username = request.getUsername().trim();
+        String email = request.getEmail().trim();
+        String firstName = request.getFirstName().trim();
+        String lastName = request.getLastName().trim();
+        String phone = request.getPhone();
+        String password = request.getPassword();
+        
+        // Check username duplicate
         if (userRepository.findByUsername(username).isPresent()) {
             return "redirect:/register?error=UsernameExists" + redirectParam;
+        }
+        
+        // Check email duplicate
+        if (userRepository.findByEmailIgnoreCase(email).isPresent()) {
+            return "redirect:/register?error=EmailExists" + redirectParam;
         }
 
         AppUser user = new AppUser();
@@ -106,6 +136,9 @@ public class AuthController {
         user.setPassword(passwordEncoder.encode(password));
         user.setFullName(firstName + " " + lastName);
         user.setRole("ROLE_USER");
+        if (phone != null && !phone.trim().isEmpty()) {
+            user.setPhone(phone.trim());
+        }
         
         userRepository.save(user);
 
@@ -116,7 +149,7 @@ public class AuthController {
     public String forgotPasswordPage() {
         return "auth/forgot-password";
     }
-    
+
     @PostMapping("/logout")
     public String logout(HttpServletResponse response) {
         Cookie cookie = new Cookie("jwtToken", null);
@@ -128,19 +161,29 @@ public class AuthController {
     }
 
     @GetMapping("/admin/login")
-    public String adminLoginPage(@RequestParam(required = false) String redirect, org.springframework.ui.Model model) {
+    public String adminLoginPage(@RequestParam(required = false) String redirect, Model model) {
         model.addAttribute("redirect", redirect);
         return "admin/auth/login";
     }
 
     @PostMapping("/admin/login")
-    public String authenticateAdmin(@RequestParam String username, @RequestParam String password, @RequestParam(required = false) String redirect, HttpServletResponse response) {
+    public String adminLoginUser(
+            @Valid @ModelAttribute com.CongNgheJave.ecommerce_system.dto.auth.LoginRequestDTO request,
+            org.springframework.validation.BindingResult bindingResult,
+            HttpServletResponse response
+    ) {
+        String redirect = request.getRedirect();
+        if (bindingResult.hasErrors()) {
+            String redirectParam = (redirect != null && !redirect.trim().isEmpty()) ? "&redirect=" + redirect : "";
+            return "redirect:/admin/login?error=InvalidInput" + redirectParam;
+        }
+
         try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(username, password)
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
             );
 
-            AppUser user = userRepository.findByUsername(username).orElseThrow();
+            AppUser user = userRepository.findByUsername(request.getUsername()).orElseThrow();
             
             // Check if the user is an ADMIN or STAFF
             if (!"ROLE_ADMIN".equals(user.getRole()) && !"ROLE_STAFF".equals(user.getRole())) {
@@ -151,8 +194,10 @@ public class AuthController {
 
             Cookie cookie = new Cookie("adminJwtToken", jwtToken);
             cookie.setHttpOnly(true);
+            cookie.setSecure(true); // Requires HTTPS on VPS
             cookie.setPath("/");
             cookie.setMaxAge(24 * 60 * 60); // 1 day
+            cookie.setAttribute("SameSite", "Strict"); // Prevent CSRF
             response.addCookie(cookie);
 
             if (redirect != null && !redirect.trim().isEmpty()) {
@@ -207,7 +252,8 @@ public class AuthController {
             resetTokenRepository.save(resetToken);
 
             // Send email
-            String resetLink = baseUrl + "/reset-password?token=" + token;
+            String cleanBaseUrl = (baseUrl != null && baseUrl.endsWith("/")) ? baseUrl.substring(0, baseUrl.length() - 1) : baseUrl;
+            String resetLink = cleanBaseUrl + "/reset-password?token=" + token;
             boolean emailSent = emailService.sendResetPasswordEmail(user.getEmail(), resetLink);
             if (!emailSent) {
                 resetTokenRepository.delete(resetToken);
@@ -216,7 +262,7 @@ public class AuthController {
 
             return "redirect:/forgot-password?success=true";
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Lỗi khi xử lý quên mật khẩu: ", e);
             return "redirect:/forgot-password?error=SystemError";
         }
     }
@@ -241,6 +287,11 @@ public class AuthController {
 
         PasswordResetToken resetToken = tokenOpt.get();
         AppUser user = resetToken.getUser();
+
+        // Validate password: minimum 8 characters, 1 uppercase, 1 lowercase, 1 number, 1 special character
+        if (!password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$")) {
+            return "redirect:/reset-password?token=" + token + "&error=InvalidPassword";
+        }
 
         // Update password with BCrypt hashing
         user.setPassword(passwordEncoder.encode(password));

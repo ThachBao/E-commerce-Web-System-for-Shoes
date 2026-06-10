@@ -63,15 +63,16 @@ public interface ProductRepository extends JpaRepository<Product, Integer>, JpaS
      * Các tham số null sẽ được bỏ qua trong điều kiện lọc.
      */
     @Query("SELECT p FROM Product p WHERE "
-         + "(:keyword IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%'))) "
+         + "(:keyword IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(p.code) LIKE LOWER(CONCAT('%', :keyword, '%'))) "
          + "AND (:categoryId IS NULL OR p.category.id = :categoryId) "
          + "AND (:brandId IS NULL OR p.brand.id = :brandId) "
          + "AND (:gender IS NULL OR p.gender = :gender) "
-         + "AND p.isActive = true")
+         + "AND (:isActive IS NULL OR p.isActive = :isActive)")
     Page<Product> searchProducts(@Param("keyword") String keyword,
                                  @Param("categoryId") Integer categoryId,
                                  @Param("brandId") Integer brandId,
                                  @Param("gender") String gender,
+                                 @Param("isActive") Boolean isActive,
                                  Pageable pageable);
 
     /** Đếm số sản phẩm đang hoạt động theo danh mục */
@@ -79,4 +80,8 @@ public interface ProductRepository extends JpaRepository<Product, Integer>, JpaS
 
     /** Đếm số sản phẩm đang hoạt động theo thương hiệu */
     long countByBrandIdAndIsActiveTrue(Integer brandId);
+
+    /** Kiểm tra xem sản phẩm đã có trong đơn hàng nào chưa */
+    @Query("SELECT COUNT(oi) > 0 FROM OrderItem oi WHERE oi.variant.product.id = :productId")
+    boolean isProductOrdered(@Param("productId") Integer productId);
 }

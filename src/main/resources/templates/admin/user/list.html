@@ -99,7 +99,7 @@
                                     <div th:unless="${user.isSystem}" class="d-flex justify-content-end gap-2">
                                         
                                         <!-- Nút Khóa / Mở khóa -->
-                                        <form th:action="@{/admin/users/toggle/{id}(id=${user.id})}" method="post" class="m-0"
+                                        <form th:action="@{/admin/users/toggle/{id}(id=${user.id}, page=${currentPage}, keyword=${keyword}, role=${role})}" method="post" class="m-0"
                                               th:if="${user.role != 'ROLE_ADMIN' or (currentUser != null and currentUser.isSystem)}"
                                               onclick="return showGlobalConfirm(event, 'Bạn có chắc chắn muốn thay đổi trạng thái hoạt động (Khóa / Mở khóa) của tài khoản này không?', this)">
                                             <button type="submit" 
@@ -112,7 +112,7 @@
                                         </form>
 
                                         <!-- Nút Đặt lại Mật khẩu (Reset Password về admin123) -->
-                                        <form th:action="@{/admin/users/reset-password/{id}(id=${user.id})}" method="post" class="m-0"
+                                        <form th:action="@{/admin/users/reset-password/{id}(id=${user.id}, page=${currentPage}, keyword=${keyword}, role=${role})}" method="post" class="m-0"
                                               th:if="${user.role != 'ROLE_ADMIN' or (currentUser != null and currentUser.isSystem)}"
                                               onclick="return showGlobalConfirm(event, 'Bạn có chắc chắn muốn đặt lại mật khẩu cho tài khoản này về mặc định (admin123)?', this)">
                                             <button type="submit" class="btn btn-sm btn-outline-warning btn-hover-lift" title="Đặt lại mật khẩu"
@@ -122,7 +122,7 @@
                                         </form>
 
                                         <!-- Nút Xóa tài khoản -->
-                                        <form th:action="@{/admin/users/delete/{id}(id=${user.id})}" method="post" class="m-0"
+                                        <form th:action="@{/admin/users/delete/{id}(id=${user.id}, page=${currentPage}, keyword=${keyword}, role=${role})}" method="post" class="m-0"
                                               th:if="${user.role != 'ROLE_ADMIN' or (currentUser != null and currentUser.isSystem)}"
                                               onclick="return showGlobalConfirm(event, 'Bạn có chắc chắn muốn XÓA VĨNH VIỄN tài khoản này không? Lưu ý: Hệ thống chỉ cho phép xóa tài khoản chưa có giao dịch hoặc lịch sử hoạt động liên quan.', this)">
                                             <button type="submit" class="btn btn-sm btn-outline-danger btn-hover-lift" title="Xóa tài khoản"

@@ -3,6 +3,7 @@ package com.CongNgheJave.ecommerce_system.service.impl;
 import com.CongNgheJave.ecommerce_system.entity.InventoryTransaction;
 import com.CongNgheJave.ecommerce_system.entity.ProductVariant;
 import com.CongNgheJave.ecommerce_system.exception.InsufficientStockException;
+import com.CongNgheJave.ecommerce_system.exception.ResourceNotFoundException;
 import com.CongNgheJave.ecommerce_system.repository.InventoryTransactionRepository;
 import com.CongNgheJave.ecommerce_system.repository.ProductVariantRepository;
 import com.CongNgheJave.ecommerce_system.service.InventoryService;
@@ -58,5 +59,12 @@ public class InventoryServiceImpl implements InventoryService {
         transaction.setQuantityChange(quantity);
         transaction.setCreatedAt(LocalDateTime.now());
         transactionRepository.save(transaction);
+    }
+
+    @Override
+    @Transactional
+    public ProductVariant lockVariant(Integer variantId) {
+        return variantRepository.findByIdForUpdate(variantId)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy biến thể sản phẩm id = " + variantId));
     }
 }

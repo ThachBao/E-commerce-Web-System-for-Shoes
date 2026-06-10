@@ -9,8 +9,11 @@ import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class EmailService {
 
     private static final String FROM_EMAIL = "thachbao2910@gmail.com";
@@ -34,14 +37,14 @@ public class EmailService {
             helper.setText(buildResetPasswordHtml(resetLink), true);
 
             mailSender.send(message);
-            System.out.println("====== [EMAIL DISPATCHED SUCCESSFULLY] To: " + toEmail + " ======");
+            log.info("====== [EMAIL DISPATCHED SUCCESSFULLY] To: {} ======", toEmail);
             return true;
         } catch (Exception e) {
-            System.err.println("====== [EMAIL SENDING FAILED] SMTP error: " + e.getMessage());
-            System.out.println("====== [RESET PASSWORD LINK (FALLBACK LOG)] ======");
-            System.out.println("Gui toi email: " + toEmail);
-            System.out.println("Lien ket khoi phuc: " + resetLink);
-            System.out.println("==================================================");
+            log.error("====== [EMAIL SENDING FAILED] SMTP error: {}", e.getMessage());
+            log.info("====== [RESET PASSWORD LINK (FALLBACK LOG)] ======");
+            log.info("Gui toi email: {}", toEmail);
+            log.info("Lien ket khoi phuc: {}", resetLink);
+            log.info("==================================================");
             return false;
         }
     }

@@ -37,7 +37,7 @@ public class ProductController {
             Model model) {
         
         Page<ProductResponse> productPage = productService.searchProducts(
-                keyword, categoryId, brandId, gender, PageRequest.of(page, size));
+                keyword, categoryId, brandId, gender, true, PageRequest.of(page, size));
         
         model.addAttribute("products", productPage.getContent());
         model.addAttribute("currentPage", page);

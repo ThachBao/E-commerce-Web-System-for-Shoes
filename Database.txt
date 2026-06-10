@@ -250,6 +250,33 @@ CREATE TABLE Inventory_Transaction (
     FOREIGN KEY (variantId) REFERENCES Product_Variant(id) ON DELETE CASCADE
 );
 
+-- ======================
+-- Table: Chat_Conversation
+-- ======================
+CREATE TABLE Chat_Conversation (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    userId INT,
+    title VARCHAR(255),
+    createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (userId) REFERENCES Users(id) ON DELETE SET NULL
+);
+
+-- ======================
+-- Table: Chat_Message
+-- ======================
+CREATE TABLE Chat_Message (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    conversationId INT NOT NULL,
+    userId INT,
+    role VARCHAR(20) NOT NULL,
+    content TEXT NOT NULL,
+    intent VARCHAR(50) NOT NULL,
+    createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (conversationId) REFERENCES Chat_Conversation(id) ON DELETE CASCADE,
+    FOREIGN KEY (userId) REFERENCES Users(id) ON DELETE SET NULL
+);
+
 USE shoe_store_db;
 
 -- ======================
@@ -262,7 +289,7 @@ INSERT INTO Role (name, description) VALUES
 ('CUSTOMER', 'Khach hang mua sam');
 
 
-SELECT * FROM USERS;
+
 -- ==============================================================
 -- Insert Users
 -- 📝 Plaintext Passwords for Testing & Seeded Accounts:
@@ -274,12 +301,12 @@ SELECT * FROM USERS;
 --   - customer02  -> Password: 123456
 -- ==============================================================
 INSERT INTO Users (username, email, passwordHash, fullName, phone, avatarUrl, role, isActive, isSystem, forceChangePassword) VALUES
-('rootadmin',  'rootadmin@shop.com',   '$2a$10$u7HabJx11uL0aPWmpPcApe2ZZm1o2jH4Qh0vn92AiKf..RDw7cG/m', 'Root Administrator', '0900000001', NULL, 'ROLE_ADMIN', TRUE, TRUE, FALSE),
-('admin01',    'admin01@shop.com',     '$2a$10$u7HabJx11uL0aPWmpPcApe2ZZm1o2jH4Qh0vn92AiKf..RDw7cG/m', 'Admin User 01',     '0900000002', NULL, 'ROLE_ADMIN', TRUE, FALSE, FALSE),
-('staff01',    'staff01@shop.com',     '$2a$10$u7HabJx11uL0aPWmpPcApe2ZZm1o2jH4Qh0vn92AiKf..RDw7cG/m', 'Staff User 01',     '0900000003', NULL, 'ROLE_STAFF', TRUE, FALSE, FALSE),
-('staff02',    'staff02@shop.com',     '$2a$10$u7HabJx11uL0aPWmpPcApe2ZZm1o2jH4Qh0vn92AiKf..RDw7cG/m', 'Staff User 02',     '0900000004', NULL, 'ROLE_STAFF', TRUE, FALSE, FALSE),
-('customer01', 'customer01@gmail.com', '$2a$10$ntf0/CLs/v/3KGwVkq5daeXWhEGLxO2l9.rH6XvvE6FQT7VWydqHy', 'Customer User 01',  '0900000005', NULL, 'ROLE_USER', TRUE, FALSE, FALSE),
-('customer02', 'customer02@gmail.com', '$2a$10$ntf0/CLs/v/3KGwVkq5daeXWhEGLxO2l9.rH6XvvE6FQT7VWydqHy', 'Customer User 02',  '0900000006', NULL, 'ROLE_USER', TRUE, FALSE, FALSE);
+('rootadmin',  'rootadmin@shop.com',   '$2a$10$DZ82GfXxCCW7nWqKcwlNROxP1qMweElOLMZruXvf6MMFEWa9qPK1i', 'Root Administrator', '0900000001', NULL, 'ROLE_ADMIN', TRUE, TRUE, FALSE),
+('admin01',    'admin01@shop.com',     '$2a$10$DZ82GfXxCCW7nWqKcwlNROxP1qMweElOLMZruXvf6MMFEWa9qPK1i', 'Admin User 01',     '0900000002', NULL, 'ROLE_ADMIN', TRUE, FALSE, FALSE),
+('staff01',    'staff01@shop.com',     '$2a$10$DZ82GfXxCCW7nWqKcwlNROxP1qMweElOLMZruXvf6MMFEWa9qPK1i', 'Staff User 01',     '0900000003', NULL, 'ROLE_STAFF', TRUE, FALSE, FALSE),
+('staff02',    'staff02@shop.com',     '$2a$10$DZ82GfXxCCW7nWqKcwlNROxP1qMweElOLMZruXvf6MMFEWa9qPK1i', 'Staff User 02',     '0900000004', NULL, 'ROLE_STAFF', TRUE, FALSE, FALSE),
+('customer01', 'customer01@gmail.com', '$2a$10$hg1Cv2nzrpyICKg4dkx2uO3aCjnu1ykYeuPsnVkE8uBtymR2d8t6q', 'Customer User 01',  '0900000005', NULL, 'ROLE_USER', TRUE, FALSE, FALSE),
+('customer02', 'customer02@gmail.com', '$2a$10$hg1Cv2nzrpyICKg4dkx2uO3aCjnu1ykYeuPsnVkE8uBtymR2d8t6q', 'Customer User 02',  '0900000006', NULL, 'ROLE_USER', TRUE, FALSE, FALSE);
 
 -- ======================
 -- Insert User_Role

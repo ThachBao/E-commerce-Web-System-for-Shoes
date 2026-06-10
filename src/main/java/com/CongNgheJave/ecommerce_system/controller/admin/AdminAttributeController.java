@@ -65,9 +65,13 @@ public class AdminAttributeController {
     public String updateColor(@PathVariable Integer id,
                               @Valid @ModelAttribute("colorRequest") ColorRequest request,
                               BindingResult result,
+                              @RequestParam(defaultValue = "0") int page,
+                              @RequestParam(required = false) String keyword,
                               RedirectAttributes ra) {
         if (result.hasErrors()) {
             ra.addFlashAttribute("error", "Dữ liệu màu sắc không hợp lệ!");
+            ra.addAttribute("page", page);
+            if (keyword != null && !keyword.trim().isEmpty()) ra.addAttribute("keyword", keyword);
             return "redirect:/admin/attributes/colors";
         }
         try {
@@ -76,17 +80,35 @@ public class AdminAttributeController {
         } catch (Exception e) {
             ra.addFlashAttribute("error", "Lỗi: " + e.getMessage());
         }
+        
+        ra.addAttribute("page", page);
+        if (keyword != null && !keyword.trim().isEmpty()) ra.addAttribute("keyword", keyword);
         return "redirect:/admin/attributes/colors";
     }
 
     @GetMapping("/colors/delete/{id}")
-    public String deleteColor(@PathVariable Integer id, RedirectAttributes ra) {
+    public String deleteColor(
+            @PathVariable Integer id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) String keyword,
+            RedirectAttributes ra) {
         try {
             colorService.deleteColor(id);
             ra.addFlashAttribute("success", "Xóa màu sắc thành công!");
+            
+            // Kiểm tra nếu trang hiện tại bị trống sau khi xóa, thì lùi lại 1 trang
+            if (page > 0) {
+                Page<ColorResponse> colorPage = colorService.getColors(keyword, PageRequest.of(page, 10));
+                if (colorPage.getContent().isEmpty()) {
+                    page = page - 1;
+                }
+            }
         } catch (Exception e) {
             ra.addFlashAttribute("error", "Lỗi: " + e.getMessage());
         }
+        
+        ra.addAttribute("page", page);
+        if (keyword != null && !keyword.trim().isEmpty()) ra.addAttribute("keyword", keyword);
         return "redirect:/admin/attributes/colors";
     }
 
@@ -128,9 +150,13 @@ public class AdminAttributeController {
     public String updateSize(@PathVariable Integer id,
                              @Valid @ModelAttribute("sizeRequest") SizeRequest request,
                              BindingResult result,
+                             @RequestParam(defaultValue = "0") int page,
+                             @RequestParam(required = false) String keyword,
                              RedirectAttributes ra) {
         if (result.hasErrors()) {
             ra.addFlashAttribute("error", "Dữ liệu kích cỡ không hợp lệ!");
+            ra.addAttribute("page", page);
+            if (keyword != null && !keyword.trim().isEmpty()) ra.addAttribute("keyword", keyword);
             return "redirect:/admin/attributes/sizes";
         }
         try {
@@ -139,17 +165,35 @@ public class AdminAttributeController {
         } catch (Exception e) {
             ra.addFlashAttribute("error", "Lỗi: " + e.getMessage());
         }
+        
+        ra.addAttribute("page", page);
+        if (keyword != null && !keyword.trim().isEmpty()) ra.addAttribute("keyword", keyword);
         return "redirect:/admin/attributes/sizes";
     }
 
     @GetMapping("/sizes/delete/{id}")
-    public String deleteSize(@PathVariable Integer id, RedirectAttributes ra) {
+    public String deleteSize(
+            @PathVariable Integer id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) String keyword,
+            RedirectAttributes ra) {
         try {
             sizeService.deleteSize(id);
             ra.addFlashAttribute("success", "Xóa kích cỡ thành công!");
+            
+            // Kiểm tra nếu trang hiện tại bị trống sau khi xóa, thì lùi lại 1 trang
+            if (page > 0) {
+                Page<SizeResponse> sizePage = sizeService.getSizes(keyword, PageRequest.of(page, 10));
+                if (sizePage.getContent().isEmpty()) {
+                    page = page - 1;
+                }
+            }
         } catch (Exception e) {
             ra.addFlashAttribute("error", "Lỗi: " + e.getMessage());
         }
+        
+        ra.addAttribute("page", page);
+        if (keyword != null && !keyword.trim().isEmpty()) ra.addAttribute("keyword", keyword);
         return "redirect:/admin/attributes/sizes";
     }
 }

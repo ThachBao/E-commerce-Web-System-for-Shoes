@@ -24,7 +24,6 @@ public class ProductVariantRequest {
     @NotNull(message = "Màu sắc không được để trống")
     private Integer colorId;
 
-    @NotBlank(message = "Mã SKU không được để trống")
     private String sku;
 
     @NotNull(message = "Giá bán không được để trống")

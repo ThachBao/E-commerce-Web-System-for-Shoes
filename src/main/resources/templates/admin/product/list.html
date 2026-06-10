@@ -90,7 +90,7 @@
                                     <a th:href="@{/admin/warehouse/product/{id}(id=${product.id})}" class="btn btn-sm btn-outline-info" title="Quản lý Biến thể (Size/Color)"><i class="bi bi-box-seam"></i></a>
                                     <!-- Nút Sửa/Xóa -->
                                     <a th:href="@{/admin/products/edit/{id}(id=${product.id})}" class="btn btn-sm btn-outline-primary" title="Sửa"><i class="bi bi-pencil"></i></a>
-                                    <a th:href="@{/admin/products/delete/{id}(id=${product.id})}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?');" title="Xóa"><i class="bi bi-trash"></i></a>
+                                    <a th:href="@{/admin/products/delete/{id}(id=${product.id}, page=${currentPage}, keyword=${keyword}, categoryId=${categoryId}, brandId=${brandId}, gender=${gender})}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?');" title="Xóa"><i class="bi bi-trash"></i></a>
                                 </td>
                             </tr>
                             <tr th:if="${#lists.isEmpty(products)}">

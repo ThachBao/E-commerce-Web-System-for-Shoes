@@ -136,7 +136,8 @@
         </div>
 
         <div class="card-body p-0">
-            <table class="table table-bordered text-center align-middle mb-0">
+            <div class="table-responsive">
+                <table class="table table-bordered text-center align-middle mb-0">
                 <thead class="table-dark">
                 <tr>
                     <th>Product</th>
@@ -148,7 +149,27 @@
 
                 <tbody>
                 <tr th:each="item : ${order.items}">
-                    <td class="text-start" th:text="${item.productName}"></td>
+                    <td class="text-start ps-3">
+                        <div class="d-flex align-items-center">
+                            <th:block th:if="${item.variant != null and item.variant.product != null and item.variant.product.images != null and !item.variant.product.images.isEmpty()}">
+                                <img th:src="${item.variant.product.images[0].imageUrl}"
+                                     class="rounded-3 border bg-white me-3" 
+                                     style="width: 50px; height: 50px; object-fit: contain; padding: 3px;"
+                                     alt="Product">
+                            </th:block>
+                            <th:block th:unless="${item.variant != null and item.variant.product != null and item.variant.product.images != null and !item.variant.product.images.isEmpty()}">
+                                <div class="bg-light rounded-3 d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                                    <i class="bi bi-image text-muted"></i>
+                                </div>
+                            </th:block>
+                            <div>
+                                <div class="fw-semibold" th:text="${item.productName}">Product Name</div>
+                                <small th:if="${item.variant != null and item.variant.color != null and item.variant.size != null}" class="text-muted">
+                                    <span th:text="${item.variant.color.name + ' / Size ' + item.variant.size.name}"></span>
+                                </small>
+                            </div>
+                        </div>
+                    </td>
                     <td th:text="${#numbers.formatDecimal(item.unitPrice, 0, 'COMMA', 0, 'POINT')} + ' VND'"></td>
                     <td th:text="${item.quantity}"></td>
                     <td th:text="${#numbers.formatDecimal(item.unitPrice * item.quantity, 0, 'COMMA', 0, 'POINT')} + ' VND'"></td>
@@ -161,6 +182,7 @@
                 </tr>
                 </tbody>
             </table>
+            </div>
         </div>
     </div>
 
@@ -387,7 +409,8 @@
         </div>
 
         <div class="card-body p-0">
-            <table class="table table-bordered text-center align-middle mb-0">
+            <div class="table-responsive">
+                <table class="table table-bordered text-center align-middle mb-0">
                 <thead class="table-dark">
                 <tr>
                     <th>Status</th>
@@ -410,6 +433,7 @@
                 </tr>
                 </tbody>
             </table>
+            </div>
         </div>
     </div>
 

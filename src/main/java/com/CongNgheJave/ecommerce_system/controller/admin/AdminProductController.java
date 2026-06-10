@@ -43,7 +43,7 @@ public class AdminProductController {
             Model model) {
         
         Page<ProductResponse> productPage = productService.searchProducts(
-                keyword, categoryId, brandId, gender, PageRequest.of(page, size));
+                keyword, categoryId, brandId, gender, null, PageRequest.of(page, size));
         
         model.addAttribute("products", productPage.getContent());
         model.addAttribute("currentPage", page);
@@ -72,7 +72,7 @@ public class AdminProductController {
     public String addProduct(@Valid @ModelAttribute("productRequest") ProductCreateRequest request,
                              BindingResult result,
                              @RequestParam("thumbnailFile") MultipartFile thumbnail,
-                             @RequestParam("imageFiles") List<MultipartFile> images,
+                             @RequestParam(value = "imageFiles", required = false) List<MultipartFile> images,
                              RedirectAttributes ra,
                              Model model) {
         if (result.hasErrors()) {
@@ -143,13 +143,40 @@ public class AdminProductController {
     }
 
     @GetMapping("/delete/{id}")
-    public String deleteProduct(@PathVariable Integer id, RedirectAttributes ra) {
+    public String deleteProduct(
+            @PathVariable Integer id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Integer categoryId,
+            @RequestParam(required = false) Integer brandId,
+            @RequestParam(required = false) String gender,
+            RedirectAttributes ra) {
         try {
-            productService.deleteProduct(id);
-            ra.addFlashAttribute("success", "Xóa sản phẩm thành công!");
+            String result = productService.deleteProduct(id);
+            if ("HARD_DELETED".equals(result)) {
+                ra.addFlashAttribute("success", "Đã xóa hoàn toàn sản phẩm và các hình ảnh liên quan khỏi hệ thống!");
+            } else {
+                ra.addFlashAttribute("success", "Sản phẩm đã có đơn hàng, hệ thống đã chuyển trạng thái sang Khóa/Ẩn để bảo toàn dữ liệu!");
+            }
+            
+            // Kiểm tra nếu trang hiện tại bị trống sau khi xóa, thì lùi lại 1 trang
+            if (page > 0) {
+                Page<ProductResponse> productPage = productService.searchProducts(
+                        keyword, categoryId, brandId, gender, null, PageRequest.of(page, 10));
+                if (productPage.getContent().isEmpty()) {
+                    page = page - 1;
+                }
+            }
         } catch (Exception e) {
             ra.addFlashAttribute("error", "Lỗi: " + e.getMessage());
         }
+        
+        ra.addAttribute("page", page);
+        if (keyword != null && !keyword.trim().isEmpty()) ra.addAttribute("keyword", keyword);
+        if (categoryId != null) ra.addAttribute("categoryId", categoryId);
+        if (brandId != null) ra.addAttribute("brandId", brandId);
+        if (gender != null && !gender.trim().isEmpty()) ra.addAttribute("gender", gender);
+        
         return "redirect:/admin/products";
     }
 }

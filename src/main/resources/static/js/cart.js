@@ -71,7 +71,7 @@ let renderCart = (cart) => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td class="align-middle text-center">
-                <input class="form-check-input fs-5 mt-0 cart-item-checkbox" type="checkbox" value="${item.id}" checked onchange="recalcTotal()" style="cursor: pointer; accent-color: var(--color-accent);">
+                <input class="form-check-input fs-5 mt-0 cart-item-checkbox" type="checkbox" value="${item.id}" checked onchange="recalcTotal()" style="cursor: pointer; accent-color: var(--color-accent); margin-left: 0 !important; float: none !important;">
             </td>
             <td class="align-middle ps-2">
                 <div class="d-flex align-items-center">

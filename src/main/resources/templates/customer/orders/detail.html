@@ -89,12 +89,25 @@
                                 <tr th:each="item : ${order.items}">
                                     <td class="ps-4 py-3 border-bottom">
                                         <div class="d-flex align-items-center">
-                                            <div class="bg-light rounded d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px;">
-                                                <i class="bi bi-image text-muted"></i>
-                                            </div>
+                                            <!-- Ảnh sản phẩm thật từ variant.product.images -->
+                                            <th:block th:if="${item.variant != null and item.variant.product != null and item.variant.product.images != null and !item.variant.product.images.isEmpty()}">
+                                                <img th:src="${item.variant.product.images[0].imageUrl}"
+                                                     class="rounded-3 border bg-white me-3 shadow-sm" 
+                                                     style="width: 60px; height: 60px; object-fit: contain; padding: 4px;"
+                                                     alt="Product Image">
+                                            </th:block>
+                                            <th:block th:unless="${item.variant != null and item.variant.product != null and item.variant.product.images != null and !item.variant.product.images.isEmpty()}">
+                                                <div class="bg-light rounded-3 d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px;">
+                                                    <i class="bi bi-image text-muted"></i>
+                                                </div>
+                                            </th:block>
                                             <div>
                                                 <h6 class="mb-1 fw-bold" th:text="${item.productName}">Tên sản phẩm</h6>
-                                                <!-- Optional: Có thể hiển thị size/màu ở đây nếu có trong order.items -->
+                                                <small th:if="${item.variant != null and item.variant.color != null and item.variant.size != null}" 
+                                                       class="text-muted">
+                                                    <i class="bi bi-tag me-1 text-warning"></i>
+                                                    <span th:text="${item.variant.color.name + ' / Size ' + item.variant.size.name}"></span>
+                                                </small>
                                             </div>
                                         </div>
                                     </td>

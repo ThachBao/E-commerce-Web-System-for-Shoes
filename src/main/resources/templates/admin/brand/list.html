@@ -49,7 +49,7 @@
                                 </td>
                                 <td class="text-end">
                                     <a th:href="@{/admin/brands/edit/{id}(id=${brand.id})}" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
-                                    <a th:href="@{/admin/brands/delete/{id}(id=${brand.id})}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa?');"><i class="bi bi-trash"></i></a>
+                                    <a th:href="@{/admin/brands/delete/{id}(id=${brand.id}, page=${currentPage}, keyword=${keyword})}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa?');"><i class="bi bi-trash"></i></a>
                                 </td>
                             </tr>
                             <tr th:if="${#lists.isEmpty(brands)}">

@@ -47,7 +47,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // Check if element is already in viewport initially
             const rect = element.getBoundingClientRect();
             if (rect.top < window.innerHeight && rect.bottom > 0) {
-                element.classList.add('active');
+                setTimeout(() => {
+                    element.classList.add('active');
+                }, 100);
             } else {
                 revealObserver.observe(element);
             }

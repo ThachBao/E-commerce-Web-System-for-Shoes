@@ -57,13 +57,13 @@
                                         <td class="fw-bold" th:text="${size.name}"></td>
                                         <td class="text-end">
                                             <button type="button" class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="modal" th:data-bs-target="'#editSizeModal' + ${size.id}"><i class="bi bi-pencil"></i></button>
-                                            <a th:href="@{/admin/attributes/sizes/delete/{id}(id=${size.id})}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Xóa kích cỡ này?');"><i class="bi bi-trash"></i></a>
+                                            <a th:href="@{/admin/attributes/sizes/delete/{id}(id=${size.id}, page=${currentPage}, keyword=${keyword})}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Xóa kích cỡ này?');"><i class="bi bi-trash"></i></a>
                                             
                                             <!-- Modal Edit Size -->
                                             <div class="modal fade text-start" th:id="'editSizeModal' + ${size.id}" tabindex="-1" aria-hidden="true">
                                                 <div class="modal-dialog">
                                                     <div class="modal-content">
-                                                        <form th:action="@{/admin/attributes/sizes/edit/{id}(id=${size.id})}" method="post">
+                                                        <form th:action="@{/admin/attributes/sizes/edit/{id}(id=${size.id}, page=${currentPage}, keyword=${keyword})}" method="post">
                                                             <div class="modal-header">
                                                                 <h5 class="modal-title">Cập nhật Kích cỡ</h5>
                                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>

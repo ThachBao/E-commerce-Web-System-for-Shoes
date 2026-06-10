@@ -49,11 +49,5 @@ public class ProductVariant {
     @Column(name = "isActive", nullable = false)
     private Boolean isActive = true;
 
-    public Boolean getActive() {
-        return isActive;
-    }
 
-    public void setActive(Boolean active) {
-        this.isActive = active;
-    }
 }

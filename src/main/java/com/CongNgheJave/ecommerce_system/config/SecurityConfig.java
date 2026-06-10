@@ -41,10 +41,10 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         // Cho phép truy cập công khai các đường dẫn này
-                        .requestMatchers("/", "/products/**", "/login", "/register", "/forgot-password", "/api/auth/**", "/admin/login", "/admin/logout").permitAll()
+                        .requestMatchers("/", "/products/**", "/login", "/register", "/forgot-password", "/reset-password", "/api/auth/**", "/admin/login", "/admin/logout", "/api/chatbot").permitAll()
                         .requestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**", "/uploads/**").permitAll()
                         // Yêu cầu đăng nhập với các đường dẫn khác
-                        .requestMatchers("/cart-ui", "/carts/**", "/checkout-ui", "/api/orders/**").authenticated()
+                        .requestMatchers("/cart-ui", "/carts/**", "/checkout-ui", "/api/orders/**", "/api/chatbot/conversations/**").authenticated()
                         .requestMatchers("/admin/users", "/admin/users/**").hasRole("ADMIN")
                         .requestMatchers("/admin", "/admin/**").hasAnyRole("ADMIN", "STAFF")
                         .anyRequest().permitAll() // Hoặc authenticated tuỳ chính sách

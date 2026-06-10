@@ -26,4 +26,7 @@ public class ProductResponse {
     
     private String thumbnailUrl;
     private List<String> imageUrls;
+    
+    private java.math.BigDecimal price;
+    private java.math.BigDecimal salePrice;
 }

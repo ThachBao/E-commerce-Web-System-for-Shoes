@@ -10,13 +10,13 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface ProductService {
-    Page<ProductResponse> searchProducts(String keyword, Integer categoryId, Integer brandId, String gender, Pageable pageable);
+    Page<ProductResponse> searchProducts(String keyword, Integer categoryId, Integer brandId, String gender, Boolean isActive, Pageable pageable);
     Page<ProductResponse> getActiveProducts(Pageable pageable);
     List<ProductResponse> getFeaturedProducts();
     ProductResponse getProductById(Integer id);
     ProductResponse getProductBySlug(String slug);
     ProductResponse createProduct(ProductCreateRequest request, MultipartFile thumbnail, List<MultipartFile> images);
     ProductResponse updateProduct(Integer id, ProductUpdateRequest request, MultipartFile thumbnail, List<MultipartFile> images);
-    void deleteProduct(Integer id);
+    String deleteProduct(Integer id);
     void deleteProductImage(Integer imageId);
 }
